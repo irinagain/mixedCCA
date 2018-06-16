@@ -1,0 +1,29 @@
+Package: mixedCCA
+Type: Package
+Title: Sparse CCA for high-dimensional mixed data
+Version: 0.1.0
+Author: Grace Yoon and Irina Gaynanova
+Maintainer: Grace Yoon <gyoon@stat.tamu.edu>
+Description: Semi-parametric approach for sparse CCA which can handle mixed data: continuous, binary and truncated continuous. Bridge functions are provided to connect Kendall's tau to latent correlation matrix under the Gaussian copula model.
+License: GPL-2
+Encoding: UTF-8
+LazyData: false
+Depends: R (>= 3.0.1), stats, MASS
+Imports:
+  pcaPP,
+  Matrix,
+  fMultivar,
+  mnormt,
+  irlba,
+  Rcpp,
+  RcppArmadillo
+Collate:
+  KendallTau.R
+  bridge.R
+  fromKtoR.R
+  estimateR.R
+  KendallCCA.R
+  GenerateData.R
+  RcppExports.R
+RoxygenNote: 6.0.1
+LinkingTo: Rcpp, RcppArmadillo
