@@ -16,7 +16,15 @@ knitr::opts_chunk$set(
 
 # mixedCCA: sparse CCA for data of mixed types
 
-The R package `mixedCCA` is to apply sparse CCA on the data of mixed types: continuous, binary or truncated continuous. It 
+The R package `mixedCCA` is to apply sparse CCA on the data of mixed types: continuous, binary or zero-inflated (truncated continuous). The methods are described in [Sparse semiparametric canonical correlation analysis for data of mixed types] by Yoon, Carroll and Gaynanova (2018+).
+
+
+## Installation
+
+```{install}
+library(devtools)
+devtools::install_github("irinagain/mixedCCA")
+```
 
 ## Example
 
