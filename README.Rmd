@@ -30,7 +30,7 @@ devtools::install_github("irinagain/mixedCCA")
 
 ## Example
 
-```{r example, results="hide"}
+```{r example, results="hide", message=FALSE}
 library(mixedCCA)
 
 # Data generation

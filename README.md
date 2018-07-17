@@ -19,7 +19,6 @@ Example
 
 ``` r
 library(mixedCCA)
-#> Loading required package: MASS
 
 # Data generation
 set.seed(1)
