@@ -1,24 +1,13 @@
 #' From Kendall's tau to correlation matrix estimator using bridge function
 #'
-#' @param K Kendall's tau correlation matrix (p by p) of \eqn{X}.
-#' @param zratio proportion of zero values of dataset \eqn{X}.
-#' @param type type of the dataset \eqn{X}. Choose among "continous", "binary", "trunc".
-#' @param tol the desired accuracy (convergence tolerance).
+#' Using a corresponding bridge function based on the type of the data (continuous/binary/truncated continuous), latent correlation matrix is estimated.
 #'
-#' @examples
-#' library(mixedCCA)
+#' @param K Kendall's tau correlation matrix (p by p) of \code{X}.
+#' @param zratio A proportion of zero values of dataset \code{X}.
+#' @param type Type of the dataset \code{X}. Choose among "continous", "binary", "trunc".
+#' @param tol The desired accuracy (convergence tolerance).
 #'
-#' set.seed(1)
-#'
-#' n <- 100 # sample size
-#' r <- 0.8 # true correlation
-#'
-#' # Data generation (X: truncated continuous)
-#' Z <- mvrnorm(n, mu = c(0, 1, 0), Sigma = matrix(c(1, r, r, r, 1, r, r, r, 1), nrow = 3))
-#' X <- ifelse(Z > 0, Z, 0)
-#' zratio <- colMeans(X==0)
-#' K <- Kendall_matrix(X)
-#' fromKtoR(K, zratio = zratio, type = "trunc")
+#' @example man/examples/fromKtoR_ex.R
 #'
 #' @export
 fromKtoR <- function(K, zratio = NULL, type = "trunc", tol = 1e-3) {
@@ -61,51 +50,15 @@ fromKtoR <- function(K, zratio = NULL, type = "trunc", tol = 1e-3) {
 }
 
 
-#' From Kendall's tau to correlation matrix estimator using bridge function for mixed type data
+#' @rdname fromKtoR
+#' @aliases fromKtoR_mixed
 #'
-#' @param K12 Kendall's tau correlation matrix (p1 by p2) between \eqn{X1} and \eqn{X2}.
-#' @param zratio1 proportion of zero values of dataset \eqn{X1}.
-#' @param zratio2 proportion of zero values of dataset \eqn{X2}.
-#' @param type1 type of the dataset \eqn{X1} among "continous", "binary", "trunc".
-#' @param type2 type of the dataset \eqn{X2} among "continous", "binary", "trunc".
-#' @param tol the desired accuracy (convergence tolerance).
-#'
-#' @examples
-#'
-#' library(mixedCCA)
-#' set.seed(1)
-#'
-#' n <- 100 # sample size
-#' r <- 0.8 # true correlation
-#'
-#' # Data generation (X1: truncated continuous, X2: continuous)
-#' Z <- mvrnorm(n, mu = c(0, 0), Sigma = matrix(c(1, r, r, 1), nrow = 2))
-#' X1 <- Z[,1]
-#' X1[Z[,1] < 1] <- 0
-#' X2 <- Z[,2]
-#' zratio1 <- mean(X1==0)
-#' bridge <- bridge_select(type1 = "trunc", type2 = "continuous")
-#' K12 <- KendallTau(X1, X2)
-#' # estimated latent correlation R based on K12.
-#' fromKtoR_mixed(K12, zratio1 = zratio1, type1 = "trunc", type2 = "continuous")
-#'
-#' # X1: truncated continuous, X2: truncated continuous
-#' X2[Z[,2] < 1] <- 0
-#' zratio2 <- mean(X2==0)
-#' bridge <- bridge_select(type1 = "trunc", type2 = "trunc")
-#' K12 <- KendallTau(X1, X2)
-#' K12
-#' # estimated latent correlation R based on K12.
-#' fromKtoR_mixed(K12, zratio1 = zratio1, zratio2 = zratio2, type1 = "trunc", type2 = "trunc")
-#'
-#' # X1: truncated continuous, X2: binary
-#' X2[X2 != 0] <- 1
-#' zratio2 <- mean(X2==0)
-#' bridge <- bridge_select(type1 = "trunc", type2 = "binary")
-#' K12 <- KendallTau(X1, X2)
-#' K12
-#' # estimated latent correlation R based on K12.
-#' fromKtoR_mixed(K12, zratio1 = zratio1, zratio2 = zratio2, type1 = "trunc", type2 = "binary")
+#' @param K12 Kendall's tau correlation matrix (p1 by p2) between \code{X1} and \code{X2}.
+#' @param zratio1 A proportion of zero values of dataset \code{X1}.
+#' @param zratio2 A proportion of zero values of dataset \code{X2}.
+#' @param type1 Type of the dataset \code{X1} among "continous", "binary", "trunc".
+#' @param type2 Type of the dataset \code{X2} among "continous", "binary", "trunc".
+#' @inheritParams tol
 #'
 #' @export
 fromKtoR_mixed <- function(K12, zratio1 = NULL, zratio2 = NULL, type1 = "trunc", type2 = "continuous", tol = 1e-3) {
