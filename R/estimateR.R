@@ -1,6 +1,6 @@
-#' Estimate latent correlation matrix based on Kendall's tau
+#' @title Estimate latent correlation matrix based on Kendall's tau
 #'
-#' Under the Gaussian copula model assumption, the latent correlation matrix is estimated based on the observed data of mixed type (continuous/biary/truncated continuous).
+#' @description Under the Gaussian copula model assumption, the latent correlation matrix is estimated based on the observed data of mixed type (continuous/biary/truncated continuous).
 #'
 #' @param X A numeric data matrix (n by p)
 #' @param type A type of data \code{X} among "continuous", "binary", "trunc".
@@ -38,8 +38,8 @@ estimateR <- function(X, type = "trunc", rho = 0.01){
 
   return(list(type = type, R = R1))
 }
-
-
+#'
+#'
 #'
 #' @rdname estimateR
 #' @aliases estimateR_mixed

@@ -2,7 +2,7 @@
 % Please edit documentation in R/GenerateData.R
 \name{GenerateData}
 \alias{GenerateData}
-\title{Two sets of mixed data generation for sparse CCA}
+\title{Mixed type simulation data generator for sparse CCA}
 \usage{
 GenerateData(n, trueidx1, trueidx2, Sigma1, Sigma2, maxcancor, copula1 = "no",
   copula2 = "no", type1 = "continuous", type2 = "continuous",
@@ -52,7 +52,7 @@ GenerateData(n, trueidx1, trueidx2, Sigma1, Sigma2, maxcancor, copula1 = "no",
 }
 }
 \description{
-Two sets of mixed data generation for sparse CCA
+\code{GenerateData} is used to generate two sets of data of mixed types for sparse CCA under the Gaussian copula model.
 }
 \examples{
 n <- 100; p1 <- 5; p2 <- 7

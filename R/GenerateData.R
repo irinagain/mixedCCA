@@ -41,7 +41,9 @@ blockcor <- function(rho, groupind){
   return(Sigma)
 }
 
-#' Two sets of mixed data generation for sparse CCA
+#' Mixed type simulation data generator for sparse CCA
+#'
+#' \code{GenerateData} is used to generate two sets of data of mixed types for sparse CCA under the Gaussian copula model.
 #'
 #' @param n Sample size
 #' @param trueidx1 True canonical direction of length p1 for \code{X1}. It will be automatically normalized such that \eqn{w_1^T \Sigma_1 w_1 = 1}.
