@@ -2,24 +2,73 @@
 % Please edit documentation in R/estimateR.R
 \name{estimateR}
 \alias{estimateR}
+\alias{estimateR_mixed}
 \title{Estimate latent correlation matrix based on Kendall's tau}
 \usage{
 estimateR(X, type = "trunc", rho = 0.01)
+
+estimateR_mixed(X1, X2, type1 = "trunc", type2 = "continuous", rho = 0.01)
 }
 \arguments{
-\item{X}{numeric data matrix (n by p)}
+\item{X}{A numeric data matrix (n by p)}
 
-\item{type}{the type of data matrix \code{X} among "continuous", "binary", "trunc".}
+\item{type}{A type of data \code{X} among "continuous", "binary", "trunc".}
 
-\item{rho}{shrinkage level to make correlation matrix estimator positive definite. The default is 0.01.}
+\item{rho}{Shrinkage level to make correlation matrix estimator positive definite. The default is 0.01.}
+
+\item{X1}{A numeric data matrix (n by p1).}
+
+\item{X2}{A numeric data matrix (n by p2).}
+
+\item{type1}{A type of data \code{X1} among "continuous", "binary", "trunc".}
+
+\item{type2}{A type of data \code{X2} among "continuous", "binary", "trunc".}
 }
 \value{
-A data.frame containing
+\code{estimateR} returns a data.frame containing
 \itemize{
-      \item{type: }{type of the data matrix X}
-      \item{R: }{Estimated latent correlation matrix}
+      \item{type: }{type of the data matrix \code{X}}
+      \item{R: }{Estimated latent correlation matrix of \code{X}}
+}
+
+\code{estimateR_mixed} returns a data.frame containing
+\itemize{
+      \item{type1: }{type of the data matrix \code{X1}}
+      \item{type2: }{type of the data matrix \code{X2}}
+      \item{R: }{Estimated latent correlation matrix of whole \code{X} = cbind(\code{X1}, \code{X2})}
+      \item{R1: }{Estimated latent correlation matrix of \code{X1}}
+      \item{R2: }{Estimated latent correlation matrix of \code{X2}}
+      \item{R12: }{Estimated latent correlation matrix of \code{X12}}
 }
 }
 \description{
-Estimate latent correlation matrix based on Kendall's tau
+Under the Gaussian copula model assumption, the latent correlation matrix is estimated based on the observed data of mixed type (continuous/biary/truncated continuous).
+}
+\examples{
+
+# Generate Data
+set.seed(1)
+n <- 100; p1 <- 5; p2 <- 7
+maxcancor <- 0.9 # true canonical correlation
+Sigma1 <- autocor(p1, 0.7)
+groupind <- c(rep(1, 2), rep(2, p2-2))
+Sigma2 <- blockcor(0.7, groupind)
+copula1 <- "exp"; copula2 <- "cube" # transformation for Gaussian copula model
+mu <- rep(0, p1+p2)
+type1 <- type2 <- "trunc" # X1: truncated continuous, X2: truncated continuous
+c1 <- rep(0, p1); c2 <- rep(0, p2) # threshold for truncation of underlying continuous variable
+trueidx1 <- c(0, 0, 1, 1, 1) # true variable indices for dataset X1
+trueidx2 <- c(1, 0, 1, 0, 0, 1, 1) # true variable indices for dataset X2
+simdata <- GenerateData(n=n, trueidx1 = trueidx1, trueidx2 = trueidx2, maxcancor = maxcancor,
+                        Sigma1 = Sigma1, Sigma2 = Sigma2,
+                        copula1 = copula1, copula2 = copula2,
+                        muZ = mu,
+                        type1 = type1, type2 = type2, c1 = c1, c2 = c2
+)
+X1 <- simdata$X1
+X2 <- simdata$X2
+
+# Estimate latent correlation matrix
+estimateR(X1, type = "trunc")
+estimateR_mixed(X1, X2, type1 = "trunc", type2 = "trunc")
 }

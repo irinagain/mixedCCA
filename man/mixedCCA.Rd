@@ -2,47 +2,47 @@
 % Please edit documentation in R/KendallCCA.R
 \name{mixedCCA}
 \alias{mixedCCA}
-\title{Kendall sparse CCA with BIC criterion}
+\title{Sparse CCA for data of mixed types with BIC criterion}
 \usage{
 mixedCCA(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL,
   initlam1 = NULL, initlam2 = NULL, nlambda = 100, lam.eps = 0.01,
   w1init, w2init, BICtype, KendallR = NULL, tol = 0.001, maxiter = 1000)
 }
 \arguments{
-\item{X1}{numeric data matrix (n by p1).}
+\item{X1}{A numeric data matrix (n by p1).}
 
-\item{X2}{numeric data matrix (n by p2).}
+\item{X2}{A numeric data matrix (n by p2).}
 
-\item{type1}{the type of data matrix \code{X1} among "continuous", "binary", "trunc".}
+\item{type1}{A type of data \code{X1} among "continuous", "binary", "trunc".}
 
-\item{type2}{the type of data matrix \code{X2} among "continuous", "binary", "trunc".}
+\item{type2}{A type of data \code{X2} among "continuous", "binary", "trunc".}
 
-\item{lamseq1}{tuning parameter sequence for \code{X1}. The length should be the same as lamseq2.}
+\item{lamseq1}{A tuning parameter sequence for \code{X1}. The length should be the same as \code{lamseq2}.}
 
-\item{lamseq2}{tuning parameter sequence for \code{X2}. The length should be the same as lamseq1.}
+\item{lamseq2}{A tuning parameter sequence for \code{X2}. The length should be the same as \code{lamseq1}.}
 
-\item{initlam1}{initial value to generate a tuning parameter sequence for \code{X1}.}
+\item{initlam1}{An initial value to generate a tuning parameter sequence for \code{X1}, which is the maximum value of tuning parameter grid.}
 
-\item{initlam2}{initial value to generate a tuning parameter sequence for \code{X2}.}
+\item{initlam2}{An initial value to generate a tuning parameter sequence for \code{X2}, which is the maximum value of tuning parameter grid.}
 
-\item{nlambda}{the number of tuning parameter sequence \code{lamseq} - default is 100.}
+\item{nlambda}{The number of tuning parameter sequence lambda - default is 100.}
 
-\item{lam.eps}{ratio of the smallest value for lambda to the maximum value of lambda.}
+\item{lam.eps}{A ratio of the smallest value for lambda to the maximum value of lambda.}
 
-\item{w1init}{initial value of canonical direction \eqn{w1}.}
+\item{w1init}{An initial vector of length p1 for canonical direction \eqn{w1}.}
 
-\item{w2init}{initial value of canonical direction \eqn{w2}.}
+\item{w2init}{An initial vector of length p2 for canonical direction \eqn{w2}.}
 
-\item{BICtype}{1 or 2: For more details for two options, see the reference.}
+\item{BICtype}{Either 1 or 2: For more details for two options, see the reference.}
 
-\item{KendallR}{estimated Kendall \eqn{\tau} matrix. The default is NULL, which means that it will be automatically estimated by Kendall's \eqn{\tau} estimator unless the user supplies.}
+\item{KendallR}{An estimated Kendall \eqn{\tau} matrix. The default is NULL, which means that it will be automatically estimated by Kendall's \eqn{\tau} estimator unless the user supplies.}
 
-\item{tol}{the desired accuracy (convergence tolerance).}
+\item{tol}{The desired accuracy (convergence tolerance).}
 
-\item{maxiter}{maximum number of iterations allowed.}
+\item{maxiter}{The maximum number of iterations allowed.}
 }
 \value{
-A data.frame containing
+\code{mixedCCA} returns a data.frame containing
 \itemize{
       \item{KendallR: }{estimated Kendall's \eqn{\tau} matrix estimator.}
       \item{lambda_seq: }{the values of \code{lambda} used for sparse CCA.}
@@ -54,9 +54,10 @@ A data.frame containing
 }
 }
 \description{
-Kendall sparse CCA with BIC criterion
+Applies sparse canonical correlation analysis (CCA) for high-dimensional data of mixed types (continuous/biary/truncated continuous). Derived rank-based estimator instead of sample correlation matrix is implemented. There are two types of BIC criteria for variable selection. We found that BIC1 works best for variable selection, whereas BIC2 works best for prediction.
 }
 \examples{
+# Generate Data
 n <- 100; p1 <- 5; p2 <- 7
 maxcancor <- 0.9
 Sigma1 <- autocor(p1, 0.7)
@@ -69,10 +70,10 @@ c1 <- rep(0, p1); c2 <- rep(0, p2)
 trueidx1 <- c(0, 0, 1, 1, 1)
 trueidx2 <- c(1, 0, 1, 0, 0, 1, 1)
 simdata <- GenerateData(n=n, trueidx1 = trueidx1, trueidx2 = trueidx2, maxcancor = maxcancor,
-                       Sigma1 = Sigma1, Sigma2 = Sigma2,
-                       copula1 = copula1, copula2 = copula2,
-                       muZ = mu,
-                       type1 = type1, type2 = type2, c1 = c1, c2 = c2
+                        Sigma1 = Sigma1, Sigma2 = Sigma2,
+                        copula1 = copula1, copula2 = copula2,
+                        muZ = mu,
+                        type1 = type1, type2 = type2, c1 = c1, c2 = c2
 )
 
 X1 <- simdata$X1
@@ -81,10 +82,21 @@ X2 <- simdata$X2
 RCCA <- myrcc(X1, X2, 0.01, 0.1)
 w1init <- RCCA$w1[, 1]
 w2init <- RCCA$w2[, 1]
+
 # Kendall CCA with BIC1
-kendallcca1 <- mixedCCA(X1, X2, type1 = type1, type2 = type2, lam.eps = 0.01, nlambda = 20,
-                       w1init = w1init, w2init = w2init, BICtype = 1)
+kendallcca1 <- mixedCCA(X1, X2, type1 = type1, type2 = type2,
+                        lam.eps = 0.01, nlambda = 20,
+                        w1init = w1init, w2init = w2init, BICtype = 1)
+
+# Kendall CCA with BIC2. Estimated correlation matrix is plugged in from the above result.
+R <- kendallcca1$KendallR
+kendallcca2 <- mixedCCA(X1, X2, type1 = type1, type2 = type2,
+                        lam.eps = 0.01, nlambda = 20,
+                        KendallR = R,
+                        w1init = w1init, w2init = w2init, BICtype = 2)
+
+classicalcca <- standardCCA(R$R1, R$R2, R$R12)
 }
 \references{
-Yoon G, Carroll R and Gaynanova I. Sparse semiparametric canonical correlation analysis for high-dimensional data of mixed types. (2018+)
+Yoon G, Carroll R and Gaynanova I. (2018+) Sparse semiparametric canonical correlation analysis for high-dimensional data of mixed types. \url{https://arxiv.org/pdf/1807.05274.pdf}
 }

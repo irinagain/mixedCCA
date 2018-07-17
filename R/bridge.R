@@ -1,11 +1,11 @@
-
 # bridge function for mixed data depending on the type
 
 #' Bridge functions
+#' @aliases bridge
 #'
-#' @name bridgeF
-#' @description
+#'
 #' Bridge function \eqn{F} connects Kendall's tau \eqn{\tau} estimation to unbiased latent correlation matrix \eqn{\Sigma} under Gaussian copula model. There are three possible types of variables: continuos, binary, truncated continuous. Depending on the combination of different types of variables, different bridge function should be applied. \code{bridge_select} shows which bridge function should be used based on data types. Taking the first letter from the type of the variables, the combination of the variables' type follows the bridgeF. For example, bc indicates the first dataset is binary and the second dataset is continuous.
+#'
 #' \deqn{ F( \Sigma_{jk} ) = \tau_{jk} }
 #' The input \eqn{r} is an element of \eqn{\Sigma} and the bridge function is calculated elementwise.
 #'

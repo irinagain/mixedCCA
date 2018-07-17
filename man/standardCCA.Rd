@@ -7,16 +7,16 @@
 standardCCA(S1, S2, S12, tol = 1e-04)
 }
 \arguments{
-\item{S1}{correlation matrix of \eqn{X1}.}
+\item{S1}{A correlation matrix of \code{X1}.}
 
-\item{S2}{correlation matrix of \eqn{X2}.}
+\item{S2}{A correlation matrix of \code{X2}.}
 
-\item{S12}{correlation matrix between \eqn{X1} and \eqn{X2}.}
+\item{S12}{A correlation matrix between \code{X1} and \code{X2}.}
 
-\item{tol}{cutoff for eigenvalues. During the calculation, eigenvalues smaller than cutoff are set to zero.}
+\item{tol}{A cutoff for eigenvalues. During the calculation, eigenvalues smaller than cutoff are set to zero.}
 }
 \value{
-A data.frame containing
+\code{standardCCA} returns a data.frame containing
 \itemize{
       \item{cancor: }{estimated canonical correlation.}
       \item{w1: }{estimated canonical direction \eqn{w1}.}
@@ -24,5 +24,8 @@ A data.frame containing
 }
 }
 \description{
-Classical CCA using correlation matrix estimator.
+Conduct the canonical correlation analysis (CCA) between two datasets using their correlation matrices as an input. Only first canonical pair with the largest canonical correlation is calculated.
+}
+\seealso{
+See \code{\link{mixedCCA}} for examples.
 }

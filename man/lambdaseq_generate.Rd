@@ -2,33 +2,64 @@
 % Please edit documentation in R/KendallCCA.R
 \name{lambdaseq_generate}
 \alias{lambdaseq_generate}
-\title{Generate tuning parameter sequence for BIC.}
+\title{Generate tuning parameter sequence for BIC criterion}
 \usage{
 lambdaseq_generate(nlambda = 100, initlam1 = NULL, initlam2 = NULL,
   lam.eps = 0.01, Sigma1, Sigma2, Sigma12, w1init = NULL, w2init = NULL)
 }
 \arguments{
-\item{nlambda}{the number of tuning parameter sequence \code{lamseq} - default is 100.}
+\item{nlambda}{The number of tuning parameter sequence \code{lamseq} - default is 100.}
 
-\item{initlam1}{initial value to generate a tuning parameter sequence for \eqn{X1}.}
+\item{initlam1}{An initial value to generate a tuning parameter sequence for \code{X1}, which is the maximum value of tuning parameter grid.}
 
-\item{initlam2}{initial value to generate a tuning parameter sequence for \eqn{X2}.}
+\item{initlam2}{An initial value to generate a tuning parameter sequence for \code{X2}, which is the maximum value of tuning parameter grid.}
 
-\item{lam.eps}{ratio of the smallest value for lambda to the maximum value of lambda.}
+\item{lam.eps}{A ratio of the smallest value for lambda to the maximum value of lambda.}
 
-\item{Sigma1}{correlation matrix of \eqn{X1}.}
+\item{Sigma1}{correlation matrix of \code{X1}.}
 
-\item{Sigma2}{correlation matrix of \eqn{X2}.}
+\item{Sigma2}{correlation matrix of \code{X2}.}
 
-\item{Sigma12}{correlation matrix between \eqn{X1} and \eqn{X2}.}
+\item{Sigma12}{correlation matrix between \code{X1} and \code{X2}.}
 
 \item{w1init}{initial value of canonical direction \eqn{w1}, which helps estimate \code{initlam1} better. The default is same coordinates for all elements such that \eqn{w^T \Sigma w = 1}.}
 
 \item{w2init}{initial value of canonical direction \eqn{w2}, which helps estimate \code{initlam2} better. The default is same coordinates for all elements such that \eqn{w^T \Sigma w = 1}.}
 }
 \value{
-a list containing two vectors of lambda sequences for \eqn{X1} and \eqn{X2}.
+A list containing two vectors of lambda sequences for \code{X1} and \code{X2}.
 }
 \description{
-Generate tuning parameter sequence for BIC.
+Given an estimated correlation matrix, the function generates a sequence of lambda values for tuning parameter selection.
+}
+\examples{
+# Generate Data
+n <- 100; p1 <- 5; p2 <- 7
+maxcancor <- 0.9
+Sigma1 <- autocor(p1, 0.7)
+groupind <- c(rep(1, 2), rep(2, p2-2))
+Sigma2 <- blockcor(0.7, groupind)
+copula1 <- "exp"; copula2 <- "cube"
+mu <- rep(0, p1+p2)
+type1 <- type2 <- "trunc"
+c1 <- rep(0, p1); c2 <- rep(0, p2)
+trueidx1 <- c(0, 0, 1, 1, 1)
+trueidx2 <- c(1, 0, 1, 0, 0, 1, 1)
+simdata <- GenerateData(n=n, trueidx1 = trueidx1, trueidx2 = trueidx2, maxcancor = maxcancor,
+                        Sigma1 = Sigma1, Sigma2 = Sigma2,
+                        copula1 = copula1, copula2 = copula2,
+                        muZ = mu,
+                        type1 = type1, type2 = type2, c1 = c1, c2 = c2
+)
+
+X1 <- simdata$X1
+X2 <- simdata$X2
+
+R <- estimateR_mixed(X1, X2, type1 = type1, type2 = type2)
+R1 <- as.matrix(R$R1)
+R2 <- as.matrix(R$R2)
+R12 <- as.matrix(R$R12)
+
+# Tuning parameter grid
+lambda_seq <- lambdaseq_generate(nlambda = 10, Sigma1 = R$R1, Sigma2 = R$R2, Sigma12 = R$R12)
 }

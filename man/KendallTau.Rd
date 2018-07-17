@@ -10,18 +10,18 @@ KendallTau(x, y)
 Kendall_matrix(X, Y = NULL)
 }
 \arguments{
-\item{x}{numeric vector (n by 1).}
+\item{x}{A numeric vector.}
 
-\item{y}{numeric vector (n by 1).}
+\item{y}{A numeric vector.}
 
-\item{X}{numeric matrix (n by p1).}
+\item{X}{A numeric matrix (n by p1).}
 
-\item{Y}{numeric matrix (n by p2).}
+\item{Y}{A numeric matrix (n by p2).}
 }
 \description{
 Calculate Kendall's tau correlation.
 \deqn{ \hat{\tau}_{jk} = \frac{2}{n(n-1)}\sum_{1\le i<i'\le n} sign(X_{ji}-X_{ji'}) sign(X_{ki}-X_{ki'}) }
-The input for \code{KendallTau} function should be in a vector format, but \code{Kendall_matrix} can handle matrix as an input.
+The function \code{KendallTau} calculates Kendall's tau correlation between two variables, returning a single correlation value. The function \code{Kendall_matrix} can handle matrices as an input and will return a correlation matrix (p1 by p2).
 }
 \examples{
 
@@ -37,6 +37,7 @@ X2 <- Z[,2]
 
 KendallTau(X1, X2)
 Kendall_matrix(X1, X2)
+
 ### matrix data input
 p1 <- 3; p2 <- 4 # dimension of X1 and X2
 JSigma <- matrix(r, nrow = p1+p2, ncol = p1+p2); diag(JSigma) <- 1

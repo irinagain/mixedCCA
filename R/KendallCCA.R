@@ -1,20 +1,24 @@
 # sparse CCA code using Rcpp.
 
 
-#' Generate tuning parameter sequence for BIC.
+#' Generate tuning parameter sequence for BIC criterion
 #'
-#' @param nlambda the number of tuning parameter sequence \code{lamseq} - default is 100.
-#' @param initlam1 initial value to generate a tuning parameter sequence for \eqn{X1}.
-#' @param initlam2 initial value to generate a tuning parameter sequence for \eqn{X2}.
-#' @param lam.eps ratio of the smallest value for lambda to the maximum value of lambda.
-#' @param Sigma1 correlation matrix of \eqn{X1}.
-#' @param Sigma2 correlation matrix of \eqn{X2}.
-#' @param Sigma12 correlation matrix between \eqn{X1} and \eqn{X2}.
+#' Given an estimated correlation matrix, the function generates a sequence of lambda values for tuning parameter selection.
+#'
+#' @param nlambda The number of tuning parameter sequence \code{lamseq} - default is 100.
+#' @param initlam1 An initial value to generate a tuning parameter sequence for \code{X1}, which is the maximum value of tuning parameter grid.
+#' @param initlam2 An initial value to generate a tuning parameter sequence for \code{X2}, which is the maximum value of tuning parameter grid.
+#' @param lam.eps A ratio of the smallest value for lambda to the maximum value of lambda.
+#' @param Sigma1 correlation matrix of \code{X1}.
+#' @param Sigma2 correlation matrix of \code{X2}.
+#' @param Sigma12 correlation matrix between \code{X1} and \code{X2}.
 #' @param w1init initial value of canonical direction \eqn{w1}, which helps estimate \code{initlam1} better. The default is same coordinates for all elements such that \eqn{w^T \Sigma w = 1}.
 #' @param w2init initial value of canonical direction \eqn{w2}, which helps estimate \code{initlam2} better. The default is same coordinates for all elements such that \eqn{w^T \Sigma w = 1}.
 #'
-#' @return a list containing two vectors of lambda sequences for \eqn{X1} and \eqn{X2}.
+#' @return A list containing two vectors of lambda sequences for \code{X1} and \code{X2}.
 #'
+#' @example man/examples/lambdaseq_ex.R
+#' @export
 lambdaseq_generate <- function(nlambda = 100, initlam1 = NULL, initlam2 = NULL, lam.eps = 1e-02, Sigma1, Sigma2, Sigma12, w1init = NULL, w2init = NULL){
   init.lambda <- rep(NA, 2)
   p1 <- nrow(Sigma1); p2 <- nrow(Sigma2)
@@ -41,27 +45,29 @@ lambdaseq_generate <- function(nlambda = 100, initlam1 = NULL, initlam2 = NULL, 
 }
 
 
-#' Kendall sparse CCA with BIC criterion
+#' Sparse CCA for data of mixed types with BIC criterion
 #'
-#' @param X1 numeric data matrix (n by p1).
-#' @param X2 numeric data matrix (n by p2).
-#' @param type1 the type of data matrix \code{X1} among "continuous", "binary", "trunc".
-#' @param type2 the type of data matrix \code{X2} among "continuous", "binary", "trunc".
-#' @param lamseq1 tuning parameter sequence for \code{X1}. The length should be the same as lamseq2.
-#' @param lamseq2 tuning parameter sequence for \code{X2}. The length should be the same as lamseq1.
-#' @param initlam1 initial value to generate a tuning parameter sequence for \code{X1}.
-#' @param initlam2 initial value to generate a tuning parameter sequence for \code{X2}.
-#' @param nlambda the number of tuning parameter sequence \code{lamseq} - default is 100.
-#' @param lam.eps ratio of the smallest value for lambda to the maximum value of lambda.
-#' @param w1init initial value of canonical direction \eqn{w1}.
-#' @param w2init initial value of canonical direction \eqn{w2}.
-#' @param BICtype 1 or 2: For more details for two options, see the reference.
-#' @param KendallR estimated Kendall \eqn{\tau} matrix. The default is NULL, which means that it will be automatically estimated by Kendall's \eqn{\tau} estimator unless the user supplies.
-#' @param tol the desired accuracy (convergence tolerance).
-#' @param maxiter maximum number of iterations allowed.
+#' Applies sparse canonical correlation analysis (CCA) for high-dimensional data of mixed types (continuous/biary/truncated continuous). Derived rank-based estimator instead of sample correlation matrix is implemented. There are two types of BIC criteria for variable selection. We found that BIC1 works best for variable selection, whereas BIC2 works best for prediction.
 #'
-#' @references Yoon G, Carroll R and Gaynanova I. Sparse semiparametric canonical correlation analysis for high-dimensional data of mixed types. (2018+)
-#' @return A data.frame containing
+#' @param X1 A numeric data matrix (n by p1).
+#' @param X2 A numeric data matrix (n by p2).
+#' @param type1 A type of data \code{X1} among "continuous", "binary", "trunc".
+#' @param type2 A type of data \code{X2} among "continuous", "binary", "trunc".
+#' @param lamseq1 A tuning parameter sequence for \code{X1}. The length should be the same as \code{lamseq2}.
+#' @param lamseq2 A tuning parameter sequence for \code{X2}. The length should be the same as \code{lamseq1}.
+#' @param initlam1 An initial value to generate a tuning parameter sequence for \code{X1}, which is the maximum value of tuning parameter grid.
+#' @param initlam2 An initial value to generate a tuning parameter sequence for \code{X2}, which is the maximum value of tuning parameter grid.
+#' @param nlambda The number of tuning parameter sequence lambda - default is 100.
+#' @param lam.eps A ratio of the smallest value for lambda to the maximum value of lambda.
+#' @param w1init An initial vector of length p1 for canonical direction \eqn{w1}.
+#' @param w2init An initial vector of length p2 for canonical direction \eqn{w2}.
+#' @param BICtype Either 1 or 2: For more details for two options, see the reference.
+#' @param KendallR An estimated Kendall \eqn{\tau} matrix. The default is NULL, which means that it will be automatically estimated by Kendall's \eqn{\tau} estimator unless the user supplies.
+#' @param tol The desired accuracy (convergence tolerance).
+#' @param maxiter The maximum number of iterations allowed.
+#'
+#' @references Yoon G, Carroll R and Gaynanova I. (2018+) Sparse semiparametric canonical correlation analysis for high-dimensional data of mixed types. \url{https://arxiv.org/pdf/1807.05274.pdf}
+#' @return \code{mixedCCA} returns a data.frame containing
 #' \itemize{
 #'       \item{KendallR: }{estimated Kendall's \eqn{\tau} matrix estimator.}
 #'       \item{lambda_seq: }{the values of \code{lambda} used for sparse CCA.}
@@ -71,40 +77,11 @@ lambdaseq_generate <- function(nlambda = 100, initlam1 = NULL, initlam2 = NULL, 
 #'       \item{selected_x1: }{indices of selected variables in \code{X1}.}
 #'       \item{selected_x2: }{indices of selected variables in \code{X2}.}
 #' }
-#' @useDynLib mixedCCA
 #' @importFrom Rcpp sourceCpp
 #' @import RcppArmadillo
 #'
-#' @examples
-#' n <- 100; p1 <- 5; p2 <- 7
-#' maxcancor <- 0.9
-#' Sigma1 <- autocor(p1, 0.7)
-#' groupind <- c(rep(1, 2), rep(2, p2-2))
-#' Sigma2 <- blockcor(0.7, groupind)
-#' copula1 <- "exp"; copula2 <- "cube"
-#' mu <- rep(0, p1+p2)
-#' type1 <- type2 <- "trunc"
-#' c1 <- rep(0, p1); c2 <- rep(0, p2)
-#' trueidx1 <- c(0, 0, 1, 1, 1)
-#' trueidx2 <- c(1, 0, 1, 0, 0, 1, 1)
-#' simdata <- GenerateData(n=n, trueidx1 = trueidx1, trueidx2 = trueidx2, maxcancor = maxcancor,
-#'                        Sigma1 = Sigma1, Sigma2 = Sigma2,
-#'                        copula1 = copula1, copula2 = copula2,
-#'                        muZ = mu,
-#'                        type1 = type1, type2 = type2, c1 = c1, c2 = c2
-#' )
-#'
-#' X1 <- simdata$X1
-#' X2 <- simdata$X2
-#'
-#' RCCA <- myrcc(X1, X2, 0.01, 0.1)
-#' w1init <- RCCA$w1[, 1]
-#' w2init <- RCCA$w2[, 1]
-
-#' # Kendall CCA with BIC1
-#' kendallcca1 <- mixedCCA(X1, X2, type1 = type1, type2 = type2, lam.eps = 0.01, nlambda = 20,
-#'                        w1init = w1init, w2init = w2init, BICtype = 1)
-#'
+#' @example man/examples/mixedCCA_ex.R
+#' @useDynLib mixedCCA
 #' @export
 mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initlam1 = NULL, initlam2 = NULL, nlambda = 100, lam.eps = 1e-02,
                     w1init, w2init, BICtype,
@@ -172,12 +149,14 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
 
 #' Classical CCA using correlation matrix estimator.
 #'
-#' @param S1 correlation matrix of \eqn{X1}.
-#' @param S2 correlation matrix of \eqn{X2}.
-#' @param S12 correlation matrix between \eqn{X1} and \eqn{X2}.
-#' @param tol cutoff for eigenvalues. During the calculation, eigenvalues smaller than cutoff are set to zero.
+#' Conduct the canonical correlation analysis (CCA) between two datasets using their correlation matrices as an input. Only first canonical pair with the largest canonical correlation is calculated.
 #'
-#' @return A data.frame containing
+#' @param S1 A correlation matrix of \code{X1}.
+#' @param S2 A correlation matrix of \code{X2}.
+#' @param S12 A correlation matrix between \code{X1} and \code{X2}.
+#' @param tol A cutoff for eigenvalues. During the calculation, eigenvalues smaller than cutoff are set to zero.
+#'
+#' @return \code{standardCCA} returns a data.frame containing
 #' \itemize{
 #'       \item{cancor: }{estimated canonical correlation.}
 #'       \item{w1: }{estimated canonical direction \eqn{w1}.}
@@ -186,6 +165,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
 #' @export
 #'
 #' @importFrom irlba irlba
+#' @seealso See \code{\link{mixedCCA}} for examples.
 standardCCA <- function(S1, S2, S12, tol = 1e-4){
   S1 <- as.matrix(S1)
   S2 <- as.matrix(S2)
@@ -211,13 +191,14 @@ standardCCA <- function(S1, S2, S12, tol = 1e-4){
 
 
 #' Canonical Ridge
+#'
 #' This code is modified from rcc in the package \code{CCA}.
 #'
-#' @param X1 numeric data matrix (n by p1).
-#' @param X2 numeric data matrix (n by p2).
-#' @param lambda1 regularization parameter sequence for \code{X1}. The length should be the same as \code{ncol(X1)}.
-#' @param lambda2 regularization parameter sequence for \code{X2}. The length should be the same as \code{ncol(X2)}.
-#' @return A data.frame containing
+#' @param X1 A numeric data matrix (n by p1).
+#' @param X2 A numeric data matrix (n by p2).
+#' @param lambda1 regularization parameter sequence for \code{X1}. The length should be the same as \code{ncol(X1)=p1}.
+#' @param lambda2 regularization parameter sequence for \code{X2}. The length should be the same as \code{ncol(X2)=p2}.
+#' @return \code{myrcc} returns a data.frame containing
 #' \itemize{
 #'       \item{cancor: }{estimated canonical correlation.}
 #'       \item{w1: }{estimated canonical direction \eqn{w1}.}
@@ -225,7 +206,7 @@ standardCCA <- function(S1, S2, S12, tol = 1e-4){
 #' }
 #' @export
 #'
-#' @seealso \code{\link{mixedCCA}}
+#' @seealso See \code{\link{mixedCCA}} for examples.
 myrcc <- function(X1, X2, lambda1, lambda2){
   X1names <- dimnames(X1)[[2]]
   X2names <- dimnames(X2)[[2]]

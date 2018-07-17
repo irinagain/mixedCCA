@@ -2,10 +2,10 @@
 #'
 #' Calculate Kendall's tau correlation.
 #' \deqn{ \hat{\tau}_{jk} = \frac{2}{n(n-1)}\sum_{1\le i<i'\le n} sign(X_{ji}-X_{ji'}) sign(X_{ki}-X_{ki'}) }
-#' The input for \code{KendallTau} function should be in a vector format, but \code{Kendall_matrix} can handle matrix as an input.
+#' The function \code{KendallTau} calculates Kendall's tau correlation between two variables, returning a single correlation value. The function \code{Kendall_matrix} can handle matrices as an input and will return a correlation matrix (p1 by p2).
 #'
-#' @param x numeric vector (n by 1).
-#' @param y numeric vector (n by 1).
+#' @param x A numeric vector.
+#' @param y A numeric vector.
 #'
 #' @rdname KendallTau
 #' @examples
@@ -22,7 +22,7 @@
 #'
 #' KendallTau(X1, X2)
 #' Kendall_matrix(X1, X2)
-
+#'
 #' ### matrix data input
 #' p1 <- 3; p2 <- 4 # dimension of X1 and X2
 #' JSigma <- matrix(r, nrow = p1+p2, ncol = p1+p2); diag(JSigma) <- 1
@@ -63,8 +63,8 @@ KendallTau <- function(x, y){ # both x and y are vectors, not matrix.
   return(tau)
 }
 
-#' @param X numeric matrix (n by p1).
-#' @param Y numeric matrix (n by p2).
+#' @param X A numeric matrix (n by p1).
+#' @param Y A numeric matrix (n by p2).
 #'
 #' @rdname KendallTau
 #' @export

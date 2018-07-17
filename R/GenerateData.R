@@ -1,22 +1,21 @@
-#' Autocorrelation matrix
+#' Construct a correlation matrix
 #'
-#' Creates autocorrelation matrix of size p with parameter rho
-#' @param p dimension of matrix
-#' @param rho correlation
-#' @seealso \code{\link{GenerateData}}
+#' Functions to create autocorrelation matrix of size p with parameter rho and block correlation matrix (p by p) using group index (of length p) and different parameter rho for each group.
+#' @name corrmat
+#' @rdname corrmat
+#' @aliases autocor
+#' @param p Dimension of matrix
+#' @param rho Correlation
 #' @export
 autocor <- function(p, rho){
   Sigma <- rho^abs(outer(1:p, 1:p, "-"))
   return(Sigma)
 }
-
-
-#' Block diagonal matrix
-#'
-#' Creates block matrix (p by p) using group index (of length p) and different parameter rho for each group.
-#' @param rho correlation
-#' @param groupind group index which indicates belonging to which block.
-#' @seealso \code{\link{GenerateData}}
+#' @rdname corrmat
+#' @aliases blockcor
+#' @inheritParams rho
+#' @param groupind Group index indicating belonging to which block.
+#' @seealso See \code{\link{GenerateData}} for an example.
 #' @export
 blockcor <- function(rho, groupind){
   # groupind variable is a vector of indices. For example, c(rep(1,3), c(2,5)) for two groups. p=8.
@@ -44,21 +43,21 @@ blockcor <- function(rho, groupind){
 
 #' Two sets of mixed data generation for sparse CCA
 #'
-#' @param n sample size
-#' @param trueidx1 true canonical direction of length p1 for \code{X1}. It will be automatically normalized such that \eqn{w_1^T \Sigma_1 w_1 = 1}.
-#' @param trueidx2 true canonical direction of length p2 for \code{X2}. It will be automatically normalized such that \eqn{w_2^T \Sigma_2 w_2 = 1}.
-#' @param Sigma1 true latent correlation matrix of \code{Z1} (p1 by p1).
-#' @param Sigma2 true latent correlation matrix of \code{Z2} (p2 by p2).
-#' @param maxcancor true canonical correlation between \code{Z1} and \code{Z2}.
-#' @param copula1 copula type for first dataset. U1 = f(Z1). Currently, we have two options: "exp", "cube".
-#' @param copula2 copula type for second dataset. U2 = f(Z2).
-#' @param type1 type of first dataset.
-#' @param type2 type of second dataset.
-#' @param muZ mean of multivariate normal for latent data generation.
-#' @param c1 constant threshold for \code{X1} only needed for "trunc" and "binary" data type.
-#' @param c2 constant threshold for \code{X2} only needed for "trunc" and "binary" data type.
+#' @param n Sample size
+#' @param trueidx1 True canonical direction of length p1 for \code{X1}. It will be automatically normalized such that \eqn{w_1^T \Sigma_1 w_1 = 1}.
+#' @param trueidx2 True canonical direction of length p2 for \code{X2}. It will be automatically normalized such that \eqn{w_2^T \Sigma_2 w_2 = 1}.
+#' @param Sigma1 True correlation matrix of latent variable \code{Z1} (p1 by p1).
+#' @param Sigma2 True correlation matrix of latent variable \code{Z2} (p2 by p2).
+#' @param maxcancor True canonical correlation between \code{Z1} and \code{Z2}.
+#' @param copula1 Copula type for first dataset. U1 = f(Z1). Currently, we have two options: "exp", "cube".
+#' @param copula2 Copula type for second dataset. U2 = f(Z2).
+#' @param type1 Type of first dataset \code{X1}.
+#' @param type2 Type of second dataset \code{X2}.
+#' @param muZ Mean of multivariate normal for latent data generation.
+#' @param c1 Constant threshold for \code{X1} only needed for "trunc" and "binary" data type.
+#' @param c2 Constant threshold for \code{X2} only needed for "trunc" and "binary" data type.
 #'
-#' @return A data.frame containing
+#' @return \code{GenerateData} returns a data.frame containing
 #' \itemize{
 #'       \item{Z1: }{latent numeric data matrix (n by p1).}
 #'       \item{Z2: }{latent numeric data matrix (n by p2).}
@@ -96,7 +95,7 @@ blockcor <- function(rho, groupind){
 #'
 #' X1 <- simdata$X1
 #' X2 <- simdata$X2
-
+#'
 GenerateData <- function(n, trueidx1, trueidx2, Sigma1, Sigma2, maxcancor,
                          copula1 = "no", copula2 = "no",
                          type1 = "continuous", type2 = "continuous", muZ = NULL, c1 = NULL, c2 = NULL

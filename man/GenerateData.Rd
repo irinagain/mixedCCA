@@ -9,34 +9,34 @@ GenerateData(n, trueidx1, trueidx2, Sigma1, Sigma2, maxcancor, copula1 = "no",
   muZ = NULL, c1 = NULL, c2 = NULL)
 }
 \arguments{
-\item{n}{sample size}
+\item{n}{Sample size}
 
-\item{trueidx1}{true canonical direction of length p1 for \code{X1}. It will be automatically normalized such that \eqn{w_1^T \Sigma_1 w_1 = 1}.}
+\item{trueidx1}{True canonical direction of length p1 for \code{X1}. It will be automatically normalized such that \eqn{w_1^T \Sigma_1 w_1 = 1}.}
 
-\item{trueidx2}{true canonical direction of length p2 for \code{X2}. It will be automatically normalized such that \eqn{w_2^T \Sigma_2 w_2 = 1}.}
+\item{trueidx2}{True canonical direction of length p2 for \code{X2}. It will be automatically normalized such that \eqn{w_2^T \Sigma_2 w_2 = 1}.}
 
-\item{Sigma1}{true latent correlation matrix of \code{Z1} (p1 by p1).}
+\item{Sigma1}{True correlation matrix of latent variable \code{Z1} (p1 by p1).}
 
-\item{Sigma2}{true latent correlation matrix of \code{Z2} (p2 by p2).}
+\item{Sigma2}{True correlation matrix of latent variable \code{Z2} (p2 by p2).}
 
-\item{maxcancor}{true canonical correlation between \code{Z1} and \code{Z2}.}
+\item{maxcancor}{True canonical correlation between \code{Z1} and \code{Z2}.}
 
-\item{copula1}{copula type for first dataset. U1 = f(Z1). Currently, we have two options: "exp", "cube".}
+\item{copula1}{Copula type for first dataset. U1 = f(Z1). Currently, we have two options: "exp", "cube".}
 
-\item{copula2}{copula type for second dataset. U2 = f(Z2).}
+\item{copula2}{Copula type for second dataset. U2 = f(Z2).}
 
-\item{type1}{type of first dataset.}
+\item{type1}{Type of first dataset \code{X1}.}
 
-\item{type2}{type of second dataset.}
+\item{type2}{Type of second dataset \code{X2}.}
 
-\item{muZ}{mean of multivariate normal for latent data generation.}
+\item{muZ}{Mean of multivariate normal for latent data generation.}
 
-\item{c1}{constant threshold for \code{X1} only needed for "trunc" and "binary" data type.}
+\item{c1}{Constant threshold for \code{X1} only needed for "trunc" and "binary" data type.}
 
-\item{c2}{constant threshold for \code{X2} only needed for "trunc" and "binary" data type.}
+\item{c2}{Constant threshold for \code{X2} only needed for "trunc" and "binary" data type.}
 }
 \value{
-A data.frame containing
+\code{GenerateData} returns a data.frame containing
 \itemize{
       \item{Z1: }{latent numeric data matrix (n by p1).}
       \item{Z2: }{latent numeric data matrix (n by p2).}
@@ -75,4 +75,5 @@ simdata <- GenerateData(n=n, trueidx1 = trueidx1, trueidx2 = trueidx2, maxcancor
 
 X1 <- simdata$X1
 X2 <- simdata$X2
+
 }

@@ -2,22 +2,21 @@
 % Please edit documentation in R/KendallCCA.R
 \name{myrcc}
 \alias{myrcc}
-\title{Canonical Ridge
-This code is modified from rcc in the package \code{CCA}.}
+\title{Canonical Ridge}
 \usage{
 myrcc(X1, X2, lambda1, lambda2)
 }
 \arguments{
-\item{X1}{numeric data matrix (n by p1).}
+\item{X1}{A numeric data matrix (n by p1).}
 
-\item{X2}{numeric data matrix (n by p2).}
+\item{X2}{A numeric data matrix (n by p2).}
 
-\item{lambda1}{regularization parameter sequence for \code{X1}. The length should be the same as \code{ncol(X1)}.}
+\item{lambda1}{regularization parameter sequence for \code{X1}. The length should be the same as \code{ncol(X1)=p1}.}
 
-\item{lambda2}{regularization parameter sequence for \code{X2}. The length should be the same as \code{ncol(X2)}.}
+\item{lambda2}{regularization parameter sequence for \code{X2}. The length should be the same as \code{ncol(X2)=p2}.}
 }
 \value{
-A data.frame containing
+\code{myrcc} returns a data.frame containing
 \itemize{
       \item{cancor: }{estimated canonical correlation.}
       \item{w1: }{estimated canonical direction \eqn{w1}.}
@@ -25,9 +24,8 @@ A data.frame containing
 }
 }
 \description{
-Canonical Ridge
 This code is modified from rcc in the package \code{CCA}.
 }
 \seealso{
-\code{\link{mixedCCA}}
+See \code{\link{mixedCCA}} for examples.
 }
