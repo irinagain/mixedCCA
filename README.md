@@ -42,18 +42,16 @@ simdata <- GenerateData(n=n, trueidx1 = trueidx1, trueidx2 = trueidx2, maxcancor
 X1 <- simdata$X1
 X2 <- simdata$X2
 
-# estimated latent correlation matrix R
-estimateR(X1, type = "trunc")
-estimateR_mixed(X1, X2, type1 = "trunc", type2 = "trunc")
-
-
-# sparse semiparametric CCA with BIC1 criterion
+# Sparse semiparametric CCA with BIC1 criterion
 w1init <- rep(1, p1)
 w2init <- rep(1, p2)
-mixedCCAresult <- mixedCCA(X1, X2, type1 = "trunc", type2 = "trunc", lam.eps = 0.01, nlambda = 20,
-                        w1init = w1init, w2init = w2init, BICtype = 1)
-mixedCCAresult$KendallR # can extract latent correlation matrix estimated within the function
-mixedCCAresult$w1 # canonical direction of X1
-mixedCCAresult$w2 # canonical direction of X2
+mixedCCAresult <- mixedCCA(X1, X2, type1 = "trunc", type2 = "trunc", w1init = w1init, w2init = w2init, BICtype = 1)
+mixedCCAresult$KendallR # extracts estimated latent correlation matrix
+mixedCCAresult$w1 # canonical vector for X1
+mixedCCAresult$w2 # canonical vector for X2
 mixedCCAresult$cor # canonical correlation
+
+# Separate estimation of latent correlation matrix
+estimateR(X1, type = "trunc") # For X1 only
+estimateR_mixed(X1, X2, type1 = "trunc", type2 = "trunc") # For X = (X1, X2)
 ```

@@ -5,7 +5,7 @@
 #' @param X A numeric data matrix (n by p)
 #' @param type A type of data \code{X} among "continuous", "binary", "trunc".
 #' @param rho Shrinkage level to make correlation matrix estimator positive definite. The default is 0.01.
-#' @return \code{estimateR} returns a data.frame containing
+#' @return \code{estimateR} returns
 #' \itemize{
 #'       \item{type: }{type of the data matrix \code{X}}
 #'       \item{R: }{Estimated latent correlation matrix of \code{X}}
@@ -49,7 +49,7 @@ estimateR <- function(X, type = "trunc", rho = 0.01){
 #' @param type2 A type of data \code{X2} among "continuous", "binary", "trunc".
 #' @inheritParams rho
 #'
-#' @return \code{estimateR_mixed} returns a data.frame containing
+#' @return \code{estimateR_mixed} returns
 #' \itemize{
 #'       \item{type1: }{type of the data matrix \code{X1}}
 #'       \item{type2: }{type of the data matrix \code{X2}}
