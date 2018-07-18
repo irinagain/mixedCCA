@@ -1,34 +1,39 @@
 #' Construct a correlation matrix
 #'
-#' Functions to create autocorrelation matrix of size p with parameter rho and block correlation matrix (p by p) using group index (of length p) and different parameter rho for each group.
+#' Functions to create autocorrelation matrix (p by p) with parameter rho and block correlation matrix (p by p) using group index (of length p) and different parameter rho for each group.
 #' @name corrmat
 #' @rdname corrmat
 #' @aliases autocor
 #' @param p Dimension of matrix
-#' @param rho Correlation
+#' @param rho Correlation must be between -0.99 and 0.99.
 #' @export
 autocor <- function(p, rho){
+  if(abs(rho)>1){ stop("correlation rho must be between -0.99 and 0.99.") }
   Sigma <- rho^abs(outer(1:p, 1:p, "-"))
   return(Sigma)
 }
 #' @rdname corrmat
 #' @aliases blockcor
 #' @inheritParams rho
-#' @param groupind Group index indicating belonging to which block.
-#' @seealso See \code{\link{GenerateData}} for an example.
+#' @param groupind Group index indicating which variable belongs to which block.
+#' @examples
+#'
+#' # For p=8,
+#' autocor(8, 0.8)
+#' blockcor(0.8, c(rep(1,3), c(2,5))) # For two groups with the same correlation
+#' blockcor(c(0.8, 0.3), c(rep(1,3), rep(2,5))) # For two groups with different correlation
+#'
 #' @export
 blockcor <- function(rho, groupind){
-  # groupind variable is a vector of indices. For example, c(rep(1,3), c(2,5)) for two groups. p=8.
-  # if (p!=length(group)){
-  #   stop("p and groupind must have the same length.")
-  # }
+  if(max(abs(rho))>1){ stop("correlation rho must be between -0.99 and 0.99.") }
+
   p <- length(groupind)
   blk <- unique(groupind)
   if (length(rho) != length(blk)){
     if(length(rho) == 1){
       rho <- rep(rho, length(blk))
     } else {
-      stop("rho and kinds of group must match.")
+      stop("rho and number of groups must match.")
     }
   }
   Sigma <- matrix(0, p, p)
@@ -51,15 +56,15 @@ blockcor <- function(rho, groupind){
 #' @param Sigma1 True correlation matrix of latent variable \code{Z1} (p1 by p1).
 #' @param Sigma2 True correlation matrix of latent variable \code{Z2} (p2 by p2).
 #' @param maxcancor True canonical correlation between \code{Z1} and \code{Z2}.
-#' @param copula1 Copula type for first dataset. U1 = f(Z1). Currently, we have two options: "exp", "cube".
-#' @param copula2 Copula type for second dataset. U2 = f(Z2).
-#' @param type1 Type of first dataset \code{X1}.
-#' @param type2 Type of second dataset \code{X2}.
-#' @param muZ Mean of multivariate normal for latent data generation.
-#' @param c1 Constant threshold for \code{X1} only needed for "trunc" and "binary" data type.
-#' @param c2 Constant threshold for \code{X2} only needed for "trunc" and "binary" data type.
+#' @param copula1 Copula type for the first dataset. U1 = f(Z1), which could be either "exp", "cube".
+#' @param copula2 Copula type for the second dataset. U2 = f(Z2), which could be either "exp", "cube".
+#' @param type1 Type of the first dataset \code{X1}.
+#' @param type2 Type of the second dataset \code{X2}.
+#' @param muZ Mean of latent multivariate normal.
+#' @param c1 Constant threshold for \code{X1} needed for "trunc" and "binary" data type - the default is NULL.
+#' @param c2 Constant threshold for \code{X2} needed for "trunc" and "binary" data type - the default is NULL.
 #'
-#' @return \code{GenerateData} returns a data.frame containing
+#' @return \code{GenerateData} returns a list containing
 #' \itemize{
 #'       \item{Z1: }{latent numeric data matrix (n by p1).}
 #'       \item{Z2: }{latent numeric data matrix (n by p2).}
@@ -105,6 +110,14 @@ GenerateData <- function(n, trueidx1, trueidx2, Sigma1, Sigma2, maxcancor,
 ){
 
   type <- rep(NA, 2); type[1] <- type1; type[2] <- type2
+
+  if (type[1] != "continuous"){
+    if(is.null(c1)){stop("c1 has to be defined for truncated continuous and binary data type.")}
+  }
+  if (type[2] != "continuous"){
+    if(is.null(c2)){stop("c2 has to be defined for truncated continuous and binary data type.")}
+  }
+
   p1 <- length(trueidx1)
   p2 <- length(trueidx2)
   p <- p1 + p2

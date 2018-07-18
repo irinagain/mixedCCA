@@ -56,9 +56,7 @@ X1 <- simdata$X1
 X2 <- simdata$X2
 
 # Sparse semiparametric CCA with BIC1 criterion
-w1init <- rep(1, p1)
-w2init <- rep(1, p2)
-mixedCCAresult <- mixedCCA(X1, X2, type1 = "trunc", type2 = "trunc", w1init = w1init, w2init = w2init, BICtype = 1)
+mixedCCAresult <- mixedCCA(X1, X2, type1 = "trunc", type2 = "trunc", BICtype = 1)
 mixedCCAresult$KendallR # extracts estimated latent correlation matrix
 mixedCCAresult$w1 # canonical vector for X1
 mixedCCAresult$w2 # canonical vector for X2

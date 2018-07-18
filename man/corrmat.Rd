@@ -13,13 +13,18 @@ blockcor(rho, groupind)
 \arguments{
 \item{p}{Dimension of matrix}
 
-\item{rho}{Correlation}
+\item{rho}{Correlation must be between -0.99 and 0.99.}
 
-\item{groupind}{Group index indicating belonging to which block.}
+\item{groupind}{Group index indicating which variable belongs to which block.}
 }
 \description{
-Functions to create autocorrelation matrix of size p with parameter rho and block correlation matrix (p by p) using group index (of length p) and different parameter rho for each group.
+Functions to create autocorrelation matrix (p by p) with parameter rho and block correlation matrix (p by p) using group index (of length p) and different parameter rho for each group.
 }
-\seealso{
-See \code{\link{GenerateData}} for an example.
+\examples{
+
+# For p=8,
+autocor(8, 0.8)
+blockcor(0.8, c(rep(1,3), c(2,5))) # For two groups with the same correlation
+blockcor(c(0.8, 0.3), c(rep(1,3), rep(2,5))) # For two groups with different correlation
+
 }

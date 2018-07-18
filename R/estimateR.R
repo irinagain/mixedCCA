@@ -2,15 +2,20 @@
 #'
 #' @description Under the Gaussian copula model assumption, the latent correlation matrix is estimated based on the observed data of mixed type (continuous/biary/truncated continuous).
 #'
-#' @param X A numeric data matrix (n by p)
+#' @param X A numeric data matrix (n by p), n is sample size and p is the number of variables.
 #' @param type A type of data \code{X} among "continuous", "binary", "trunc".
-#' @param rho Shrinkage level to make correlation matrix estimator positive definite. The default is 0.01.
+#' @param rho Shrinkage level to make correlation matrix estimator positive definite and must be between 0 and 1 - the default is 0.01.
 #' @return \code{estimateR} returns
 #' \itemize{
 #'       \item{type: }{type of the data matrix \code{X}}
 #'       \item{R: }{Estimated latent correlation matrix of \code{X}}
 #' }
+#' @references
+#' Fan J., Liu H., Ning Y. and Zou H. (2017) \href{https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssb.12168}{"High dimensional semiparametric latent graphicalmodel for mixed data"}, \emph{J. R. Statist. Soc. B}, 79: 405-421.
+#'
+#' Yoon G., Carroll R.J. and Gaynanova I. (2018+) \href{http://arxiv.org/abs/1807.05274}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}.
 #' @export
+#' @import stats
 #' @importFrom Matrix nearPD
 #' @example man/examples/estimateR_ex.R
 estimateR <- function(X, type = "trunc", rho = 0.01){
@@ -34,6 +39,7 @@ estimateR <- function(X, type = "trunc", rho = 0.01){
     R1 <- Matrix::nearPD(R1, corr = TRUE)$mat
   }
   # shrinkage method
+  if(rho<0 | rho>1){stop("rho must be be between 0 and 1.")}
   R1 <- (1-rho)*R1 + rho*diag(p1)
 
   return(list(type = type, R = R1))
@@ -45,18 +51,18 @@ estimateR <- function(X, type = "trunc", rho = 0.01){
 #' @aliases estimateR_mixed
 #' @param X1 A numeric data matrix (n by p1).
 #' @param X2 A numeric data matrix (n by p2).
-#' @param type1 A type of data \code{X1} among "continuous", "binary", "trunc".
-#' @param type2 A type of data \code{X2} among "continuous", "binary", "trunc".
+#' @param type1 A type of data \code{X1}. The data type must be "continuous", "binary", "trunc".
+#' @param type2 A type of data \code{X2}. The data type must be "continuous", "binary", "trunc".
 #' @inheritParams rho
 #'
 #' @return \code{estimateR_mixed} returns
 #' \itemize{
 #'       \item{type1: }{type of the data matrix \code{X1}}
 #'       \item{type2: }{type of the data matrix \code{X2}}
-#'       \item{R: }{Estimated latent correlation matrix of whole \code{X} = cbind(\code{X1}, \code{X2})}
-#'       \item{R1: }{Estimated latent correlation matrix of \code{X1}}
-#'       \item{R2: }{Estimated latent correlation matrix of \code{X2}}
-#'       \item{R12: }{Estimated latent correlation matrix of \code{X12}}
+#'       \item{R: }{Estimated latent correlation matrix of whole \code{X} = (\code{X1}, \code{X2}) (p1+p2 by p1+p2)}
+#'       \item{R1: }{Estimated latent correlation matrix of \code{X1} (p1 by p1)}
+#'       \item{R2: }{Estimated latent correlation matrix of \code{X2} (p2 by p2)}
+#'       \item{R12: }{Estimated latent correlation matrix between \code{X1} and \code{X2} (p1 by p2)}
 #' }
 #'
 #' @export

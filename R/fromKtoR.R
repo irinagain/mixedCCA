@@ -1,15 +1,3 @@
-#' From Kendall's tau to correlation matrix estimator using bridge function
-#'
-#' Using a corresponding bridge function based on the type of the data (continuous/binary/truncated continuous), latent correlation matrix is estimated.
-#'
-#' @param K Kendall's tau correlation matrix (p by p) of \code{X}.
-#' @param zratio A proportion of zero values of dataset \code{X}.
-#' @param type Type of the dataset \code{X}. Choose among "continous", "binary", "trunc".
-#' @param tol The desired accuracy (convergence tolerance).
-#'
-#' @example man/examples/fromKtoR_ex.R
-#'
-#' @export
 fromKtoR <- function(K, zratio = NULL, type = "trunc", tol = 1e-3) {
   K <- as.matrix(K)
   d1 <- nrow(K)
@@ -49,18 +37,6 @@ fromKtoR <- function(K, zratio = NULL, type = "trunc", tol = 1e-3) {
   return(hatR)
 }
 
-
-#' @rdname fromKtoR
-#' @aliases fromKtoR_mixed
-#'
-#' @param K12 Kendall's tau correlation matrix (p1 by p2) between \code{X1} and \code{X2}.
-#' @param zratio1 A proportion of zero values of dataset \code{X1}.
-#' @param zratio2 A proportion of zero values of dataset \code{X2}.
-#' @param type1 Type of the dataset \code{X1} among "continous", "binary", "trunc".
-#' @param type2 Type of the dataset \code{X2} among "continous", "binary", "trunc".
-#' @inheritParams tol
-#'
-#' @export
 fromKtoR_mixed <- function(K12, zratio1 = NULL, zratio2 = NULL, type1 = "trunc", type2 = "continuous", tol = 1e-3) {
 
   K12 <- as.matrix(K12)

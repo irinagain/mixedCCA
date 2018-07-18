@@ -21,22 +21,22 @@ GenerateData(n, trueidx1, trueidx2, Sigma1, Sigma2, maxcancor, copula1 = "no",
 
 \item{maxcancor}{True canonical correlation between \code{Z1} and \code{Z2}.}
 
-\item{copula1}{Copula type for first dataset. U1 = f(Z1). Currently, we have two options: "exp", "cube".}
+\item{copula1}{Copula type for the first dataset. U1 = f(Z1), which could be either "exp", "cube".}
 
-\item{copula2}{Copula type for second dataset. U2 = f(Z2).}
+\item{copula2}{Copula type for the second dataset. U2 = f(Z2), which could be either "exp", "cube".}
 
-\item{type1}{Type of first dataset \code{X1}.}
+\item{type1}{Type of the first dataset \code{X1}.}
 
-\item{type2}{Type of second dataset \code{X2}.}
+\item{type2}{Type of the second dataset \code{X2}.}
 
-\item{muZ}{Mean of multivariate normal for latent data generation.}
+\item{muZ}{Mean of latent multivariate normal.}
 
-\item{c1}{Constant threshold for \code{X1} only needed for "trunc" and "binary" data type.}
+\item{c1}{Constant threshold for \code{X1} needed for "trunc" and "binary" data type - the default is NULL.}
 
-\item{c2}{Constant threshold for \code{X2} only needed for "trunc" and "binary" data type.}
+\item{c2}{Constant threshold for \code{X2} needed for "trunc" and "binary" data type - the default is NULL.}
 }
 \value{
-\code{GenerateData} returns a data.frame containing
+\code{GenerateData} returns a list containing
 \itemize{
       \item{Z1: }{latent numeric data matrix (n by p1).}
       \item{Z2: }{latent numeric data matrix (n by p2).}

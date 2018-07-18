@@ -20,20 +20,9 @@ simdata <- GenerateData(n=n, trueidx1 = trueidx1, trueidx2 = trueidx2, maxcancor
 X1 <- simdata$X1
 X2 <- simdata$X2
 
-RCCA <- myrcc(X1, X2, 0.01, 0.1)
-w1init <- RCCA$w1[, 1]
-w2init <- RCCA$w2[, 1]
-
 # Kendall CCA with BIC1
-kendallcca1 <- mixedCCA(X1, X2, type1 = type1, type2 = type2,
-                        lam.eps = 0.01, nlambda = 20,
-                        w1init = w1init, w2init = w2init, BICtype = 1)
+kendallcca1 <- mixedCCA(X1, X2, type1 = type1, type2 = type2, BICtype = 1)
 
 # Kendall CCA with BIC2. Estimated correlation matrix is plugged in from the above result.
 R <- kendallcca1$KendallR
-kendallcca2 <- mixedCCA(X1, X2, type1 = type1, type2 = type2,
-                        lam.eps = 0.01, nlambda = 20,
-                        KendallR = R,
-                        w1init = w1init, w2init = w2init, BICtype = 2)
-
-classicalcca <- standardCCA(R$R1, R$R2, R$R12)
+kendallcca2 <- mixedCCA(X1, X2, type1 = type1, type2 = type2, KendallR = R, BICtype = 2)

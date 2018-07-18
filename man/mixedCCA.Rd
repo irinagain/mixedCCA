@@ -5,8 +5,9 @@
 \title{Sparse CCA for data of mixed types with BIC criterion}
 \usage{
 mixedCCA(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL,
-  initlam1 = NULL, initlam2 = NULL, nlambda = 100, lam.eps = 0.01,
-  w1init, w2init, BICtype, KendallR = NULL, tol = 0.001, maxiter = 1000)
+  initlam1 = NULL, initlam2 = NULL, nlambda = 20, lam.eps = 0.01,
+  w1init = NULL, w2init = NULL, BICtype, KendallR = NULL, tol = 0.001,
+  maxiter = 1000)
 }
 \arguments{
 \item{X1}{A numeric data matrix (n by p1).}
@@ -25,7 +26,7 @@ mixedCCA(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL,
 
 \item{initlam2}{An initial value to generate a tuning parameter sequence for \code{X2}, which is the maximum value of tuning parameter grid.}
 
-\item{nlambda}{The number of tuning parameter sequence lambda - default is 100.}
+\item{nlambda}{The number of tuning parameter sequence lambda - default is 20.}
 
 \item{lam.eps}{A ratio of the smallest value for lambda to the maximum value of lambda.}
 
@@ -79,24 +80,13 @@ simdata <- GenerateData(n=n, trueidx1 = trueidx1, trueidx2 = trueidx2, maxcancor
 X1 <- simdata$X1
 X2 <- simdata$X2
 
-RCCA <- myrcc(X1, X2, 0.01, 0.1)
-w1init <- RCCA$w1[, 1]
-w2init <- RCCA$w2[, 1]
-
 # Kendall CCA with BIC1
-kendallcca1 <- mixedCCA(X1, X2, type1 = type1, type2 = type2,
-                        lam.eps = 0.01, nlambda = 20,
-                        w1init = w1init, w2init = w2init, BICtype = 1)
+kendallcca1 <- mixedCCA(X1, X2, type1 = type1, type2 = type2, BICtype = 1)
 
 # Kendall CCA with BIC2. Estimated correlation matrix is plugged in from the above result.
 R <- kendallcca1$KendallR
-kendallcca2 <- mixedCCA(X1, X2, type1 = type1, type2 = type2,
-                        lam.eps = 0.01, nlambda = 20,
-                        KendallR = R,
-                        w1init = w1init, w2init = w2init, BICtype = 2)
-
-classicalcca <- standardCCA(R$R1, R$R2, R$R12)
+kendallcca2 <- mixedCCA(X1, X2, type1 = type1, type2 = type2, KendallR = R, BICtype = 2)
 }
 \references{
-Yoon G, Carroll R and Gaynanova I. (2018+) Sparse semiparametric canonical correlation analysis for high-dimensional data of mixed types. \url{https://arxiv.org/pdf/1807.05274.pdf}
+Yoon G., Carroll R.J. and Gaynanova I. (2018+) \href{http://arxiv.org/abs/1807.05274}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}.
 }
