@@ -23,8 +23,11 @@ Functions to create autocorrelation matrix (p by p) with parameter rho and block
 \examples{
 
 # For p=8,
+# auto correlation matrix
 autocor(8, 0.8)
-blockcor(0.8, c(rep(1,3), rep(2,5))) # Two blocks with the same correlation within each block
-blockcor(c(0.8, 0.3), c(rep(1,3), rep(2,5))) # Two blocks with different correlation within each block
+# block correlation mattrix: two blocks with the same correlation within each block
+blockcor(c(rep(1,3), rep(2,5)), 0.8)
+# block correlation mattrix: two blocks with different correlation within each block
+blockcor(c(rep(1,3), rep(2,5)), c(0.8, 0.3))
 
 }

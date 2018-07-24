@@ -19,9 +19,12 @@ autocor <- function(p, rho){
 #' @examples
 #'
 #' # For p=8,
+#' # auto correlation matrix
 #' autocor(8, 0.8)
-#' blockcor(0.8, c(rep(1,3), rep(2,5))) # Two blocks with the same correlation within each block
-#' blockcor(c(0.8, 0.3), c(rep(1,3), rep(2,5))) # Two blocks with different correlation within each block
+#' # block correlation mattrix: two blocks with the same correlation within each block
+#' blockcor(c(rep(1,3), rep(2,5)), 0.8)
+#' # block correlation mattrix: two blocks with different correlation within each block
+#' blockcor(c(rep(1,3), rep(2,5)), c(0.8, 0.3))
 #'
 #' @export
 blockcor <- function(blockind, rho){
@@ -85,8 +88,8 @@ blockcor <- function(blockind, rho){
 #' n <- 100; p1 <- 5; p2 <- 7
 #' maxcancor <- 0.9
 #' Sigma1 <- autocor(p1, 0.7)
-#' groupind <- c(rep(1, 2), rep(2, p2-2))
-#' Sigma2 <- blockcor(0.7, groupind)
+#' blockind <- c(rep(1, 2), rep(2, p2-2))
+#' Sigma2 <- blockcor(blockind, 0.7)
 #' copula1 <- "exp"; copula2 <- "cube"
 #' mu <- rep(0, p1+p2)
 #' type1 <- type2 <- "trunc"
