@@ -1,19 +1,19 @@
-#' @title Estimate latent correlation matrix based on Kendall's tau
+#' @title Estimate latent correlation matrix
 #'
-#' @description Under the Gaussian copula model assumption, the latent correlation matrix is estimated based on the observed data of mixed type (continuous/biary/truncated continuous).
+#' @description Estimation of latent correlation matrix from observed data of (possibly) mixed types (continuous/biary/truncated continuous) based on the latent Gaussian copula model.
 #'
-#' @param X A numeric data matrix (n by p), n is sample size and p is the number of variables.
-#' @param type A type of data \code{X} among "continuous", "binary", "trunc".
-#' @param rho Shrinkage level to make correlation matrix estimator positive definite and must be between 0 and 1 - the default is 0.01.
+#' @param X A numeric data matrix (n by p), n is the sample size and p is the number of variables.
+#' @param type A type of variables in \code{X}, must be one of "continuous", "binary" or "trunc".
+#' @param rho Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.
 #' @return \code{estimateR} returns
 #' \itemize{
-#'       \item{type: }{type of the data matrix \code{X}}
-#'       \item{R: }{Estimated latent correlation matrix of \code{X}}
+#'       \item{type: }{Type of the data matrix \code{X}}
+#'       \item{R: }{Estimated p by p latent correlation matrix of \code{X}}
 #' }
 #' @references
 #' Fan J., Liu H., Ning Y. and Zou H. (2017) \href{https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssb.12168}{"High dimensional semiparametric latent graphicalmodel for mixed data"}, \emph{J. R. Statist. Soc. B}, 79: 405-421.
 #'
-#' Yoon G., Carroll R.J. and Gaynanova I. (2018+) \href{http://arxiv.org/abs/1807.05274}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}.
+#' Yoon G., Carroll R.J. and Gaynanova I. (2018+) \href{http://arxiv.org/abs/1807.05274}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{arXiv 1807.05274}.
 #' @export
 #' @import stats
 #' @importFrom Matrix nearPD
@@ -51,14 +51,14 @@ estimateR <- function(X, type = "trunc", rho = 0.01){
 #' @aliases estimateR_mixed
 #' @param X1 A numeric data matrix (n by p1).
 #' @param X2 A numeric data matrix (n by p2).
-#' @param type1 A type of data \code{X1}. The data type must be "continuous", "binary", "trunc".
-#' @param type2 A type of data \code{X2}. The data type must be "continuous", "binary", "trunc".
+#' @param type1 A type of variables in \code{X1}, must be one of "continuous", "binary" or "trunc".
+#' @param type2 A type of variables in \code{X2}, must be one of "continuous", "binary" or "trunc".
 #' @inheritParams rho
 #'
 #' @return \code{estimateR_mixed} returns
 #' \itemize{
-#'       \item{type1: }{type of the data matrix \code{X1}}
-#'       \item{type2: }{type of the data matrix \code{X2}}
+#'       \item{type1: }{Type of the data matrix \code{X1}}
+#'       \item{type2: }{Type of the data matrix \code{X2}}
 #'       \item{R: }{Estimated latent correlation matrix of whole \code{X} = (\code{X1}, \code{X2}) (p1+p2 by p1+p2)}
 #'       \item{R1: }{Estimated latent correlation matrix of \code{X1} (p1 by p1)}
 #'       \item{R2: }{Estimated latent correlation matrix of \code{X2} (p2 by p2)}

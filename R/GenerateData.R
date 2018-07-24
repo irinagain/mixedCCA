@@ -1,34 +1,34 @@
 #' Construct a correlation matrix
 #'
-#' Functions to create autocorrelation matrix (p by p) with parameter rho and block correlation matrix (p by p) using group index (of length p) and different parameter rho for each group.
+#' Functions to create autocorrelation matrix (p by p) with parameter rho and block correlation matrix (p by p) using group index (of length p) and (possibly) different parameter rho for each group.
 #' @name corrmat
 #' @rdname corrmat
 #' @aliases autocor
-#' @param p Dimension of matrix
-#' @param rho Correlation must be between -0.99 and 0.99.
+#' @param p Specified matrix dimension.
+#' @param rho Correlation value(s), must be between -0.99 and 0.99. Should be a scalar for \code{autocor}, and either a scalar or a vector of the same length as the maximal \code{blockind} K for \code{blockcor}.
 #' @export
 autocor <- function(p, rho){
-  if(abs(rho)>1){ stop("correlation rho must be between -0.99 and 0.99.") }
+  if (abs(rho) > 0.99){ stop("correlation rho must be between -0.99 and 0.99.") }
   Sigma <- rho^abs(outer(1:p, 1:p, "-"))
   return(Sigma)
 }
 #' @rdname corrmat
 #' @aliases blockcor
 #' @inheritParams rho
-#' @param groupind Group index indicating which variable belongs to which block.
+#' @param blockind Block index 1,\dots, K for a poisitive integer K specifying which variable belongs to which block, the matrix dimension is equal to \code{length(blockind)}.
 #' @examples
 #'
 #' # For p=8,
 #' autocor(8, 0.8)
-#' blockcor(0.8, c(rep(1,3), c(2,5))) # For two groups with the same correlation
-#' blockcor(c(0.8, 0.3), c(rep(1,3), rep(2,5))) # For two groups with different correlation
+#' blockcor(0.8, c(rep(1,3), rep(2,5))) # Two blocks with the same correlation within each block
+#' blockcor(c(0.8, 0.3), c(rep(1,3), rep(2,5))) # Two blocks with different correlation within each block
 #'
 #' @export
-blockcor <- function(rho, groupind){
-  if(max(abs(rho))>1){ stop("correlation rho must be between -0.99 and 0.99.") }
+blockcor <- function(blockind, rho){
+  if(max(abs(rho)) > 0.99){ stop("correlation rho must be between -0.99 and 0.99.") }
 
-  p <- length(groupind)
-  blk <- unique(groupind)
+  p <- length(blockind)
+  blk <- unique(blockind)
   if (length(rho) != length(blk)){
     if(length(rho) == 1){
       rho <- rep(rho, length(blk))
@@ -39,7 +39,7 @@ blockcor <- function(rho, groupind){
   Sigma <- matrix(0, p, p)
 
   for (j in 1:length(blk)){
-    coef <- which(groupind %in% blk[j])
+    coef <- which(blockind %in% blk[j])
     Sigma[coef, coef] <- rho[j]
   }
   diag(Sigma) = 1
