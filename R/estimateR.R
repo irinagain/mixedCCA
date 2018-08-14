@@ -36,7 +36,7 @@ estimateR <- function(X, type = "trunc", rho = 0.01){
   }
 
   if ( min(eigen(R1)$values) < 0 ) {
-    R1 <- Matrix::nearPD(R1, corr = TRUE)$mat
+    R1 <- as.matrix(Matrix::nearPD(R1, corr = TRUE)$mat)
   }
   # shrinkage method
   if(rho<0 | rho>1){stop("rho must be be between 0 and 1.")}
@@ -126,7 +126,7 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", rho =
     }
   }
   if ( min(eigen(Rall)$values) < 0 ) {
-    Rall <- Matrix::nearPD(Rall, corr = TRUE)$mat
+    Rall <- as.matrix(Matrix::nearPD(Rall, corr = TRUE)$mat)
   }
   # shrinkage method
   Rall <- (1-rho)*Rall + rho*diag(p1+p2)
