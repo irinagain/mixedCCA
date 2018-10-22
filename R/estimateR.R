@@ -4,7 +4,7 @@
 #'
 #' @param X A numeric data matrix (n by p), n is the sample size and p is the number of variables.
 #' @param type A type of variables in \code{X}, must be one of "continuous", "binary" or "trunc".
-#' @param use.nearPD A logical value indicating whether to use link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).
+#' @param use.nearPD A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).
 #' @param rho Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.
 #' @return \code{estimateR} returns
 #' \itemize{

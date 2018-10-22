@@ -5,14 +5,17 @@
 \alias{estimateR_mixed}
 \title{Estimate latent correlation matrix}
 \usage{
-estimateR(X, type = "trunc", rho = 0.01)
+estimateR(X, type = "trunc", use.nearPD = TRUE, rho = 0.01)
 
-estimateR_mixed(X1, X2, type1 = "trunc", type2 = "continuous", rho = 0.01)
+estimateR_mixed(X1, X2, type1 = "trunc", type2 = "continuous",
+  use.nearPD = TRUE, rho = 0.01)
 }
 \arguments{
 \item{X}{A numeric data matrix (n by p), n is the sample size and p is the number of variables.}
 
 \item{type}{A type of variables in \code{X}, must be one of "continuous", "binary" or "trunc".}
+
+\item{use.nearPD}{A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).}
 
 \item{rho}{Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.}
 

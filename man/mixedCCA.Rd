@@ -6,8 +6,8 @@
 \usage{
 mixedCCA(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL,
   initlam1 = NULL, initlam2 = NULL, nlambda = 20, lam.eps = 0.01,
-  w1init = NULL, w2init = NULL, BICtype, KendallR = NULL, tol = 0.001,
-  maxiter = 1000)
+  w1init = NULL, w2init = NULL, BICtype, KendallR = NULL,
+  tol = 0.001, maxiter = 1000)
 }
 \arguments{
 \item{X1}{A numeric data matrix (n by p1).}

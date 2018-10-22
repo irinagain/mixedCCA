@@ -25,5 +25,5 @@ Collate:
   KendallCCA.R
   GenerateData.R
   RcppExports.R
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 LinkingTo: Rcpp, RcppArmadillo
