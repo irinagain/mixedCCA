@@ -4,6 +4,7 @@
 #'
 #' @param X A numeric data matrix (n by p), n is the sample size and p is the number of variables.
 #' @param type A type of variables in \code{X}, must be one of "continuous", "binary" or "trunc".
+#' @param use.nearPD A logical value indicating whether to use link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).
 #' @param rho Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.
 #' @return \code{estimateR} returns
 #' \itemize{
@@ -18,7 +19,7 @@
 #' @import stats
 #' @importFrom Matrix nearPD
 #' @example man/examples/estimateR_ex.R
-estimateR <- function(X, type = "trunc", rho = 0.01){
+estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01){
   X <- as.matrix(X)
 
   n <- nrow(X)
@@ -35,11 +36,12 @@ estimateR <- function(X, type = "trunc", rho = 0.01){
     R1 <- fromKtoR(Kendall_matrix(X), zratio = zratio1, type = type)
   }
 
-  if ( min(eigen(R1)$values) < 0 ) {
+  if ( use.nearPD == TRUE & min(eigen(R1)$values) < 0 ) {
+    message(" minimum eigenvalue of correlation estimator is ", min(eigen(R1)$values), "\n nearPD is used")
     R1 <- as.matrix(Matrix::nearPD(R1, corr = TRUE)$mat)
   }
   # shrinkage method
-  if(rho<0 | rho>1){stop("rho must be be between 0 and 1.")}
+  if(rho<0 | rho>1){ stop("rho must be be between 0 and 1.") }
   R1 <- (1-rho)*R1 + rho*diag(p1)
 
   return(list(type = type, R = R1))
@@ -53,6 +55,7 @@ estimateR <- function(X, type = "trunc", rho = 0.01){
 #' @param X2 A numeric data matrix (n by p2).
 #' @param type1 A type of variables in \code{X1}, must be one of "continuous", "binary" or "trunc".
 #' @param type2 A type of variables in \code{X2}, must be one of "continuous", "binary" or "trunc".
+#' @inheritParams use.nearPD
 #' @inheritParams rho
 #'
 #' @return \code{estimateR_mixed} returns
@@ -67,7 +70,7 @@ estimateR <- function(X, type = "trunc", rho = 0.01){
 #'
 #' @export
 #' @importFrom Matrix nearPD
-estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", rho = 0.01){
+estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.nearPD = TRUE, rho = 0.01){
   X1 <- as.matrix(X1)
   X2 <- as.matrix(X2)
   if (nrow(X1) != nrow(X2)){ # Check of they have the same length.
@@ -125,7 +128,8 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", rho =
       Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
     }
   }
-  if ( min(eigen(Rall)$values) < 0 ) {
+  if ( use.nearPD == TRUE & min(eigen(Rall)$values) < 0 ) {
+    message(" minimum eigenvalue of correlation estimator is ", min(eigen(Rall)$values), "\n nearPD is used")
     Rall <- as.matrix(Matrix::nearPD(Rall, corr = TRUE)$mat)
   }
   # shrinkage method
