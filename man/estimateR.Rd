@@ -5,10 +5,11 @@
 \alias{estimateR_mixed}
 \title{Estimate latent correlation matrix}
 \usage{
-estimateR(X, type = "trunc", use.nearPD = TRUE, rho = 0.01)
+estimateR(X, type = "trunc", use.nearPD = TRUE, rho = 0.01,
+  tol = 0.001)
 
 estimateR_mixed(X1, X2, type1 = "trunc", type2 = "continuous",
-  use.nearPD = TRUE, rho = 0.01)
+  use.nearPD = TRUE, rho = 0.01, tol = 0.001)
 }
 \arguments{
 \item{X}{A numeric data matrix (n by p), n is the sample size and p is the number of variables.}
@@ -18,6 +19,8 @@ estimateR_mixed(X1, X2, type1 = "trunc", type2 = "continuous",
 \item{use.nearPD}{A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).}
 
 \item{rho}{Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.}
+
+\item{tol}{Desired accuracy when calculating the solution of bridge function.}
 
 \item{X1}{A numeric data matrix (n by p1).}
 

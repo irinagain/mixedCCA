@@ -6,6 +6,7 @@
 #' @param type A type of variables in \code{X}, must be one of "continuous", "binary" or "trunc".
 #' @param use.nearPD A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).
 #' @param rho Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.
+#' @param tol Desired accuracy when calculating the solution of bridge function.
 #' @return \code{estimateR} returns
 #' \itemize{
 #'       \item{type: }{Type of the data matrix \code{X}}
@@ -19,7 +20,7 @@
 #' @import stats
 #' @importFrom Matrix nearPD
 #' @example man/examples/estimateR_ex.R
-estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01){
+estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e-3){
   X <- as.matrix(X)
 
   n <- nrow(X)
@@ -33,7 +34,7 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01){
     R1 <- sin(pi/2 * pcaPP::cor.fk(X))
   } else {
     zratio1 <- colMeans(X==0)
-    R1 <- fromKtoR(Kendall_matrix(X), zratio = zratio1, type = type)
+    R1 <- fromKtoR(Kendall_matrix(X), zratio = zratio1, type = type, tol = tol)
   }
 
   if ( use.nearPD == TRUE & min(eigen(R1)$values) < 0 ) {
@@ -57,6 +58,7 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01){
 #' @param type2 A type of variables in \code{X2}, must be one of "continuous", "binary" or "trunc".
 #' @inheritParams use.nearPD
 #' @inheritParams rho
+#' @inheritParams tol
 #'
 #' @return \code{estimateR_mixed} returns
 #' \itemize{
@@ -70,7 +72,7 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01){
 #'
 #' @export
 #' @importFrom Matrix nearPD
-estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.nearPD = TRUE, rho = 0.01){
+estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.nearPD = TRUE, rho = 0.01, tol = 1e-3){
   X1 <- as.matrix(X1)
   X2 <- as.matrix(X2)
   if (nrow(X1) != nrow(X2)){ # Check of they have the same length.
@@ -100,9 +102,9 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
     } else {
       zratio1 <- colMeans(X1==0)
       zratio2 <- colMeans(X2==0)
-      R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type[1])
-      R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type[2])
-      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, zratio2 = zratio2, type1 = type[1], type2 = type[2])
+      R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type[1], tol = tol)
+      R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type[2], tol = tol)
+      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, zratio2 = zratio2, type1 = type[1], type2 = type[2], tol = tol)
       Rall <- rbind(cbind(R1, R12),cbind(t(R12), R2))
     }
   } else {
@@ -110,21 +112,21 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
     if (type[1] == "continuous"){
       zratio2 <- colMeans(X2==0)
       R1 <- sin(pi/2 * pcaPP::cor.fk(X1))
-      R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type[2])
-      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio2 = zratio2, type1 = type[1], type2 = type[2])
+      R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type[2], tol = tol)
+      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio2 = zratio2, type1 = type[1], type2 = type[2], tol = tol)
       Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
     } else if (type[2] == "continuous"){
       zratio1 <- colMeans(X1==0)
-      R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type[1])
-      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, type1 = type[1], type2 = type[2])
+      R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type[1], tol = tol)
+      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, type1 = type[1], type2 = type[2], tol = tol)
       R2 <- sin(pi/2 * pcaPP::cor.fk(X2))
       Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
     } else {
       zratio1 <- colMeans(X1==0)
       zratio2 <- colMeans(X2==0)
-      R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type[1])
-      R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type[2])
-      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, zratio2 = zratio2, type1 = type[1], type2 = type[2])
+      R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type[1], tol = tol)
+      R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type[2], tol = tol)
+      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, zratio2 = zratio2, type1 = type[1], type2 = type[2], tol = tol)
       Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
     }
   }
