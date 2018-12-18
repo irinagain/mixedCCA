@@ -18,7 +18,7 @@ fromKtoR <- function(K, zratio = NULL, type = "trunc", tol = 1e-3) {
       op <- tryCatch(optimize(f1, lower = -0.99, upper = 0.99, tol = tol)[1], error = function(e) 100)
       if(op == 100) {
         hatR[i, j] <- hatR[j, i] <-0
-      }else {
+      } else {
         hatR[i, j] <- hatR[j, i] <- unlist(op)
       }
     } else { # for matrix K
@@ -70,7 +70,7 @@ fromKtoR_mixed <- function(K12, zratio1 = NULL, zratio2 = NULL, type1 = "trunc",
       op <- tryCatch(optimize(f1, lower = -0.99, upper = 0.99, tol = tol)[1], error = function(e) 100)
       if(op == 100) {
         hatR[i, j] <- hatR[j, i] <- 0
-      }else {
+      } else {
         hatR[i, j] <- hatR[j, i] <- unlist(op)
       }
     } else {
@@ -81,7 +81,7 @@ fromKtoR_mixed <- function(K12, zratio1 = NULL, zratio2 = NULL, type1 = "trunc",
           op <- tryCatch(optimize(f1, lower = -0.99, upper = 0.99, tol = tol)[1], error = function(e) 100)
           if(op == 100) {
             hatR[i,j] <- 0
-          }else {
+          } else {
             hatR[i,j] <- unlist(op)
           }
         }
