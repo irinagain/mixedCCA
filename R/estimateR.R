@@ -94,19 +94,12 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
 
   if (type[1] == type[2]) {
     # both datasets are of the same type
-    if (type[1] == "continuous"){ # both are continuous
-      Rall <- sin(pi/2 * pcaPP::cor.fk(cbind(X1, X2)))
-      R1 <- Rall[1:p1, 1:p1]
-      R2 <- Rall[(p1 + 1):(p1 + p2), (p1 + 1):(p1 + p2)]
-      R12 <- Rall[1:p1, (p1 + 1):(p1 + p2)]
-    } else {
-      zratio1 <- colMeans(X1==0)
-      zratio2 <- colMeans(X2==0)
-      R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type[1], tol = tol)
-      R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type[2], tol = tol)
-      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, zratio2 = zratio2, type1 = type[1], type2 = type[2], tol = tol)
-      Rall <- rbind(cbind(R1, R12),cbind(t(R12), R2))
-    }
+    Xcomb <- cbind(X1, X2)
+    Rall <- estimateR(Xcomb, type = type[1], use.nearPD = use.nearPD, rho = rho, tol = tol)$R
+    R1 <- Rall[1:p1, 1:p1]
+    R2 <- Rall[(p1 + 1):(p1 + p2), (p1 + 1):(p1 + p2)]
+    R12 <- Rall[1:p1, (p1 + 1):(p1 + p2)]
+
   } else {
     # datasets are of different type
     if (type[1] == "continuous"){
@@ -129,16 +122,17 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
       R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, zratio2 = zratio2, type1 = type[1], type2 = type[2], tol = tol)
       Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
     }
+
+    if ( use.nearPD == TRUE & min(eigen(Rall)$values) < 0 ) {
+      message(" minimum eigenvalue of correlation estimator is ", min(eigen(Rall)$values), "\n nearPD is used")
+      Rall <- as.matrix(Matrix::nearPD(Rall, corr = TRUE)$mat)
+    }
+    # shrinkage method
+    Rall <- (1-rho)*Rall + rho*diag(p1+p2)
+    R1 <- Rall[1:p1, 1:p1]
+    R2 <- Rall[(p1 + 1):(p1 + p2), (p1 + 1):(p1 + p2)]
+    R12 <- Rall[1:p1, (p1 + 1):(p1 + p2)]
   }
-  if ( use.nearPD == TRUE & min(eigen(Rall)$values) < 0 ) {
-    message(" minimum eigenvalue of correlation estimator is ", min(eigen(Rall)$values), "\n nearPD is used")
-    Rall <- as.matrix(Matrix::nearPD(Rall, corr = TRUE)$mat)
-  }
-  # shrinkage method
-  Rall <- (1-rho)*Rall + rho*diag(p1+p2)
-  R1 <- Rall[1:p1, 1:p1]
-  R2 <- Rall[(p1 + 1):(p1 + p2), (p1 + 1):(p1 + p2)]
-  R12 <- Rall[1:p1, (p1 + 1):(p1 + p2)]
 
   return(list(type = type, R1 = R1, R2 = R2, R12 = R12, R = Rall))
 }
