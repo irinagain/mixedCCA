@@ -1,5 +1,4 @@
 #' @title Estimate latent correlation matrix
-#'
 #' @description Estimation of latent correlation matrix from observed data of (possibly) mixed types (continuous/biary/truncated continuous) based on the latent Gaussian copula model.
 #'
 #' @param X A numeric data matrix (n by p), n is the sample size and p is the number of variables.
@@ -99,7 +98,6 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
     R1 <- Rall[1:p1, 1:p1]
     R2 <- Rall[(p1 + 1):(p1 + p2), (p1 + 1):(p1 + p2)]
     R12 <- Rall[1:p1, (p1 + 1):(p1 + p2)]
-
   } else {
     # datasets are of different type
     if (type[1] == "continuous"){
