@@ -1,5 +1,6 @@
 //[[Rcpp::depends(RcppArmadillo)]]
 #include "RcppArmadillo.h"
+#include "stdio.h"
 using namespace Rcpp;
 using namespace arma;
 
@@ -68,19 +69,6 @@ arma::colvec lassobic(int n, const arma::mat& R1, const arma::mat& R2, const arm
     return wmat.col(ind);
 
   }
-}
-vec sample2(const vec& sampleset, int size){
-  // cpp version of sample function in R
-  arma::vec prob = randu<vec>(size);
-  arma::vec sampleseq(size);
-  for (int i=0; i<size; i++){
-    if (prob[i]<0.5){
-      sampleseq[i] = sampleset[0];
-    } else {
-      sampleseq[i] = sampleset[1];
-    }
-  }
-  return sampleseq;
 }
 
 
