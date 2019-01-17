@@ -1,6 +1,5 @@
 #' @title Estimate latent correlation matrix
 #' @description Estimation of latent correlation matrix from observed data of (possibly) mixed types (continuous/biary/truncated continuous) based on the latent Gaussian copula model.
-#'
 #' @param X A numeric data matrix (n by p), n is the sample size and p is the number of variables.
 #' @param type A type of variables in \code{X}, must be one of "continuous", "binary" or "trunc".
 #' @param use.nearPD A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).
