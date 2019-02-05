@@ -7,8 +7,8 @@
 using namespace Rcpp;
 
 // find_w12bic
-arma::colvec find_w12bic(int n, const arma::mat& R1, const arma::mat& R2, const arma::mat& R12, const arma::vec& lambda1, const arma::vec& lambda2, arma::colvec w1init, arma::colvec w2init, int BICtype, int maxiter, double tol);
-RcppExport SEXP _mixedCCA_find_w12bic(SEXP nSEXP, SEXP R1SEXP, SEXP R2SEXP, SEXP R12SEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP w1initSEXP, SEXP w2initSEXP, SEXP BICtypeSEXP, SEXP maxiterSEXP, SEXP tolSEXP) {
+arma::colvec find_w12bic(int n, const arma::mat& R1, const arma::mat& R2, const arma::mat& R12, const arma::vec& lambda1, const arma::vec& lambda2, arma::colvec w1init, arma::colvec w2init, int BICtype, int maxiter, double tol, bool verbose);
+RcppExport SEXP _mixedCCA_find_w12bic(SEXP nSEXP, SEXP R1SEXP, SEXP R2SEXP, SEXP R12SEXP, SEXP lambda1SEXP, SEXP lambda2SEXP, SEXP w1initSEXP, SEXP w2initSEXP, SEXP BICtypeSEXP, SEXP maxiterSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -23,13 +23,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type BICtype(BICtypeSEXP);
     Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    rcpp_result_gen = Rcpp::wrap(find_w12bic(n, R1, R2, R12, lambda1, lambda2, w1init, w2init, BICtype, maxiter, tol));
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(find_w12bic(n, R1, R2, R12, lambda1, lambda2, w1init, w2init, BICtype, maxiter, tol, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_mixedCCA_find_w12bic", (DL_FUNC) &_mixedCCA_find_w12bic, 11},
+    {"_mixedCCA_find_w12bic", (DL_FUNC) &_mixedCCA_find_w12bic, 12},
     {NULL, NULL, 0}
 };
 

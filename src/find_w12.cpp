@@ -29,7 +29,7 @@ double BIC(int n, const arma::mat& R1, const arma::mat& R2, const arma::mat& R12
 
 arma::colvec lassobic(int n, const arma::mat& R1, const arma::mat& R2, const arma::mat& R12, arma::colvec winit1, const arma::colvec& w2, const arma::colvec& lambda,
                       int BICtype,
-                      int maxiter = 100, double tol = 0.001){
+                      int maxiter = 100, double tol = 0.001, bool verbose = true){
   // basically same as solveLasso for fixed w2 and all lambda values.
   // find w1 with smallest bic
   arma::colvec d = R12*w2;
@@ -60,7 +60,7 @@ arma::colvec lassobic(int n, const arma::mat& R1, const arma::mat& R2, const arm
         }
       }
       wmat.col(j) = winit1;
-      if (iter == (maxiter + 1)){
+      if (iter == (maxiter + 1) && verbose){
         printf("Failed to converge. Try increasing the number of iterations. (lasso part)\n error = %f\n", error);
       }
       bicvec[j] = BIC(n, R1, R2, R12, winit1, w2, BICtype);
@@ -77,7 +77,7 @@ arma::colvec find_w12bic(int n, const arma::mat& R1, const arma::mat& R2, const 
                          const arma::vec& lambda1, const arma::vec& lambda2,
                          arma::colvec w1init, arma::colvec w2init,
                          int BICtype,
-                         int maxiter = 1000, double tol = 0.001){
+                         int maxiter = 1000, double tol = 0.001, bool verbose = true){
   // Same as find_w12 function. SolveLasso part is replaced with lassobic.
   int p1 = R1.n_cols;
   int p2 = R2.n_cols;
@@ -113,7 +113,7 @@ arma::colvec find_w12bic(int n, const arma::mat& R1, const arma::mat& R2, const 
     error += sum(arma::abs(w2-w2init));
     w2init = w2;
   }
-  if (iter == (maxiter + 1)){
+  if (iter == (maxiter + 1) && verbose){
     printf("Failed to converge. Try increasing the number of iterations. (findw12 part)\n error = %f\n", error);
   }
   w1init.insert_rows(w1init.n_elem, w2init);

@@ -44,6 +44,7 @@ lambdaseq_generate <- function(nlambda = 20, initlam1 = NULL, initlam2 = NULL, l
 #' @param KendallR An estimated Kendall \eqn{\tau} matrix. The default is NULL, which means that it will be automatically estimated by Kendall's \eqn{\tau} estimator unless the user supplies.
 #' @param tol The desired accuracy (convergence tolerance).
 #' @param maxiter The maximum number of iterations allowed.
+#' @param verbose If \code{verbose = FALSE}, printing convergence error when the convergence is failed after \code{maxiter} is disabled. The default value is \code{TRUE}.
 #'
 #' @references
 #' Yoon G., Carroll R.J. and Gaynanova I. (2018+) \href{http://arxiv.org/abs/1807.05274}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}.
@@ -68,7 +69,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
                      nlambda = 20, lam.eps = 1e-02,
                      w1init = NULL, w2init = NULL, BICtype,
                      KendallR = NULL,
-                     tol = 1e-3, maxiter = 1000){
+                     tol = 1e-3, maxiter = 1000, verbose = TRUE){
   n <- nrow(X1)
   p1 <- ncol(X1); p2 <- ncol(X2);
   p <- p1 + p2
@@ -108,7 +109,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
   lamtmp <- lambda_seq
   while(sum(coefall[1:p1]!=0)==0 | sum(coefall[(p1+1):(p1+p2)]!=0)==0){
     coefall <- find_w12bic(n, R1, R2, R12, rep(lamtmp[[1]][1], p1), rep(lamtmp[[2]][1], p2), maxiter = maxiter, tol = tol,
-                           w1init, w2init, BICtype = BICtype)
+                           w1init, w2init, BICtype = BICtype, verbose = verbose)
     if(sum(coefall[1:p1]!=0)==0){
       lamtmp[[1]] <- exp(seq(log(lamtmp[[1]][2]), log(lambda_seq[[1]][nlambda]), length.out = nlambda))
     }
@@ -119,7 +120,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
   lambda_seq <- lamtmp
 
   coeff <- find_w12bic(n, R1, R2, R12, lambda_seq[[1]], lambda_seq[[2]], maxiter = maxiter, tol = tol,
-                       w1init, w2init, BICtype = BICtype)
+                       w1init, w2init, BICtype = BICtype, verbose = verbose)
 
   w1 <- coeff[1:p1]
   w2 <- coeff[(p1+1):(p1+p2)]
