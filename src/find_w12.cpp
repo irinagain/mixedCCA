@@ -29,7 +29,7 @@ double BIC(int n, const arma::mat& R1, const arma::mat& R2, const arma::mat& R12
 
 arma::colvec lassobic(int n, const arma::mat& R1, const arma::mat& R2, const arma::mat& R12, arma::colvec winit1, const arma::colvec& w2, const arma::colvec& lambda,
                       int BICtype,
-                      int maxiter = 100, double tol = 0.001, bool verbose = true){
+                      int maxiter = 100, double tol = 0.001, bool verbose){
   // basically same as solveLasso for fixed w2 and all lambda values.
   // find w1 with smallest bic
   arma::colvec d = R12*w2;
@@ -77,7 +77,7 @@ arma::colvec find_w12bic(int n, const arma::mat& R1, const arma::mat& R2, const 
                          const arma::vec& lambda1, const arma::vec& lambda2,
                          arma::colvec w1init, arma::colvec w2init,
                          int BICtype,
-                         int maxiter = 1000, double tol = 0.001, bool verbose = true){
+                         int maxiter = 1000, double tol = 0.001, bool verbose){
   // Same as find_w12 function. SolveLasso part is replaced with lassobic.
   int p1 = R1.n_cols;
   int p2 = R2.n_cols;
