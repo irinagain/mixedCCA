@@ -28,6 +28,15 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e
     stop("Unrecognized type of data. Should be one of continuous, binary or trunc.")
   }
 
+  if (type == "trunc"){
+    if(sum(X<0)>0) {stop("The data contains negative values.")}
+    if(colSums(X==0)==0){
+      message("The data does not contain zeros. Consider changing the type to \"continuous\".")
+    }
+  }
+  if (type == "binary"){
+    if(sum(!(X %in% c(0, 1)))>0) {stop("The data is not \"binary\".")}
+  }
   if (type == "continuous"){
     R1 <- sin(pi/2 * pcaPP::cor.fk(X))
   } else {
@@ -88,6 +97,26 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
 
   if (sum(type %in% c("continuous", "binary", "trunc")) != 2){
     stop("Unrecognised type of variables. Should be one of continuous, binary or trunc.")
+  }
+
+  if (type1 == "trunc"){
+    if(sum(X1<0)>0) {stop("The data X1 contains negative values.")}
+    if(colSums(X1==0)==0){
+      message("The data X1 does not contain zeros. Consider changing the type to \"continuous\".")
+    }
+  }
+  if (type1 == "binary"){
+    if(sum(!(X1 %in% c(0, 1)))>0) {stop("The data X1 is not \"binary\".")}
+  }
+
+  if (type2 == "trunc"){
+    if(sum(X2<0)>0) {stop("The data X2 contains negative values.")}
+    if(colSums(X2==0)==0){
+      message("The data X2 does not contain zeros. Consider changing the type to \"continuous\".")
+    }
+  }
+  if (type2 == "binary"){
+    if(sum(!(X2 %in% c(0, 1)))>0) {stop("The data X2 is not \"binary\".")}
   }
 
   if (type[1] == type[2]) {
