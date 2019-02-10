@@ -30,7 +30,7 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e
 
   if (type == "trunc"){
     if(sum(X<0)>0) {stop("The data contains negative values.")}
-    if(colSums(X==0)==0){
+    if(sum(colSums(X==0))==0){
       message("The data does not contain zeros. Consider changing the type to \"continuous\".")
     }
   }
