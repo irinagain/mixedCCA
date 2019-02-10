@@ -24,7 +24,7 @@ The R package `mixedCCA` implements sparse canonical correlation analysis for da
 ## Installation
 
 ```{install}
-devtools::install_github("irinagain/mixedCCA")
+devtools::install_github("irinagain/mixedCCA", force = TRUE)
 ```
 
 ## Example

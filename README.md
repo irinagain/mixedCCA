@@ -10,7 +10,7 @@ Installation
 ------------
 
 ``` install
-devtools::install_github("irinagain/mixedCCA")
+devtools::install_github("irinagain/mixedCCA", force = TRUE)
 ```
 
 Example
@@ -43,6 +43,12 @@ X2 <- simdata$X2
 
 # Sparse semiparametric CCA with BIC1 criterion
 mixedCCAresult <- mixedCCA(X1, X2, type1 = "trunc", type2 = "trunc", BICtype = 1)
+#> Warning in if (colSums(X1 == 0) == 0) {: the condition has length > 1 and
+#> only the first element will be used
+#> Warning in if (colSums(X2 == 0) == 0) {: the condition has length > 1 and
+#> only the first element will be used
+#> Warning in if (colSums(X == 0) == 0) {: the condition has length > 1 and
+#> only the first element will be used
 mixedCCAresult$KendallR # extracts estimated latent correlation matrix
 mixedCCAresult$w1 # canonical vector for X1
 mixedCCAresult$w2 # canonical vector for X2
@@ -50,5 +56,13 @@ mixedCCAresult$cor # canonical correlation
 
 # Separate estimation of latent correlation matrix
 estimateR(X1, type = "trunc") # For X1 only
+#> Warning in if (colSums(X == 0) == 0) {: the condition has length > 1 and
+#> only the first element will be used
 estimateR_mixed(X1, X2, type1 = "trunc", type2 = "trunc") # For X = (X1, X2)
+#> Warning in if (colSums(X1 == 0) == 0) {: the condition has length > 1 and
+#> only the first element will be used
+#> Warning in if (colSums(X2 == 0) == 0) {: the condition has length > 1 and
+#> only the first element will be used
+#> Warning in if (colSums(X == 0) == 0) {: the condition has length > 1 and
+#> only the first element will be used
 ```
