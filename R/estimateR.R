@@ -101,7 +101,7 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
 
   if (type1 == "trunc"){
     if(sum(X1<0)>0) {stop("The data X1 contains negative values.")}
-    if(colSums(X1==0)==0){
+    if(sum(colSums(X1==0))==0){
       message("The data X1 does not contain zeros. Consider changing the type to \"continuous\".")
     }
   }
@@ -111,7 +111,7 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
 
   if (type2 == "trunc"){
     if(sum(X2<0)>0) {stop("The data X2 contains negative values.")}
-    if(colSums(X2==0)==0){
+    if(sum(colSums(X2==0))==0){
       message("The data X2 does not contain zeros. Consider changing the type to \"continuous\".")
     }
   }
