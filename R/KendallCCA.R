@@ -94,6 +94,8 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
   ### Create lambda sequences
   lambda_seq <- list()
   if (is.null(lamseq1) & is.null(lamseq2)){
+    w1init <- w1init/sqrt(as.numeric(crossprod(w1init, R1 %*% w1init)))
+    w2init <- w2init/sqrt(as.numeric(crossprod(w2init, R2 %*% w2init)))
     lambda_seq <- lambdaseq_generate(nlambda = nlambda, initlam1 = initlam1, initlam2 = initlam2, lam.eps = lam.eps,
                                      Sigma1 = R1, Sigma2 = R2, Sigma12 = R12, w1init = w1init, w2init = w2init)
   } else {
