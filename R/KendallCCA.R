@@ -94,35 +94,21 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
   ### Create lambda sequences
   lambda_seq <- list()
   if (is.null(lamseq1) & is.null(lamseq2)){
+    # Perform standardization of w1 and w2
     w1init <- w1init/sqrt(as.numeric(crossprod(w1init, R1 %*% w1init)))
     w2init <- w2init/sqrt(as.numeric(crossprod(w2init, R2 %*% w2init)))
     lambda_seq <- lambdaseq_generate(nlambda = nlambda, initlam1 = initlam1, initlam2 = initlam2, lam.eps = lam.eps,
                                      Sigma1 = R1, Sigma2 = R2, Sigma12 = R12, w1init = w1init, w2init = w2init)
   } else {
     if(length(lamseq1) == length(lamseq2)){
-    nlambda <- length(lamseq1)
-    lambda_seq[[1]] <- lamseq1
-    lambda_seq[[2]] <- lamseq2
+      nlambda <- length(lamseq1)
+      lambda_seq[[1]] <- lamseq1
+      lambda_seq[[2]] <- lamseq2
     } else { warning( "The lengths of lambda sequences for two variables are different." ); stop; }
   }
 
   ### To remove lambda values which make all elements have zero coefficients.
-  coefall <- rep(0, p)
-  lamtmp <- lambda_seq
-  while(sum(coefall[1:p1]!=0)==0 | sum(coefall[(p1+1):(p1+p2)]!=0)==0){
-    coefall <- find_w12bic(n, R1, R2, R12, rep(lamtmp[[1]][1], p1), rep(lamtmp[[2]][1], p2), maxiter = maxiter, tol = tol,
-                           w1init, w2init, BICtype = BICtype, verbose = verbose)
-    if(sum(coefall[1:p1]!=0)==0){
-      lamtmp[[1]] <- exp(seq(log(lamtmp[[1]][2]), log(lambda_seq[[1]][nlambda]), length.out = nlambda))
-    }
-    if(sum(coefall[(p1+1):(p1+p2)]!=0)==0){
-      lamtmp[[2]] <- exp(seq(log(lamtmp[[2]][2]), log(lambda_seq[[2]][nlambda]), length.out = nlambda))
-    }
-  }
-  lambda_seq <- lamtmp
-
-  coeff <- find_w12bic(n, R1, R2, R12, lambda_seq[[1]], lambda_seq[[2]], maxiter = maxiter, tol = tol,
-                       w1init, w2init, BICtype = BICtype, verbose = verbose)
+  coeff <- find_w12bic(n, R1, R2, R12, lambda_seq[[1]], lambda_seq[[2]], maxiter = maxiter, tol = tol, w1init, w2init, BICtype = BICtype, verbose = verbose)
 
   w1 <- coeff[1:p1]
   w2 <- coeff[(p1+1):(p1+p2)]
