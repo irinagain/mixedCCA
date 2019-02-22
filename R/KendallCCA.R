@@ -107,7 +107,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
     } else { warning( "The lengths of lambda sequences for two variables are different." ); stop; }
   }
 
-  ### To remove lambda values which make all elements have zero coefficients.
+  ### Calculate coefficients correspondind to BIC
   coeff <- find_w12bic(n, R1, R2, R12, lambda_seq[[1]], lambda_seq[[2]], maxiter = maxiter, tol = tol, w1init, w2init, BICtype = BICtype, verbose = verbose)
 
   w1 <- coeff[1:p1]
