@@ -76,12 +76,12 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
 
   ### Compute Kendall tau.
   if(is.null(KendallR)){
-    R <- estimateR_mixed(X1, X2, type1 = type1, type2 = type2)
+    R <- estimateR_mixed(X1, X2, type1 = type1, type2 = type2)$R
   } else { R <- KendallR; rm(KendallR) }
 
-  R1 <- as.matrix(R$R1)
-  R2 <- as.matrix(R$R2)
-  R12 <- as.matrix(R$R12)
+  R1 <- as.matrix(R[1:p1, 1:p1])
+  R2 <- as.matrix(R[(p1+1):p, (p1+1):p])
+  R12 <- as.matrix(R[1:p1, (p1+1):p])
 
   if (is.null(w1init) | is.null(w2init)){
       res.regul <- estim.regul_crossvalidation(X1, X2)
@@ -95,7 +95,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
   lambda_seq <- list()
   if (is.null(lamseq1) & is.null(lamseq2)){
     lambda_seq <- lambdaseq_generate(nlambda = nlambda, initlam1 = initlam1, initlam2 = initlam2, lam.eps = lam.eps,
-                                     Sigma1 = R$R1, Sigma2 = R$R2, Sigma12 = R$R12, w1init = w1init, w2init = w2init)
+                                     Sigma1 = R1, Sigma2 = R2, Sigma12 = R12, w1init = w1init, w2init = w2init)
   } else {
     if(length(lamseq1) == length(lamseq2)){
     nlambda <- length(lamseq1)
