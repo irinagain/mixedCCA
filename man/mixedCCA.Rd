@@ -8,7 +8,8 @@ Applies sparse canonical correlation analysis (CCA) for high-dimensional data of
 mixedCCA(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL,
   initlam1 = NULL, initlam2 = NULL, nlamseq = 20, lam.eps = 0.01,
   w1init = NULL, w2init = NULL, BICtype, KendallR = NULL,
-  tol = 0.001, maxiter = 100, verbose = FALSE, convcheck = TRUE)
+  tol = 0.001, maxiter = 100, verbose = FALSE, convcheck = TRUE,
+  addstep = TRUE)
 }
 \arguments{
 \item{X1}{A numeric data matrix (n by p1).}
@@ -46,6 +47,8 @@ mixedCCA(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL,
 \item{verbose}{If \code{verbose = TRUE}, error values in each iteration will be printed. The default value is \code{FALSE}.}
 
 \item{convcheck}{If \code{convcheck = TRUE}, the convergence error will be printed when the convergence is failed after the algorithm reached \code{maxiter}. The default value is \code{TRUE}.}
+
+\item{addstep}{When the convergence is failed, \code{addstep = TRUE} will try further fine lambda sequence values between the oscillation points. The default value is \code{TRUE}.}
 }
 \value{
 \code{mixedCCA} returns a data.frame containing

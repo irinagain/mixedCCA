@@ -59,7 +59,7 @@ mixedCCAresult <- mixedCCA(X1, X2, type1 = "trunc", type2 = "trunc", BICtype = 1
 mixedCCAresult$KendallR # extracts estimated latent correlation matrix
 mixedCCAresult$w1 # canonical vector for X1
 mixedCCAresult$w2 # canonical vector for X2
-mixedCCAresult$cor # canonical correlation
+mixedCCAresult$cancor # canonical correlation
 
 # Separate estimation of latent correlation matrix
 estimateR(X1, type = "trunc") # For X1 only

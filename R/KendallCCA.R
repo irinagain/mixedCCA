@@ -27,7 +27,7 @@ lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, l
 
 # wrapper function
 find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
-                        maxiter = 100, tol = 0.001, verbose = FALSE, convcheck = TRUE){
+                        maxiter = 100, tol = 0.001, verbose = FALSE, convcheck = TRUE, addstep = TRUE){
   # Same as find_w12 function. SolveLasso part is replaced with lassobic.
   p1 = ncol(R1)
   p2 = ncol(R2)
@@ -81,11 +81,25 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
     }
   }
   if (iter == (maxiter + 1) & convcheck){
-    cat("Failed to converge. (findw12 part)\n objective function = ", obj[iter],  " where tol = ", tol, " with BICtype = ", BICtype, "\n")
+    cat("Failed to converge. (findw12 part)\n objective function = ", obj[iter], " and error = ", error, " where tol = ", tol, " with BICtype = ", BICtype, "\n")
     cat("WARNING: lambda = ", lamseq1, " and ", lamseq2, "\n")
-  }
-  if (verbose){
-    cat("Convergence was completed with error = ", error,  " where tol = ", tol, " with BICtype = ", BICtype, "\n")
+
+    if(addstep){
+      last10 <- c((length(lamseq1)-9):length(lamseq1))
+      lamseq1_rev <- seq(max(lam1.iter[!is.na(lam1.iter)][last10]), min(lam1.iter[!is.na(lam1.iter)][last10]), length.out = length(lamseq1))
+      lamseq2_rev <- seq(max(lam2.iter[!is.na(lam2.iter)][last10]), min(lam2.iter[!is.na(lam2.iter)][last10]), length.out = length(lamseq2))
+
+      cat("More fine lambda sequences are used. lambda = ", lamseq1_rev, " and ", lamseq2_rev, "\n")
+      refit <- find_w12bic(n = n, R1 = R1, R2 = R2, R12 = R12, lamseq1 = lamseq1_rev, lamseq2 = lamseq2_rev,
+                           w1init = w1, w2init = w2, BICtype = BICtype,
+                           maxiter = maxiter, tol = tol, verbose = verbose, convcheck = convcheck, addstep = FALSE)
+      w1 = refit$w1
+      w2 = refit$w2
+      lam1.iter <- c(lam1.iter, refit$lam1.iter)
+      lam2.iter <- c(lam2.iter, refit$lam2.iter)
+      obj <- c(obj, refit$obj)
+    }
+      cat("With finer lambda sequences, selected lambda values are", lam1.iter[length(lam1.iter)], " and ", lam2.iter[length(lam2.iter)], ". Objective function = ", obj[length(obj)], " and error = ", abs(obj[length(obj)]-obj[length(obj)-1])/obj[length(obj)-1], " where tol = ", tol, " with BICtype = ", BICtype, "\n")
   }
   return(list(w1 = w1, w2 = w2, lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
 }
@@ -114,6 +128,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 #' @param maxiter The maximum number of iterations allowed.
 #' @param verbose If \code{verbose = TRUE}, error values in each iteration will be printed. The default value is \code{FALSE}.
 #' @param convcheck If \code{convcheck = TRUE}, the convergence error will be printed when the convergence is failed after the algorithm reached \code{maxiter}. The default value is \code{TRUE}.
+#' @param addstep When the convergence is failed, \code{addstep = TRUE} will try further fine lambda sequence values between the oscillation points. The default value is \code{TRUE}.
 #'
 #' @references
 #' Yoon G., Carroll R.J. and Gaynanova I. (2018+) \href{http://arxiv.org/abs/1807.05274}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}.
@@ -130,7 +145,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 #' }
 #'
 #' @example man/examples/mixedCCA_ex.R
-#' @useDynLib mixedCCA
+#' @useDynLib mixedCCA, .registration = TRUE
 #' @import stats
 #' @importFrom Rcpp evalCpp
 #' @export
@@ -138,7 +153,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
                      nlamseq = 20, lam.eps = 1e-02,
                      w1init = NULL, w2init = NULL, BICtype,
                      KendallR = NULL,
-                     tol = 1e-3, maxiter = 100, verbose = FALSE, convcheck = TRUE){
+                     tol = 1e-3, maxiter = 100, verbose = FALSE, convcheck = TRUE, addstep = TRUE){
   n <- nrow(X1)
   p1 <- ncol(X1); p2 <- ncol(X2);
   p <- p1 + p2
@@ -188,7 +203,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
   fitresult <- find_w12bic(n = n, R1 = R1, R2 = R2, R12 = R12,
                            lamseq1 = lambda_seq[[1]], lamseq2 = lambda_seq[[2]],
                            w1init = w1init, w2init = w2init, BICtype = BICtype, maxiter = maxiter, tol = tol,
-                           verbose = verbose, convcheck = convcheck)
+                           verbose = verbose, convcheck = convcheck, addstep = addstep)
 
   w1 <- fitresult$w1
   w2 <- fitresult$w2

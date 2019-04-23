@@ -9,7 +9,7 @@ Description: Semi-parametric approach for sparse CCA which can handle mixed data
 License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 3.0.1), stats, MASS
-Imports: Rcpp, pcaPP, Matrix, fMultivar, mnormt, irlba, RcppArmadillo
+Imports: Rcpp, RcppArmadillo, pcaPP, Matrix, fMultivar, mnormt, irlba
 NeedsCompilation: yes
 RoxygenNote: 6.1.1
 LinkingTo: Rcpp, RcppArmadillo

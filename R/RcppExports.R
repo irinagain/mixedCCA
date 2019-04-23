@@ -2,6 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 lassobic <- function(n, R1, R2, R12, w1init, w2, lamseq, BICtype, maxiter = 100L, tol = 0.001, convcheck = TRUE) {
-    .Call('_mixedCCA_lassobic', PACKAGE = 'mixedCCA', n, R1, R2, R12, w1init, w2, lamseq, BICtype, maxiter, tol, convcheck)
+    .Call(`_mixedCCA_lassobic`, n, R1, R2, R12, w1init, w2, lamseq, BICtype, maxiter, tol, convcheck)
 }
 
