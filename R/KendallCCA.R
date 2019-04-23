@@ -1,31 +1,99 @@
-lambdaseq_generate <- function(nlambda = 20, initlam1 = NULL, initlam2 = NULL, lam.eps = 1e-02, Sigma1, Sigma2, Sigma12, w1init = NULL, w2init = NULL){
-  init.lambda <- rep(NA, 2)
+# to generate data-driven lambda sequence
+lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, lam.eps = 1e-02,
+                               Sigma1, Sigma2, Sigma12, w1init = NULL, w2init = NULL){
+  init.lamseq <- rep(NA, 2)
   p1 <- nrow(Sigma1); p2 <- nrow(Sigma2)
   if (is.null(initlam1)) {
     if (is.null(w2init)) {
       w2init <- rep(1,p2)/sqrt(as.numeric(crossprod(rep(1,p2), Sigma2 %*% rep(1,p2))))
     }
-    init.lambda[1] <- max(abs(Sigma12%*%w2init)) # estimated w1 for different (but close) lambda could be used
+    init.lamseq[1] <- max(abs(Sigma12%*%w2init)) # estimated w1 for different (but close) lamseq could be used
   }
 
   if (is.null(initlam2)) {
     if (is.null(w1init)) {
       w1init <- rep(1,p1)/sqrt(as.numeric(crossprod(rep(1,p1), Sigma1 %*% rep(1,p1))))
     }
-    init.lambda[2] <- max(abs(t(Sigma12)%*%w1init)) # estimated w2 for different (but close) lambda could be used
+    init.lamseq[2] <- max(abs(t(Sigma12)%*%w1init)) # estimated w2 for different (but close) lamseq could be used
   }
 
-  lambda <- list("vector")
-  # lambda values in decreasing order.
-  lambda[[1]] <- exp(seq(log(init.lambda[1]), log(lam.eps*init.lambda[1]), length.out = nlambda))
-  lambda[[2]] <- exp(seq(log(init.lambda[2]), log(lam.eps*init.lambda[2]), length.out = nlambda))
+  lamseq <- list("vector")
+  # lamseq values in decreasing order.
+  lamseq[[1]] <- exp(seq(log(init.lamseq[1]), log(lam.eps*init.lamseq[1]), length.out = nlamseq))
+  lamseq[[2]] <- exp(seq(log(init.lamseq[2]), log(lam.eps*init.lamseq[2]), length.out = nlamseq))
 
-  return(lambda)
+  return(lamseq)
+}
+
+# wrapper function
+find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
+                        maxiter = 100, tol = 0.001, verbose = FALSE, convcheck = TRUE){
+  # Same as find_w12 function. SolveLasso part is replaced with lassobic.
+  p1 = ncol(R1)
+  p2 = ncol(R2)
+
+  error = 1000.0
+  iter = 0
+  w1 <- w2 <- c()
+  lam1.iter <- lam2.iter <- c()
+  obj <- c()
+
+  while( iter <= maxiter & error > tol ){
+    iter = iter + 1
+    error = 0
+
+    ### for w1
+    res1 <- lassobic(n = n, R1 = R1, R2 = R2, R12 = R12,
+                     w1init = w1init, w2 = w2init, lamseq = lamseq1, BICtype = BICtype,
+                     maxiter = maxiter, tol = tol, convcheck = convcheck)
+    w1 = res1$finalcoef
+    # if w1 is estimated as a vector of only zeros,
+    if (sum(abs(w1))==0){
+      return(list(w1 = rep(0, p1), w2 = rep(0, p2), lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
+    } else {
+      lam1.iter[iter] <- res1$lamseq[res1$bicInd]
+    }
+    w1init = w1
+
+    ### for w2
+    res2 <- lassobic(n = n, R1 = R2, R2 = R1, R12 = t(R12),
+                     w1init = w2init, w2 = w1init, lamseq = lamseq2, BICtype = BICtype,
+                     maxiter = maxiter, tol = tol, convcheck = convcheck)
+    w2 = res2$finalcoef
+    if (sum(abs(w2))==0){
+      return(list(w1 = rep(0, p1), w2 = rep(0, p2), lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
+    } else {
+      lam2.iter[iter] <- res2$lamseq[res2$bicInd]
+    }
+    w2init = w2
+
+    # Just want to check # cat("check w1*R1*w1 =", t(w1)%*%R1%*%w1, ",\t ", "check w2*R2*w2 =", t(w2)%*%R2%*%w2, "\n")
+    obj[iter] <- t(w1)%*%R12%*%w2
+
+    if(iter == 1){
+      error <- 1000
+    }else if(iter >1){
+      error <- abs(obj[iter] - obj[iter-1])/obj[iter-1]
+    }
+
+    if (verbose){
+      cat("iteration = ", iter, " and selected lambda = ", lam1.iter[iter], "&", lam2.iter[iter], "and objective function = ", obj[iter], "\n")
+    }
+  }
+  if (iter == (maxiter + 1) & convcheck){
+    cat("Failed to converge. (findw12 part)\n objective function = ", obj[iter],  " where tol = ", tol, " with BICtype = ", BICtype, "\n")
+    cat("WARNING: lambda = ", lamseq1, " and ", lamseq2, "\n")
+  }
+  if (verbose){
+    cat("Convergence was completed with error = ", error,  " where tol = ", tol, " with BICtype = ", BICtype, "\n")
+  }
+  return(list(w1 = w1, w2 = w2, lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
 }
 
 
-#' Sparse CCA for data of mixed types with BIC criterion
-#'
+
+
+#' @title Sparse CCA for data of mixed types with BIC criterion
 #' Applies sparse canonical correlation analysis (CCA) for high-dimensional data of mixed types (continuous/biary/truncated continuous). Derived rank-based estimator instead of sample correlation matrix is implemented. There are two types of BIC criteria for variable selection. We found that BIC1 works best for variable selection, whereas BIC2 works best for prediction.
 #'
 #' @param X1 A numeric data matrix (n by p1).
@@ -36,7 +104,7 @@ lambdaseq_generate <- function(nlambda = 20, initlam1 = NULL, initlam2 = NULL, l
 #' @param lamseq2 A tuning parameter sequence for \code{X2}. The length should be the same as \code{lamseq1}.
 #' @param initlam1 An initial value to generate a tuning parameter sequence for \code{X1}, which is the maximum value of tuning parameter grid.
 #' @param initlam2 An initial value to generate a tuning parameter sequence for \code{X2}, which is the maximum value of tuning parameter grid.
-#' @param nlambda The number of tuning parameter sequence lambda - default is 20.
+#' @param nlamseq The number of tuning parameter sequence lambda - default is 20.
 #' @param lam.eps A ratio of the smallest value for lambda to the maximum value of lambda.
 #' @param w1init An initial vector of length p1 for canonical direction \eqn{w1}.
 #' @param w2init An initial vector of length p2 for canonical direction \eqn{w2}.
@@ -44,32 +112,33 @@ lambdaseq_generate <- function(nlambda = 20, initlam1 = NULL, initlam2 = NULL, l
 #' @param KendallR An estimated Kendall \eqn{\tau} matrix. The default is NULL, which means that it will be automatically estimated by Kendall's \eqn{\tau} estimator unless the user supplies.
 #' @param tol The desired accuracy (convergence tolerance).
 #' @param maxiter The maximum number of iterations allowed.
-#' @param verbose If \code{verbose = FALSE}, printing convergence error when the convergence is failed after \code{maxiter} is disabled. The default value is \code{TRUE}.
+#' @param verbose If \code{verbose = TRUE}, error values in each iteration will be printed. The default value is \code{FALSE}.
+#' @param convcheck If \code{convcheck = TRUE}, the convergence error will be printed when the convergence is failed after the algorithm reached \code{maxiter}. The default value is \code{TRUE}.
 #'
 #' @references
 #' Yoon G., Carroll R.J. and Gaynanova I. (2018+) \href{http://arxiv.org/abs/1807.05274}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}.
 #' @return \code{mixedCCA} returns a data.frame containing
 #' \itemize{
 #'       \item{KendallR: }{estimated Kendall's \eqn{\tau} matrix estimator.}
-#'       \item{lambda_seq: }{the values of \code{lambda} used for sparse CCA.}
+#'       \item{lambda_seq: }{the values of \code{lamseq} used for sparse CCA.}
 #'       \item{w1: }{estimated canonical direction \eqn{w1}.}
 #'       \item{w2: }{estimated canonical direction \eqn{w2}.}
 #'       \item{cancor: }{estimated canonical correlation.}
 #'       \item{selected_x1: }{indices of selected variables in \code{X1}.}
 #'       \item{selected_x2: }{indices of selected variables in \code{X2}.}
+#'       \item{fitresult: }{more details on selected lambda values in each iteration.}
 #' }
-#' @importFrom Rcpp sourceCpp
-#' @import RcppArmadillo
-#' @import stats
 #'
 #' @example man/examples/mixedCCA_ex.R
 #' @useDynLib mixedCCA
+#' @import stats
+#' @importFrom Rcpp evalCpp
 #' @export
 mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initlam1 = NULL, initlam2 = NULL,
-                     nlambda = 20, lam.eps = 1e-02,
+                     nlamseq = 20, lam.eps = 1e-02,
                      w1init = NULL, w2init = NULL, BICtype,
                      KendallR = NULL,
-                     tol = 1e-3, maxiter = 1000, verbose = TRUE){
+                     tol = 1e-3, maxiter = 100, verbose = FALSE, convcheck = TRUE){
   n <- nrow(X1)
   p1 <- ncol(X1); p2 <- ncol(X2);
   p <- p1 + p2
@@ -77,18 +146,24 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
   ### Compute Kendall tau.
   if(is.null(KendallR)){
     R <- estimateR_mixed(X1, X2, type1 = type1, type2 = type2)$R
-  } else { R <- KendallR; rm(KendallR) }
+  } else {
+    R <- KendallR; rm(KendallR)
+  }
 
   R1 <- as.matrix(R[1:p1, 1:p1])
   R2 <- as.matrix(R[(p1+1):p, (p1+1):p])
   R12 <- as.matrix(R[1:p1, (p1+1):p])
 
   if (is.null(w1init) | is.null(w2init)){
-      res.regul <- estim.regul_crossvalidation(X1, X2)
-      RCCA <- myrcc(X1, X2, res.regul$lambda1.optim, res.regul$lambda2.optim)
+      # res.regul <- myestim.regul_crossvalidation(X1, X2, type1 = type1, type2 = type2, option = warmstartoption)
+      RCCA <- myrcc(R1 = R1, R2 = R2, R12 = R12, lambda1 = 0.7, lambda2 = 0.7) # without cross-validation, fixed lambda value
 
-      if (is.null(w1init)){ w1init <- as.matrix(RCCA$w1, ncol=1) }
-      if (is.null(w2init)){ w2init <- as.matrix(RCCA$w2, ncol=1) }
+      if (is.null(w1init)){
+        w1init <- as.matrix(RCCA$w1, ncol=1)
+      }
+      if (is.null(w2init)){
+        w2init <- as.matrix(RCCA$w2, ncol=1)
+      }
   }
 
   ### Create lambda sequences
@@ -97,21 +172,26 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
     # Perform standardization of w1 and w2
     w1init <- w1init/sqrt(as.numeric(crossprod(w1init, R1 %*% w1init)))
     w2init <- w2init/sqrt(as.numeric(crossprod(w2init, R2 %*% w2init)))
-    lambda_seq <- lambdaseq_generate(nlambda = nlambda, initlam1 = initlam1, initlam2 = initlam2, lam.eps = lam.eps,
+    lambda_seq <- lambdaseq_generate(nlamseq = nlamseq, initlam1 = initlam1, initlam2 = initlam2, lam.eps = lam.eps,
                                      Sigma1 = R1, Sigma2 = R2, Sigma12 = R12, w1init = w1init, w2init = w2init)
   } else {
     if(length(lamseq1) == length(lamseq2)){
-      nlambda <- length(lamseq1)
       lambda_seq[[1]] <- lamseq1
       lambda_seq[[2]] <- lamseq2
-    } else { warning( "The lengths of lambda sequences for two variables are different." ); stop; }
+    } else {
+      warning( "The lengths of lambda sequences for two variables are different." );
+      stop;
+    }
   }
 
-  ### Calculate coefficients correspondind to BIC
-  coeff <- find_w12bic(n, R1, R2, R12, lambda_seq[[1]], lambda_seq[[2]], maxiter = maxiter, tol = tol, w1init, w2init, BICtype = BICtype, verbose = verbose)
+  ### Calculate canonical coefficients using BIC.
+  fitresult <- find_w12bic(n = n, R1 = R1, R2 = R2, R12 = R12,
+                           lamseq1 = lambda_seq[[1]], lamseq2 = lambda_seq[[2]],
+                           w1init = w1init, w2init = w2init, BICtype = BICtype, maxiter = maxiter, tol = tol,
+                           verbose = verbose, convcheck = convcheck)
 
-  w1 <- coeff[1:p1]
-  w2 <- coeff[(p1+1):(p1+p2)]
+  w1 <- fitresult$w1
+  w2 <- fitresult$w2
   ix1 <- which(w1!=0)
   ix2 <- which(w2!=0)
 
@@ -121,9 +201,11 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
               lambda_seq = lambda_seq,
               w1 = w1, w2 = w2,
               cancor = cancor,
-              selected_x1 = ix1, selected_x2 = ix2))
+              selected_x1 = ix1, selected_x2 = ix2, fitresult = fitresult))
 }
 
+
+# modified to only deal with positive eigenvalues larger than the tolerance.
 standardCCA <- function(S1, S2, S12, tol = 1e-4){
   S1 <- as.matrix(S1)
   S2 <- as.matrix(S2)
@@ -147,82 +229,16 @@ standardCCA <- function(S1, S2, S12, tol = 1e-4){
   return(list(cancor = cancor, w1 = w1, w2 = w2))
 }
 
-myrcc <- function(X1, X2, lambda1, lambda2){
-  X1names <- dimnames(X1)[[2]]
-  X2names <- dimnames(X2)[[2]]
-  ind.names <- dimnames(X1)[[1]]
-  C1 <- var(X1, na.rm = TRUE, use = "pairwise") + diag(lambda1, ncol(X1))
-  C2 <- var(X2, na.rm = TRUE, use = "pairwise") + diag(lambda2, ncol(X2))
-  C12 <- cov(X1, X2, use = "pairwise")
-  res <- standardCCA(C1, C2, C12)
+# modified from CCA package rcc function
+myrcc <- function(R1, R2, R12, lambda1, lambda2, tol = 1e-4){
+
+  C1 <- R1 + diag(lambda1, ncol(R1))
+  C2 <- R2 + diag(lambda2, ncol(R2))
+  C12 <- R12
+  res <- standardCCA(S1 = C1, S2 = C2, S12 = C12, tol = tol)
 
   return(list(cancor = res$cancor,
               w1 = res$w1,
               w2 = res$w2))
 }
 
-
-# CV for canonical ridge method
-estim.regul_crossvalidation <- function (X1, X2, lambda1grid = NULL, lambda2grid = NULL, nfolds = 5){
-
-  if (is.null(lambda1grid)) {
-    lambda1grid <- matrix(seq(0.001, 1, length = 5),nrow=1)
-  } else {
-    lambda1grid <- matrix(lambda1grid, nrow=1)
-  }
-  if (is.null(lambda2grid)) {
-    lambda2grid <- matrix(seq(0.001, 1, length = 5),nrow=1)
-  } else {
-    lambda2grid <- matrix(lambda2grid, nrow=1)
-  }
-
-  lambda1.matrix <- matrix(rep(lambda1grid,length(lambda1grid)), ncol=length(lambda2grid), byrow=T)
-  lambda2.matrix <- matrix(sort(rep(lambda2grid,length(lambda2grid))), ncol=length(lambda1grid), byrow=T)
-
-  cvscores <- apply(lambda1grid, 2, l1function, X1=X1, X2=X2, lambda2grid=lambda2grid, nfolds=nfolds) #cv-score
-  cv.optim <- cvscores[which.max(cvscores)]
-  lambda1.optim <- lambda1.matrix[which.max(cvscores)]
-  lambda2.optim <- lambda2.matrix[which.max(cvscores)]
-
-  ##OUTPUT
-  out = list(lambda1.optim=lambda1.optim, lambda2.optim=lambda1.optim, cv.optim=cv.optim)
-  return(out)
-}
-
-l1function<-function(lam1, X1, X2, lambda2grid, nfolds){ # AUXILIARY FUNCTION CANONICAL RIDGE
-  testcor <- apply(lambda2grid, 2, l2function, X1=X1, X2=X2, lambda1fixed=lam1, nfolds=nfolds)
-  return(testcor)
-}
-
-l2function <- function(lam2, X1, X2, lambda1fixed, nfolds){ # AUXILIARY FUNCTION CANONICAL RIDGE
-  RCCcvm <- RCC_crossvalidation(X1=X1, X2=X2, lambda1=lambda1fixed, lambda2=lam2, nfolds=nfolds)
-  return(RCCcvm)
-}
-
-
-RCC_crossvalidation <- function (X1, X2, lambda1, lambda2, nfolds) { # AUXILIARY FUNCTION CANONICAL RIDGE: n.cv-fold cross-validation
-
-  n <- nrow(X1)
-  id <- sample(rep(seq_len(nfolds), length.out = n))
-
-  cv <- 0
-  # For each fold, do
-  for (nf in 1: nfolds){
-    ### set training data and test data
-    xtrain1 <- X1[id != nf, ]
-    xtrain2 <- X2[id != nf, ]
-    xtest1 <- X1[id == nf, ]
-    xtest2 <- X2[id == nf, ]
-
-    ### compute Canonical Ridge
-    res = myrcc(xtrain1, xtrain2, lambda1, lambda2)
-
-    #### Calculate cv metrics for each lambda
-    xscore = xtest1 %*% res$w1
-    yscore = xtest2 %*% res$w2
-    cv <- cv + abs(cor(xscore,yscore,use="pairwise"))
-  }
-  cvm <- sum(cv)/nfolds
-  return(cvm)
-
-}

@@ -2,12 +2,13 @@
 % Please edit documentation in R/KendallCCA.R
 \name{mixedCCA}
 \alias{mixedCCA}
-\title{Sparse CCA for data of mixed types with BIC criterion}
+\title{Sparse CCA for data of mixed types with BIC criterion
+Applies sparse canonical correlation analysis (CCA) for high-dimensional data of mixed types (continuous/biary/truncated continuous). Derived rank-based estimator instead of sample correlation matrix is implemented. There are two types of BIC criteria for variable selection. We found that BIC1 works best for variable selection, whereas BIC2 works best for prediction.}
 \usage{
 mixedCCA(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL,
-  initlam1 = NULL, initlam2 = NULL, nlambda = 20, lam.eps = 0.01,
+  initlam1 = NULL, initlam2 = NULL, nlamseq = 20, lam.eps = 0.01,
   w1init = NULL, w2init = NULL, BICtype, KendallR = NULL,
-  tol = 0.001, maxiter = 1000, verbose = TRUE)
+  tol = 0.001, maxiter = 100, verbose = FALSE, convcheck = TRUE)
 }
 \arguments{
 \item{X1}{A numeric data matrix (n by p1).}
@@ -26,7 +27,7 @@ mixedCCA(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL,
 
 \item{initlam2}{An initial value to generate a tuning parameter sequence for \code{X2}, which is the maximum value of tuning parameter grid.}
 
-\item{nlambda}{The number of tuning parameter sequence lambda - default is 20.}
+\item{nlamseq}{The number of tuning parameter sequence lambda - default is 20.}
 
 \item{lam.eps}{A ratio of the smallest value for lambda to the maximum value of lambda.}
 
@@ -42,21 +43,25 @@ mixedCCA(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL,
 
 \item{maxiter}{The maximum number of iterations allowed.}
 
-\item{verbose}{If \code{verbose = FALSE}, printing convergence error when the convergence is failed after \code{maxiter} is disabled. The default value is \code{TRUE}.}
+\item{verbose}{If \code{verbose = TRUE}, error values in each iteration will be printed. The default value is \code{FALSE}.}
+
+\item{convcheck}{If \code{convcheck = TRUE}, the convergence error will be printed when the convergence is failed after the algorithm reached \code{maxiter}. The default value is \code{TRUE}.}
 }
 \value{
 \code{mixedCCA} returns a data.frame containing
 \itemize{
       \item{KendallR: }{estimated Kendall's \eqn{\tau} matrix estimator.}
-      \item{lambda_seq: }{the values of \code{lambda} used for sparse CCA.}
+      \item{lambda_seq: }{the values of \code{lamseq} used for sparse CCA.}
       \item{w1: }{estimated canonical direction \eqn{w1}.}
       \item{w2: }{estimated canonical direction \eqn{w2}.}
       \item{cancor: }{estimated canonical correlation.}
       \item{selected_x1: }{indices of selected variables in \code{X1}.}
       \item{selected_x2: }{indices of selected variables in \code{X2}.}
+      \item{fitresult: }{more details on selected lambda values in each iteration.}
 }
 }
 \description{
+Sparse CCA for data of mixed types with BIC criterion
 Applies sparse canonical correlation analysis (CCA) for high-dimensional data of mixed types (continuous/biary/truncated continuous). Derived rank-based estimator instead of sample correlation matrix is implemented. There are two types of BIC criteria for variable selection. We found that BIC1 works best for variable selection, whereas BIC2 works best for prediction.
 }
 \examples{
