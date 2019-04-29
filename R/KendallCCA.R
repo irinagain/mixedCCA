@@ -35,6 +35,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
   error = 1000.0
   iter = 0
   w1 <- w2 <- c()
+  wmat1 <- wmat2 <- c()
   lam1.iter <- lam2.iter <- c()
   obj <- c()
 
@@ -47,6 +48,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
                      w1init = w1init, w2 = w2init, lamseq = lamseq1, BICtype = BICtype,
                      maxiter = maxiter, tol = tol, convcheck = convcheck)
     w1 = res1$finalcoef
+    wmat1 <- cbind(wmat1, w1)
     # if w1 is estimated as a vector of only zeros,
     if (sum(abs(w1))==0){
       return(list(w1 = rep(0, p1), w2 = rep(0, p2), lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
@@ -60,6 +62,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
                      w1init = w2init, w2 = w1init, lamseq = lamseq2, BICtype = BICtype,
                      maxiter = maxiter, tol = tol, convcheck = convcheck)
     w2 = res2$finalcoef
+    wmat2 <- cbind(wmat2, w2)
     if (sum(abs(w2))==0){
       return(list(w1 = rep(0, p1), w2 = rep(0, p2), lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
     } else {
@@ -95,13 +98,15 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
                            maxiter = maxiter, tol = tol, verbose = verbose, convcheck = convcheck, addstep = FALSE)
       w1 = refit$w1
       w2 = refit$w2
+      wmat1 <- cbind(wmat1, refit$w1trace)
+      wmat2 <- cbind(wmat2, refit$w2trace)
       lam1.iter <- c(lam1.iter, refit$lam1.iter)
       lam2.iter <- c(lam2.iter, refit$lam2.iter)
       obj <- c(obj, refit$obj)
     }
       cat("With finer lambda sequences, selected lambda values are", lam1.iter[length(lam1.iter)], " and ", lam2.iter[length(lam2.iter)], ". Objective function = ", obj[length(obj)], " and error = ", abs(obj[length(obj)]-obj[length(obj)-1])/obj[length(obj)-1], " where tol = ", tol, " with BICtype = ", BICtype, "\n")
   }
-  return(list(w1 = w1, w2 = w2, lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
+  return(list(w1 = w1, w2 = w2, w1trace = wmat1, w2trace = wmat2, lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
 }
 
 
@@ -221,6 +226,8 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
 
 
 # modified to only deal with positive eigenvalues larger than the tolerance.
+# inputs are correlation/covariance matrices.
+# only returning first pair of canonical covaraites.
 standardCCA <- function(S1, S2, S12, tol = 1e-4){
   S1 <- as.matrix(S1)
   S2 <- as.matrix(S2)
@@ -245,6 +252,9 @@ standardCCA <- function(S1, S2, S12, tol = 1e-4){
 }
 
 # modified from CCA package rcc function
+# this estimates are used for initial values for our algorithm. warm starts.
+# inputs are rank-based estimator.
+# lambda 1 and lambda 2 are scalars.
 myrcc <- function(R1, R2, R12, lambda1, lambda2, tol = 1e-4){
 
   C1 <- R1 + diag(lambda1, ncol(R1))
