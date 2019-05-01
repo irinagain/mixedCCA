@@ -13,7 +13,7 @@ double soft(double a, double lambda){
 }
 
 // BIC criterion for w1, given w2.
-double myBIC(int n, const arma::mat& R1, const arma::colvec& d, 
+double myBIC(int n, const arma::mat& R1, const arma::colvec& d,
            const arma::colvec& w1, int BICtype){
   // d = R12*w2. w1 should not be normalized.
   double myBIC = 0.0;
@@ -24,7 +24,7 @@ double myBIC(int n, const arma::mat& R1, const arma::colvec& d,
     myBIC = n*log(rss*n/(n-sum(w1!=0))) + sum(w1!=0)*log(n);
   } else if (BICtype == 3){ // BIC as in Wilms and Croux paper
     myBIC = 2*rss + sum(w1!=0)*log(n);
-  } else { 
+  } else {
     warning("Choose BIC type either 1 or 2.\n");
   }
   return myBIC;
@@ -33,17 +33,17 @@ double myBIC(int n, const arma::mat& R1, const arma::colvec& d,
 
 // find lasso solution for w1 given w2.
 // [[Rcpp::export]]
-Rcpp::List lassobic(int n, const arma::mat& R1, const arma::mat& R2, const arma::mat& R12, 
-                    arma::colvec w1init, arma::colvec w2, const arma::colvec& lamseq, 
-                    int BICtype, int maxiter = 100, double tol = 0.001, 
+Rcpp::List lassobic(int n, const arma::mat& R1, const arma::mat& R2, const arma::mat& R12,
+                    arma::colvec w1init, arma::colvec w2, const arma::colvec& lamseq,
+                    int BICtype, int maxiter = 100, double tol = 0.001,
                     bool convcheck = true){
   // basically same as solveLasso for fixed w2 and all lambda values.
   // find w1 with smallest bic
-  
+
   // normalize the initial value vectors
   w1init = w1init/sqrt(as_scalar(trans(w1init)*R1*w1init));
   w2 = w2/sqrt(as_scalar(trans(w2)*R2*w2));
-  
+
   // initialize variables
   arma::colvec d = R12*w2;
   int p = d.n_elem;
@@ -53,7 +53,7 @@ Rcpp::List lassobic(int n, const arma::mat& R1, const arma::mat& R2, const arma:
   arma::colvec w1(p);
   w1.fill(0);
   arma::mat wmat(p, nlam);
-  
+
   if (arma::min(lamseq) < arma::max(arma::abs(d))) {
     arma::colvec r = d - R1*w1init;
     // for each lambda value, estimate w1
@@ -80,12 +80,17 @@ Rcpp::List lassobic(int n, const arma::mat& R1, const arma::mat& R2, const arma:
     }// finished checking all lambda values.
     ind = bicvec.index_min();
     w1 = wmat.col(ind);
-    w1 = w1/sqrt(as_scalar(trans(w1)*R1*w1));
+    if (as_scalar(trans(w1)*R1*w1) == 0){
+      w1.fill(0);
+    } else {
+      w1 = w1/sqrt(as_scalar(trans(w1)*R1*w1));
+    }
+
   }
-  return List::create(Rcpp::Named("finalcoef") = w1, 
-                      Rcpp::Named("wmat") = wmat, 
+  return List::create(Rcpp::Named("finalcoef") = w1,
+                      Rcpp::Named("wmat") = wmat,
                       Rcpp::Named("bicInd") = ind+1, // vector index in cpp starts from 0, so had to revise "bicInd" variable by adding 1.
-                      Rcpp::Named("lamseq") = lamseq, 
+                      Rcpp::Named("lamseq") = lamseq,
                       Rcpp::Named("bicvalues") = bicvec);
 }
 
