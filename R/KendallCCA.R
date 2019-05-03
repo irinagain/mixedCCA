@@ -175,9 +175,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
   R12 <- as.matrix(R[1:p1, (p1+1):p])
 
   if (is.null(w1init) | is.null(w2init)){
-      # res.regul <- myestim.regul_crossvalidation(X1, X2, type1 = type1, type2 = type2, option = warmstartoption)
-      RCCA <- myrcc(R1 = R1, R2 = R2, R12 = R12, lambda1 = 0.7, lambda2 = 0.7) # without cross-validation, fixed lambda value
-
+      RCCA <- standardCCA(R1 = R1, R2 = R2, R12 = R12)
       if (is.null(w1init)){
         w1init <- as.matrix(RCCA$w1, ncol=1)
       }
