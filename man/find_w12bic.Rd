@@ -2,7 +2,9 @@
 % Please edit documentation in R/KendallCCA.R
 \name{find_w12bic}
 \alias{find_w12bic}
-\title{Title Internal mixedCCA function (wrapper function for lassobic function in cpp)}
+\title{Internal mixedCCA function
+
+wrapper function for lassobic function in cpp}
 \usage{
 find_w12bic(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
   maxiter = 100, tol = 0.001, verbose = FALSE, convcheck = TRUE,
@@ -38,5 +40,7 @@ find_w12bic(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
 \item{addstep}{When the convergence is failed, \code{addstep = TRUE} will try further fine lambda sequence values between the oscillation points. The default value is \code{TRUE}.}
 }
 \description{
-Title Internal mixedCCA function (wrapper function for lassobic function in cpp)
+Internal mixedCCA function
+
+wrapper function for lassobic function in cpp
 }

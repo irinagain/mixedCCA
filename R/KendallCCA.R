@@ -26,7 +26,9 @@ lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, l
 }
 
 # wrapper function
-#' Title Internal mixedCCA function (wrapper function for lassobic function in cpp)
+#' @title Internal mixedCCA function
+#'
+#' wrapper function for lassobic function in cpp
 #'
 #' @param n Sample size
 #' @param R1 Correlation matrix of dataset \code{X1} (p1 by p1)
@@ -255,6 +257,26 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
 # modified to only deal with positive eigenvalues larger than the tolerance.
 # inputs are correlation/covariance matrices.
 # only returning first pair of canonical covaraites.
+
+#' @title Internal standard CCA function.
+#'
+#' This function is modified from original CCA function to only deal with positive eigenvalues larger than the tolerance. Only returning the first pair of canonical covariates.
+#'
+#' @param S1 correlation/covariance matrix of dataset \code{X1}.
+#' @param S2 correlation/covariance matrix of dataset \code{X2}.
+#' @param S12 correlation/covariance matrix between dataset \code{X1} and dataset \code{X2}.
+#' @param tol tolerance for eigenvalues. \code{standardCCA} function only deals with positive eigenvalues larger than the tolerance.
+#'
+#' @return \code{standardCCA} returns a data.frame containing
+#' \itemize{
+#'       \item{cancor: }{estimated canonical correlation.}
+#'       \item{w1: }{estimated canonical direction \eqn{w1}.}
+#'       \item{w2: }{estimated canonical direction \eqn{w2}.}
+#' }
+#'
+#' @importFrom irlba irlba
+#' @export
+#'
 standardCCA <- function(S1, S2, S12, tol = 1e-4){
   S1 <- as.matrix(S1)
   S2 <- as.matrix(S2)
@@ -282,6 +304,26 @@ standardCCA <- function(S1, S2, S12, tol = 1e-4){
 # this estimates are used for initial values for our algorithm. warm starts.
 # inputs are rank-based estimator.
 # lambda 1 and lambda 2 are scalars.
+
+#' @title Internal RidgeCCA function
+#' This function is modified from CCA package rcc function. This estimates are used for initial values for our algorithm as warm starts.
+#'
+#' @param R1 correlation/covariance/rank-based correlation matrix of dataset \code{X1}.
+#' @param R2 correlation/covariance/rank-based correlation matrix of dataset \code{X2}.
+#' @param R12 correlation/covariance/rank-based correlation matrix between dataset \code{X1} and dataset \code{X2}.
+#' @param lambda1 tuning parameter dataset \code{X1}. a scalar value.
+#' @param lambda2 tuning parameter dataset \code{X2}. a scalar value.
+#' @param tol tolerance for eigenvalues. Refer to \code{standardCCA} function.
+#'
+#' @return \code{myrcc} returns a data.frame containing
+#' \itemize{
+#'       \item{cancor: }{estimated canonical correlation.}
+#'       \item{w1: }{estimated canonical direction \eqn{w1}.}
+#'       \item{w2: }{estimated canonical direction \eqn{w2}.}
+#' }
+#' @export
+#'
+#' @examples
 myrcc <- function(R1, R2, R12, lambda1, lambda2, tol = 1e-4){
 
   C1 <- R1 + diag(lambda1, ncol(R1))
