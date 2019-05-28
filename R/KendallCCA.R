@@ -26,7 +26,7 @@ lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, l
 }
 
 # wrapper function
-#' Title Internal mixedCCA function
+#' Title Internal mixedCCA function (wrapper function for lassobic function in cpp)
 #'
 #' @param n Sample size
 #' @param R1 Correlation matrix of dataset \code{X1} (p1 by p1)
@@ -92,7 +92,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 
     # Just want to check # cat("check w1*R1*w1 =", t(w1)%*%R1%*%w1, ",\t ", "check w2*R2*w2 =", t(w2)%*%R2%*%w2, "\n")
     if(length(lamseq1) == 1 & length(lamseq2) == 1){
-      obj[iter] <- t(w1)%*%R12%*%w2 - lam1[j]*sum(abs(w1)) - lam2[j]*sum(abs(w2))
+      obj[iter] <- t(w1)%*%R12%*%w2 - lamseq1*sum(abs(w1)) - lamseq2*sum(abs(w2))
     } else {
       obj[iter] <- t(w1)%*%R12%*%w2
     }
