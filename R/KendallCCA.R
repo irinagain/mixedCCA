@@ -71,7 +71,11 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
     w2init = w2
 
     # Just want to check # cat("check w1*R1*w1 =", t(w1)%*%R1%*%w1, ",\t ", "check w2*R2*w2 =", t(w2)%*%R2%*%w2, "\n")
-    obj[iter] <- t(w1)%*%R12%*%w2
+    if(length(lamseq1) == 1 & length(lamseq2) == 1){
+      obj[iter] <- t(w1)%*%R12%*%w2 - lam1[j]*sum(abs(w1)) - lam2[j]*sum(abs(w2))
+    } else {
+      obj[iter] <- t(w1)%*%R12%*%w2
+    }
 
     if(iter == 1){
       error <- 1000
@@ -87,8 +91,13 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
     cat("Failed to converge. (findw12 part)\n objective function = ", obj[iter], " and error = ", error, " where tol = ", tol, " with BICtype = ", BICtype, "\n")
     cat("WARNING: lambda = ", lamseq1, " and ", lamseq2, "\n")
 
-    if(addstep){
-      last10 <- c((length(lamseq1)-9):length(lamseq1))
+    if(addstep & (length(unique(lam1.iter)) > 1 | length(unique(lam2.iter)) > 1)){
+      ll <- min(length(lam1.iter[!is.na(lam1.iter)]), length(lam2.iter[!is.na(lam2.iter)]))
+      if(ll>10){
+        last10 <- c((ll-9):ll)
+      } else {
+        last10 <- 1:ll
+      }
       lamseq1_rev <- seq(max(lam1.iter[!is.na(lam1.iter)][last10]), min(lam1.iter[!is.na(lam1.iter)][last10]), length.out = length(lamseq1))
       lamseq2_rev <- seq(max(lam2.iter[!is.na(lam2.iter)][last10]), min(lam2.iter[!is.na(lam2.iter)][last10]), length.out = length(lamseq2))
 
@@ -104,7 +113,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
       lam2.iter <- c(lam2.iter, refit$lam2.iter)
       obj <- c(obj, refit$obj)
     }
-      cat("With finer lambda sequences, selected lambda values are", lam1.iter[length(lam1.iter)], " and ", lam2.iter[length(lam2.iter)], ". Objective function = ", obj[length(obj)], " and error = ", abs(obj[length(obj)]-obj[length(obj)-1])/obj[length(obj)-1], " where tol = ", tol, " with BICtype = ", BICtype, "\n")
+      cat("Selected lambda values are", lam1.iter[length(lam1.iter)], " and ", lam2.iter[length(lam2.iter)], ". Objective function = ", obj[length(obj)], " and error = ", abs(obj[length(obj)]-obj[length(obj)-1])/obj[length(obj)-1], " where tol = ", tol, " with BICtype = ", BICtype, "\n")
   }
   return(list(w1 = w1, w2 = w2, w1trace = wmat1, w2trace = wmat2, lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
 }
