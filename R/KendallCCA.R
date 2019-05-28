@@ -26,6 +26,26 @@ lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, l
 }
 
 # wrapper function
+#' Title Internal mixedCCA function
+#'
+#' @param n Sample size
+#' @param R1 Correlation matrix of dataset \code{X1} (p1 by p1)
+#' @param R2 Correlation matrix of dataset \code{X2} (p2 by p2)
+#' @param R12 Correlation matrix between the dataset \code{X1} and the dataset \code{X2} (p1 by p2)
+#' @param lamseq1 a sequence of lambda values for the datasets \code{X1}. It can be a scalar (a vector of one value). should be the same length with lamseq2.
+#' @param lamseq2 a sequence of lambda values for the datasets \code{X2}. It can be a scalar (a vector of one value). should be the same length with lamseq1.
+#' @param w1init An initial vector of length p1 for canonical direction \eqn{w1}.
+#' @param w2init An initial vector of length p1 for canonical direction \eqn{w2}.
+#' @param BICtype Either 1 or 2: For more details for two options, see the reference.
+#' @param maxiter The maximum number of iterations allowed.
+#' @param tol The desired accuracy (convergence tolerance).
+#' @param verbose If \code{verbose = TRUE}, error values in each iteration will be printed. The default value is \code{FALSE}.
+#' @param convcheck If \code{convcheck = TRUE}, the convergence error will be printed when the convergence is failed after the algorithm reached \code{maxiter}. The default value is \code{TRUE}.
+#' @param addstep When the convergence is failed, \code{addstep = TRUE} will try further fine lambda sequence values between the oscillation points. The default value is \code{TRUE}.
+#'
+#' @return
+#' @export
+#'
 find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
                         maxiter = 100, tol = 0.001, verbose = FALSE, convcheck = TRUE, addstep = TRUE){
   # Same as find_w12 function. SolveLasso part is replaced with lassobic.
