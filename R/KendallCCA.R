@@ -1,21 +1,20 @@
-#' Internal data-driven lambda sequence generating function.
+#' @title Internal data-driven lambda sequence generating function.
 #'
-#' Since this is for sparse CCA, it returns a list of two vectors. Each vector will be used for each data set \math{X1} and \math{X2}. And \math{w1} and \math{w2} denote canonical vector for each data set.
+#' @description Since this is for sparse CCA, it returns a list of two vectors. Each vector will be used for each data set \eqn{X1} and \eqn{X2}. And \eqn{w1} and \eqn{w2} denote canonical vector for each data set.
 #'
 #' @param nlamseq The length of lambda sequence
-#' @param initlam1 Maximum lambda value for \math{X1}
-#' @param initlam2 Maximum lambda value for \math{X2}
+#' @param initlam1 Maximum lambda value for \eqn{X1}
+#' @param initlam2 Maximum lambda value for \eqn{X2}
 #' @param lam.eps The smallest value for lambda as a fraction of maximum lambda value
-#' @param Sigma1 Covariance/correlation matrix of \math{X1} (p1 by p1)
-#' @param Sigma2 Covariance/correlation matrix of \math{X2} (p2 by p2)
-#' @param Sigma12 Covariance/correlation matrix betweem \math{X1} and \math{X2}
-#' @param w1init Initial value for canonical vector \math{w1}
-#' @param w2init Initial value for canonical vector \math{w2}
+#' @param Sigma1 Covariance/correlation matrix of \eqn{X1} (p1 by p1)
+#' @param Sigma2 Covariance/correlation matrix of \eqn{X2} (p2 by p2)
+#' @param Sigma12 Covariance/correlation matrix betweem \eqn{X1} and \eqn{X2}
+#' @param w1init Initial value for canonical vector \eqn{w1}
+#' @param w2init Initial value for canonical vector \eqn{w2}
 #'
 #' @return \code{lambdaseq_generate} returns a list of length 2. Each vector is of the same length \code{nlamseq} and will be used for each data set separately.
 #' @export
 #'
-#' @examples
 lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, lam.eps = 1e-02,
                                Sigma1, Sigma2, Sigma12, w1init = NULL, w2init = NULL){
   init.lamseq <- rep(NA, 2)
@@ -45,7 +44,7 @@ lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, l
 # wrapper function
 #' @title Internal mixedCCA function
 #'
-#' wrapper function for lassobic function in cpp
+#' @description wrapper function for lassobic function in cpp
 #'
 #' @param n Sample size
 #' @param R1 Correlation matrix of dataset \code{X1} (p1 by p1)
@@ -141,7 +140,8 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 
 
 #' @title Sparse CCA for data of mixed types with BIC criterion
-#' Applies sparse canonical correlation analysis (CCA) for high-dimensional data of mixed types (continuous/biary/truncated continuous). Derived rank-based estimator instead of sample correlation matrix is implemented. There are two types of BIC criteria for variable selection. We found that BIC1 works best for variable selection, whereas BIC2 works best for prediction.
+#'
+#' @description Applies sparse canonical correlation analysis (CCA) for high-dimensional data of mixed types (continuous/biary/truncated continuous). Derived rank-based estimator instead of sample correlation matrix is implemented. There are two types of BIC criteria for variable selection. We found that BIC1 works best for variable selection, whereas BIC2 works best for prediction.
 #'
 #' @param X1 A numeric data matrix (n by p1).
 #' @param X2 A numeric data matrix (n by p2).
@@ -256,7 +256,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
 
 #' @title Internal standard CCA function.
 #'
-#' This function is modified from original CCA function to only deal with positive eigenvalues larger than the tolerance. Only returning the first pair of canonical covariates.
+#' @description This function is modified from original CCA function to only deal with positive eigenvalues larger than the tolerance. Only returning the first pair of canonical covariates.
 #'
 #' @param S1 correlation/covariance matrix of dataset \code{X1}.
 #' @param S2 correlation/covariance matrix of dataset \code{X2}.
@@ -302,7 +302,7 @@ standardCCA <- function(S1, S2, S12, tol = 1e-4){
 # lambda 1 and lambda 2 are scalars.
 
 #' @title Internal RidgeCCA function
-#' This function is modified from CCA package rcc function. This estimates are used for initial values for our algorithm as warm starts.
+#' @description This function is modified from CCA package rcc function. This estimates are used for initial values for our algorithm as warm starts.
 #'
 #' @param R1 correlation/covariance/rank-based correlation matrix of dataset \code{X1}.
 #' @param R2 correlation/covariance/rank-based correlation matrix of dataset \code{X2}.

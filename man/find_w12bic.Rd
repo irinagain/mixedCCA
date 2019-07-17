@@ -2,13 +2,10 @@
 % Please edit documentation in R/KendallCCA.R
 \name{find_w12bic}
 \alias{find_w12bic}
-\title{Internal mixedCCA function
-
-wrapper function for lassobic function in cpp}
+\title{Internal mixedCCA function}
 \usage{
 find_w12bic(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
-  maxiter = 100, tol = 0.001, verbose = FALSE, convcheck = TRUE,
-  addstep = TRUE)
+  maxiter = 1000, tol = 0.01, verbose = FALSE, convcheck = TRUE)
 }
 \arguments{
 \item{n}{Sample size}
@@ -19,9 +16,9 @@ find_w12bic(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
 
 \item{R12}{Correlation matrix between the dataset \code{X1} and the dataset \code{X2} (p1 by p2)}
 
-\item{lamseq1}{a sequence of lambda values for the datasets \code{X1}. It can be a scalar (a vector of one value). should be the same length with lamseq2.}
+\item{lamseq1}{A sequence of lambda values for the datasets \code{X1}. It can be a scalar (a vector of one value). should be the same length with lamseq2.}
 
-\item{lamseq2}{a sequence of lambda values for the datasets \code{X2}. It can be a scalar (a vector of one value). should be the same length with lamseq1.}
+\item{lamseq2}{A sequence of lambda values for the datasets \code{X2}. It can be a scalar (a vector of one value). should be the same length with lamseq1.}
 
 \item{w1init}{An initial vector of length p1 for canonical direction \eqn{w1}.}
 
@@ -36,11 +33,19 @@ find_w12bic(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
 \item{verbose}{If \code{verbose = TRUE}, error values in each iteration will be printed. The default value is \code{FALSE}.}
 
 \item{convcheck}{If \code{convcheck = TRUE}, the convergence error will be printed when the convergence is failed after the algorithm reached \code{maxiter}. The default value is \code{TRUE}.}
-
-\item{addstep}{When the convergence is failed, \code{addstep = TRUE} will try further fine lambda sequence values between the oscillation points. The default value is \code{TRUE}.}
+}
+\value{
+\code{find_w12bic} returns a data.frame containing
+\itemize{
+      \item{w1: }{estimated canonical direction \eqn{w1}.}
+      \item{w2: }{estimated canonical direction \eqn{w2}.}
+      \item{w1trace: }{a matrix, of which column is the estimated canonical direction \eqn{w1} at each iteration. The number of columns is the number of iteration until the convergence.}
+      \item{w2trace: }{a matrix, of which column is the estimated canonical direction \eqn{w2} at each iteration. The number of columns is the number of iteration until the convergence.}
+      \item{lam1.iter: }{For each iteration, what lambda value is selected for \eqn{w1} is stored.}
+      \item{lam2.iter: }{For each iteration, what lambda value is selected for \eqn{w2} is stored.}
+      \item{obj: }{objective function value without penalty: \eqn{w1^T * R12 * w2}. If lamseq1 and lamseq2 are scalar, then original objective function including penalty part will be used.}
+}
 }
 \description{
-Internal mixedCCA function
-
 wrapper function for lassobic function in cpp
 }

@@ -2,8 +2,7 @@
 % Please edit documentation in R/KendallCCA.R
 \name{myrcc}
 \alias{myrcc}
-\title{Internal RidgeCCA function
-This function is modified from CCA package rcc function. This estimates are used for initial values for our algorithm as warm starts.}
+\title{Internal RidgeCCA function}
 \usage{
 myrcc(R1, R2, R12, lambda1, lambda2, tol = 1e-04)
 }
@@ -29,6 +28,5 @@ myrcc(R1, R2, R12, lambda1, lambda2, tol = 1e-04)
 }
 }
 \description{
-Internal RidgeCCA function
 This function is modified from CCA package rcc function. This estimates are used for initial values for our algorithm as warm starts.
 }

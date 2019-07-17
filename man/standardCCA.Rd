@@ -2,9 +2,7 @@
 % Please edit documentation in R/KendallCCA.R
 \name{standardCCA}
 \alias{standardCCA}
-\title{Internal standard CCA function.
-
-This function is modified from original CCA function to only deal with positive eigenvalues larger than the tolerance. Only returning the first pair of canonical covariates.}
+\title{Internal standard CCA function.}
 \usage{
 standardCCA(S1, S2, S12, tol = 1e-04)
 }
@@ -26,7 +24,5 @@ standardCCA(S1, S2, S12, tol = 1e-04)
 }
 }
 \description{
-Internal standard CCA function.
-
 This function is modified from original CCA function to only deal with positive eigenvalues larger than the tolerance. Only returning the first pair of canonical covariates.
 }
