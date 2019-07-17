@@ -45,11 +45,20 @@ lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, l
 #' @param convcheck If \code{convcheck = TRUE}, the convergence error will be printed when the convergence is failed after the algorithm reached \code{maxiter}. The default value is \code{TRUE}.
 #' @param addstep When the convergence is failed, \code{addstep = TRUE} will try further fine lambda sequence values between the oscillation points. The default value is \code{TRUE}.
 #'
-#' @return
+#' @return \code{find_w12bic} returns a data.frame containing
+#' \itemize{
+#'       \item{w1: }{estimated canonical direction \eqn{w1}.}
+#'       \item{w2: }{estimated canonical direction \eqn{w2}.}
+#'       \item{w1trace: }{a matrix, of which column is the estimated canonical direction \eqn{w1} at each iteration. The number of columns is the number of iteration until the convergence.}
+#'       \item{w2trace: }{a matrix, of which column is the estimated canonical direction \eqn{w2} at each iteration. The number of columns is the number of iteration until the convergence.}
+#'       \item{lam1.iter: }{For each iteration, what lambda value is selected for \eqn{w1} is stored.}
+#'       \item{lam2.iter: }{For each iteration, what lambda value is selected for \eqn{w2} is stored.}
+#'       \item{obj: }{objective function value without penalty: \eqn{w1^T * R12 * w2}. If lamseq1 and lamseq2 are scalar, then original objective function including penalty part will be used.}
+#' }
 #' @export
 #'
 find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
-                        maxiter = 100, tol = 0.001, verbose = FALSE, convcheck = TRUE, addstep = TRUE){
+                        maxiter = 1000, tol = 0.01, verbose = FALSE, convcheck = TRUE, addstep = TRUE){
   # Same as find_w12 function. SolveLasso part is replaced with lassobic.
   p1 = ncol(R1)
   p2 = ncol(R2)
@@ -189,7 +198,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
                      nlamseq = 20, lam.eps = 1e-02,
                      w1init = NULL, w2init = NULL, BICtype,
                      KendallR = NULL,
-                     tol = 1e-3, maxiter = 100, verbose = FALSE, convcheck = TRUE, addstep = TRUE){
+                     tol = 0.01, maxiter = 1000, verbose = FALSE, convcheck = TRUE, addstep = TRUE){
   n <- nrow(X1)
   p1 <- ncol(X1); p2 <- ncol(X2);
   p <- p1 + p2
@@ -323,7 +332,6 @@ standardCCA <- function(S1, S2, S12, tol = 1e-4){
 #' }
 #' @export
 #'
-#' @examples
 myrcc <- function(R1, R2, R12, lambda1, lambda2, tol = 1e-4){
 
   C1 <- R1 + diag(lambda1, ncol(R1))
