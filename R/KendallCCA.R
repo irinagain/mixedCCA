@@ -43,7 +43,6 @@ lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, l
 #' @param tol The desired accuracy (convergence tolerance).
 #' @param verbose If \code{verbose = TRUE}, error values in each iteration will be printed. The default value is \code{FALSE}.
 #' @param convcheck If \code{convcheck = TRUE}, the convergence error will be printed when the convergence is failed after the algorithm reached \code{maxiter}. The default value is \code{TRUE}.
-#' @param addstep When the convergence is failed, \code{addstep = TRUE} will try further fine lambda sequence values between the oscillation points. The default value is \code{TRUE}.
 #'
 #' @return \code{find_w12bic} returns a data.frame containing
 #' \itemize{
@@ -58,7 +57,7 @@ lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, l
 #' @export
 #'
 find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
-                        maxiter = 1000, tol = 0.01, verbose = FALSE, convcheck = TRUE, addstep = TRUE){
+                        maxiter = 1000, tol = 0.01, verbose = FALSE, convcheck = TRUE){
   # Same as find_w12 function. SolveLasso part is replaced with lassobic.
   p1 = ncol(R1)
   p2 = ncol(R2)
@@ -80,11 +79,10 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
                      maxiter = maxiter, tol = tol, convcheck = convcheck)
     w1 = res1$finalcoef
     wmat1 <- cbind(wmat1, w1)
+    lam1.iter[iter] <- res1$lamseq[res1$bicInd]
     # if w1 is estimated as a vector of only zeros,
     if (sum(abs(w1))==0){
       return(list(w1 = rep(0, p1), w2 = rep(0, p2), lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
-    } else {
-      lam1.iter[iter] <- res1$lamseq[res1$bicInd]
     }
     w1init = w1
 
@@ -94,14 +92,12 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
                      maxiter = maxiter, tol = tol, convcheck = convcheck)
     w2 = res2$finalcoef
     wmat2 <- cbind(wmat2, w2)
+    lam2.iter[iter] <- res2$lamseq[res2$bicInd]
     if (sum(abs(w2))==0){
       return(list(w1 = rep(0, p1), w2 = rep(0, p2), lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
-    } else {
-      lam2.iter[iter] <- res2$lamseq[res2$bicInd]
     }
     w2init = w2
 
-    # Just want to check # cat("check w1*R1*w1 =", t(w1)%*%R1%*%w1, ",\t ", "check w2*R2*w2 =", t(w2)%*%R2%*%w2, "\n")
     if(length(lamseq1) == 1 & length(lamseq2) == 1){
       obj[iter] <- t(w1)%*%R12%*%w2 - lamseq1*sum(abs(w1)) - lamseq2*sum(abs(w2))
     } else {
@@ -120,31 +116,6 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
   }
   if (iter == (maxiter + 1) & convcheck){
     cat("Failed to converge. (findw12 part)\n objective function = ", obj[iter], " and error = ", error, " where tol = ", tol, " with BICtype = ", BICtype, "\n")
-    cat("WARNING: lambda = ", lamseq1, " and ", lamseq2, "\n")
-
-    if(addstep & (length(unique(lam1.iter)) > 1 | length(unique(lam2.iter)) > 1)){
-      ll <- min(length(lam1.iter[!is.na(lam1.iter)]), length(lam2.iter[!is.na(lam2.iter)]))
-      if(ll>10){
-        last10 <- c((ll-9):ll)
-      } else {
-        last10 <- 1:ll
-      }
-      lamseq1_rev <- seq(max(lam1.iter[!is.na(lam1.iter)][last10]), min(lam1.iter[!is.na(lam1.iter)][last10]), length.out = length(lamseq1))
-      lamseq2_rev <- seq(max(lam2.iter[!is.na(lam2.iter)][last10]), min(lam2.iter[!is.na(lam2.iter)][last10]), length.out = length(lamseq2))
-
-      cat("More fine lambda sequences are used. lambda = ", lamseq1_rev, " and ", lamseq2_rev, "\n")
-      refit <- find_w12bic(n = n, R1 = R1, R2 = R2, R12 = R12, lamseq1 = lamseq1_rev, lamseq2 = lamseq2_rev,
-                           w1init = w1, w2init = w2, BICtype = BICtype,
-                           maxiter = maxiter, tol = tol, verbose = verbose, convcheck = convcheck, addstep = FALSE)
-      w1 = refit$w1
-      w2 = refit$w2
-      wmat1 <- cbind(wmat1, refit$w1trace)
-      wmat2 <- cbind(wmat2, refit$w2trace)
-      lam1.iter <- c(lam1.iter, refit$lam1.iter)
-      lam2.iter <- c(lam2.iter, refit$lam2.iter)
-      obj <- c(obj, refit$obj)
-    }
-      cat("Selected lambda values are", lam1.iter[length(lam1.iter)], " and ", lam2.iter[length(lam2.iter)], ". Objective function = ", obj[length(obj)], " and error = ", abs(obj[length(obj)]-obj[length(obj)-1])/obj[length(obj)-1], " where tol = ", tol, " with BICtype = ", BICtype, "\n")
   }
   return(list(w1 = w1, w2 = w2, w1trace = wmat1, w2trace = wmat2, lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
 }
@@ -173,7 +144,6 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 #' @param maxiter The maximum number of iterations allowed.
 #' @param verbose If \code{verbose = TRUE}, error values in each iteration will be printed. The default value is \code{FALSE}.
 #' @param convcheck If \code{convcheck = TRUE}, the convergence error will be printed when the convergence is failed after the algorithm reached \code{maxiter}. The default value is \code{TRUE}.
-#' @param addstep When the convergence is failed, \code{addstep = TRUE} will try further fine lambda sequence values between the oscillation points. The default value is \code{TRUE}.
 #'
 #' @references
 #' Yoon G., Carroll R.J. and Gaynanova I. (2018+) \href{http://arxiv.org/abs/1807.05274}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}.
@@ -198,7 +168,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
                      nlamseq = 20, lam.eps = 1e-02,
                      w1init = NULL, w2init = NULL, BICtype,
                      KendallR = NULL,
-                     tol = 0.01, maxiter = 1000, verbose = FALSE, convcheck = TRUE, addstep = TRUE){
+                     tol = 0.01, maxiter = 1000, verbose = FALSE, convcheck = TRUE){
   n <- nrow(X1)
   p1 <- ncol(X1); p2 <- ncol(X2);
   p <- p1 + p2
@@ -246,7 +216,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
   fitresult <- find_w12bic(n = n, R1 = R1, R2 = R2, R12 = R12,
                            lamseq1 = lambda_seq[[1]], lamseq2 = lambda_seq[[2]],
                            w1init = w1init, w2init = w2init, BICtype = BICtype, maxiter = maxiter, tol = tol,
-                           verbose = verbose, convcheck = convcheck, addstep = addstep)
+                           verbose = verbose, convcheck = convcheck)
 
   w1 <- fitresult$w1
   w2 <- fitresult$w2
