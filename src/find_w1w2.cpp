@@ -35,7 +35,7 @@ double myBIC(int n, const arma::mat& R1, const arma::colvec& d,
 // [[Rcpp::export]]
 Rcpp::List lassobic(int n, const arma::mat& R1, const arma::mat& R2, const arma::mat& R12,
                     arma::colvec w1init, arma::colvec w2, const arma::colvec& lamseq,
-                    int BICtype, int maxiter = 100, double tol = 0.001,
+                    int BICtype, int maxiter = 1000, double tol = 0.01,
                     bool convcheck = true){
   // basically same as solveLasso for fixed w2 and all lambda values.
   // find w1 with smallest bic
