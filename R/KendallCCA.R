@@ -73,7 +73,7 @@ lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, l
 #' @export
 #'
 find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
-                        maxiter = 1000, tol = 0.01, verbose = FALSE, convcheck = TRUE){
+                        maxiter = 1000, tol = 1e-3, verbose = FALSE, convcheck = TRUE){
   # Same as find_w12 function. SolveLasso part is replaced with lassobic.
   p1 = ncol(R1)
   p2 = ncol(R2)
@@ -204,7 +204,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
                      nlamseq = 20, lam.eps = 1e-02,
                      w1init = NULL, w2init = NULL, BICtype,
                      KendallR = NULL,
-                     tol = 0.01, maxiter = 1000, verbose = FALSE, convcheck = TRUE){
+                     tol = 1e-3, maxiter = 1000, verbose = FALSE, convcheck = TRUE){
   n <- nrow(X1)
   p1 <- ncol(X1); p2 <- ncol(X2);
   p <- p1 + p2

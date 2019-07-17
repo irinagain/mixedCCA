@@ -5,7 +5,7 @@
 \title{Internal mixedCCA function}
 \usage{
 find_w12bic(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
-  maxiter = 1000, tol = 0.01, verbose = FALSE, convcheck = TRUE)
+  maxiter = 1000, tol = 0.001, verbose = FALSE, convcheck = TRUE)
 }
 \arguments{
 \item{n}{Sample size}
