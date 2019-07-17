@@ -89,10 +89,20 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
     iter = iter + 1
     error = 0
 
+
     ### for w1
-    res1 <- lassobic(n = n, R1 = R1, R2 = R2, R12 = R12,
-                     w1init = w1init, w2 = w2init, lamseq = lamseq1, BICtype = BICtype,
-                     maxiter = maxiter, tol = tol, convcheck = convcheck)
+    if(sum(lamseq1 >= max(abs(R12%*%w2init)))>0){
+      # since we're not interested in zero solutions, we do not want to even consider the large lambda values which result in zero solutions.
+      # It might lead to the shorter length of lambda sequence.
+      ind <- which(lamseq1 >= max(abs(R12%*%w2init)))
+      res1 <- lassobic(n = n, R1 = R1, R2 = R2, R12 = R12,
+                       w1init = w1init, w2 = w2init, lamseq = lamseq1[-ind], BICtype = BICtype,
+                       maxiter = maxiter, tol = tol, convcheck = convcheck)
+    } else {
+      res1 <- lassobic(n = n, R1 = R1, R2 = R2, R12 = R12,
+                       w1init = w1init, w2 = w2init, lamseq = lamseq1, BICtype = BICtype,
+                       maxiter = maxiter, tol = tol, convcheck = convcheck)
+    }
     w1 = res1$finalcoef
     wmat1 <- cbind(wmat1, w1)
     lam1.iter[iter] <- res1$lamseq[res1$bicInd]
@@ -103,9 +113,18 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
     w1init = w1
 
     ### for w2
-    res2 <- lassobic(n = n, R1 = R2, R2 = R1, R12 = t(R12),
-                     w1init = w2init, w2 = w1init, lamseq = lamseq2, BICtype = BICtype,
-                     maxiter = maxiter, tol = tol, convcheck = convcheck)
+    if(sum(lamseq2 >= max(abs(t(R12)%*%w1init)))>0){
+      # since we're not interested in zero solutions, we do not want to even consider the large lambda values which result in zero solutions.
+      # It might lead to the shorter length of lambda sequence.
+      ind <- which(lamseq2 >= max(abs(t(R12)%*%w1init)))
+      res2 <- lassobic(n = n, R1 = R2, R2 = R1, R12 = t(R12),
+                       w1init = w2init, w2 = w1init, lamseq = lamseq2[-ind], BICtype = BICtype,
+                       maxiter = maxiter, tol = tol, convcheck = convcheck)
+    } else {
+      res2 <- lassobic(n = n, R1 = R2, R2 = R1, R12 = t(R12),
+                       w1init = w2init, w2 = w1init, lamseq = lamseq2, BICtype = BICtype,
+                       maxiter = maxiter, tol = tol, convcheck = convcheck)
+    }
     w2 = res2$finalcoef
     wmat2 <- cbind(wmat2, w2)
     lam2.iter[iter] <- res2$lamseq[res2$bicInd]
