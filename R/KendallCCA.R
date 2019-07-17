@@ -229,13 +229,13 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
         w2init <- as.matrix(RCCA$w2, ncol=1)
       }
   }
+  # standardize initial starting points - for both lambda seq generation (lambdaseq_generate) and cca algorithm (find_w12bic)
+  w1init <- w1init/sqrt(as.numeric(crossprod(w1init, R1 %*% w1init)))
+  w2init <- w2init/sqrt(as.numeric(crossprod(w2init, R2 %*% w2init)))
 
-  ### Create lambda sequences
+  ### Create lambda sequences based on standardized initial starting point
   lambda_seq <- list()
   if (is.null(lamseq1) & is.null(lamseq2)){
-    # Perform standardization of w1 and w2
-    w1init <- w1init/sqrt(as.numeric(crossprod(w1init, R1 %*% w1init)))
-    w2init <- w2init/sqrt(as.numeric(crossprod(w2init, R2 %*% w2init)))
     lambda_seq <- lambdaseq_generate(nlamseq = nlamseq, initlam1 = initlam1, initlam2 = initlam2, lam.eps = lam.eps,
                                      Sigma1 = R1, Sigma2 = R2, Sigma12 = R12, w1init = w1init, w2init = w2init)
   } else {
