@@ -1,4 +1,21 @@
-# to generate data-driven lambda sequence
+#' Internal data-driven lambda sequence generating function.
+#'
+#' Since this is for sparse CCA, it returns a list of two vectors. Each vector will be used for each data set \math{X1} and \math{X2}. And \math{w1} and \math{w2} denote canonical vector for each data set.
+#'
+#' @param nlamseq The length of lambda sequence
+#' @param initlam1 Maximum lambda value for \math{X1}
+#' @param initlam2 Maximum lambda value for \math{X2}
+#' @param lam.eps The smallest value for lambda as a fraction of maximum lambda value
+#' @param Sigma1 Covariance/correlation matrix of \math{X1} (p1 by p1)
+#' @param Sigma2 Covariance/correlation matrix of \math{X2} (p2 by p2)
+#' @param Sigma12 Covariance/correlation matrix betweem \math{X1} and \math{X2}
+#' @param w1init Initial value for canonical vector \math{w1}
+#' @param w2init Initial value for canonical vector \math{w2}
+#'
+#' @return \code{lambdaseq_generate} returns a list of length 2. Each vector is of the same length \code{nlamseq} and will be used for each data set separately.
+#' @export
+#'
+#' @examples
 lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, lam.eps = 1e-02,
                                Sigma1, Sigma2, Sigma12, w1init = NULL, w2init = NULL){
   init.lamseq <- rep(NA, 2)
@@ -34,8 +51,8 @@ lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, l
 #' @param R1 Correlation matrix of dataset \code{X1} (p1 by p1)
 #' @param R2 Correlation matrix of dataset \code{X2} (p2 by p2)
 #' @param R12 Correlation matrix between the dataset \code{X1} and the dataset \code{X2} (p1 by p2)
-#' @param lamseq1 a sequence of lambda values for the datasets \code{X1}. It can be a scalar (a vector of one value). should be the same length with lamseq2.
-#' @param lamseq2 a sequence of lambda values for the datasets \code{X2}. It can be a scalar (a vector of one value). should be the same length with lamseq1.
+#' @param lamseq1 A sequence of lambda values for the datasets \code{X1}. It can be a scalar (a vector of one value). should be the same length with lamseq2.
+#' @param lamseq2 A sequence of lambda values for the datasets \code{X2}. It can be a scalar (a vector of one value). should be the same length with lamseq1.
 #' @param w1init An initial vector of length p1 for canonical direction \eqn{w1}.
 #' @param w2init An initial vector of length p1 for canonical direction \eqn{w2}.
 #' @param BICtype Either 1 or 2: For more details for two options, see the reference.
