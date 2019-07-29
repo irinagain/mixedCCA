@@ -133,6 +133,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
     }
     w2init = w2
 
+    # If one scalar value is used on input for lambda sequence, then I track the whole objective function, which should be strictly increasing. On the other hand, when a vector is used on input for lambda sequence, then I track only the objective function without penalty part. Since we alternatively choose and update the tuning parameter, the objective function wouldn't be strictly increasing with changing tuning parameter values.
     if(length(lamseq1) == 1 & length(lamseq2) == 1){
       obj[iter] <- t(w1)%*%R12%*%w2 - lamseq1*sum(abs(w1)) - lamseq2*sum(abs(w2))
     } else {
