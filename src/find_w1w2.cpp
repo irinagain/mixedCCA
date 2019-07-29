@@ -13,7 +13,8 @@ double soft(double a, double lambda){
 }
 
 // BIC criterion for w1, given w2.
-double myBIC(int n, const arma::mat& R1, const arma::colvec& d,
+// [[Rcpp::export]]
+double BICw1(int n, const arma::mat& R1, const arma::colvec& d,
            const arma::colvec& w1, int BICtype){
   // d = R12*w2. w1 should not be normalized.
   double myBIC = 0.0;
@@ -35,8 +36,8 @@ double myBIC(int n, const arma::mat& R1, const arma::colvec& d,
 
 // find lasso solution for w1 given w2.
 // [[Rcpp::export]]
-Rcpp::List lassobic(int n, const arma::mat& R1, const arma::mat& R2, const arma::mat& R12,
-                    arma::colvec w1init, arma::colvec w2, const arma::colvec& lamseq,
+Rcpp::List lassobic(int n, const arma::mat& R1, const arma::colvec& d, //d = R12*w2
+                    arma::colvec w1init, const arma::colvec& lamseq,
                     int BICtype, int maxiter = 1000, double tol = 0.0001,
                     bool convcheck = true){
   // basically same as solveLasso for fixed w2 and all lambda values.
@@ -44,10 +45,8 @@ Rcpp::List lassobic(int n, const arma::mat& R1, const arma::mat& R2, const arma:
 
   // normalize the initial value vectors
   w1init = w1init/sqrt(as_scalar(trans(w1init)*R1*w1init));
-  w2 = w2/sqrt(as_scalar(trans(w2)*R2*w2));
 
   // initialize variables
-  arma::colvec d = R12*w2;
   int p = d.n_elem;
   int nlam = lamseq.n_elem;
   int ind = 0;
@@ -74,7 +73,7 @@ Rcpp::List lassobic(int n, const arma::mat& R1, const arma::mat& R2, const arma:
             }
           }// done with lasso optimization for one lambda value.
           wmat.col(j) = w1init; // save
-          bicvec[j] = myBIC(n, R1, d, w1init, BICtype);
+          bicvec[j] = BICw1(n, R1, d, w1init, BICtype);
             // print error if iter reach maxiter
             if (iter == (maxiter + 1) && convcheck){
               warning("Failed to converge: lasso part at %i-th lambda = %f with error = %f\n", j, lamseq[j], error);
