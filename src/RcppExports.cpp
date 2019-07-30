@@ -7,29 +7,26 @@
 using namespace Rcpp;
 
 // lassobic
-Rcpp::List lassobic(int n, const arma::mat& R1, const arma::mat& R2, const arma::mat& R12, arma::colvec w1init, arma::colvec w2, const arma::colvec& lamseq, int BICtype, int maxiter, double tol, bool convcheck);
-RcppExport SEXP _mixedCCA_lassobic(SEXP nSEXP, SEXP R1SEXP, SEXP R2SEXP, SEXP R12SEXP, SEXP w1initSEXP, SEXP w2SEXP, SEXP lamseqSEXP, SEXP BICtypeSEXP, SEXP maxiterSEXP, SEXP tolSEXP, SEXP convcheckSEXP) {
+Rcpp::List lassobic(int n, const arma::mat& R1, const arma::colvec& d, arma::colvec w1init, const arma::colvec& lamseq, int BICtype, int maxiter, double tol);
+RcppExport SEXP _mixedCCA_lassobic(SEXP nSEXP, SEXP R1SEXP, SEXP dSEXP, SEXP w1initSEXP, SEXP lamseqSEXP, SEXP BICtypeSEXP, SEXP maxiterSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type R1(R1SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type R2(R2SEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type R12(R12SEXP);
+    Rcpp::traits::input_parameter< const arma::colvec& >::type d(dSEXP);
     Rcpp::traits::input_parameter< arma::colvec >::type w1init(w1initSEXP);
-    Rcpp::traits::input_parameter< arma::colvec >::type w2(w2SEXP);
     Rcpp::traits::input_parameter< const arma::colvec& >::type lamseq(lamseqSEXP);
     Rcpp::traits::input_parameter< int >::type BICtype(BICtypeSEXP);
     Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    Rcpp::traits::input_parameter< bool >::type convcheck(convcheckSEXP);
-    rcpp_result_gen = Rcpp::wrap(lassobic(n, R1, R2, R12, w1init, w2, lamseq, BICtype, maxiter, tol, convcheck));
+    rcpp_result_gen = Rcpp::wrap(lassobic(n, R1, d, w1init, lamseq, BICtype, maxiter, tol));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_mixedCCA_lassobic", (DL_FUNC) &_mixedCCA_lassobic, 11},
+    {"_mixedCCA_lassobic", (DL_FUNC) &_mixedCCA_lassobic, 8},
     {NULL, NULL, 0}
 };
 
