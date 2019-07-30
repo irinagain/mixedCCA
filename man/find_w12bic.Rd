@@ -2,10 +2,10 @@
 % Please edit documentation in R/KendallCCA.R
 \name{find_w12bic}
 \alias{find_w12bic}
-\title{Internal mixedCCA function}
+\title{Internal mixedCCA function finding w1 and w2 given R1, R2 and R12}
 \usage{
 find_w12bic(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
-  maxiter = 1000, tol = 0.001, verbose = FALSE, convcheck = TRUE)
+  maxiter = 100, tol = 0.01, trace = FALSE)
 }
 \arguments{
 \item{n}{Sample size}
@@ -30,9 +30,7 @@ find_w12bic(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
 
 \item{tol}{The desired accuracy (convergence tolerance).}
 
-\item{verbose}{If \code{verbose = TRUE}, error values in each iteration will be printed. The default value is \code{FALSE}.}
-
-\item{convcheck}{If \code{convcheck = TRUE}, the convergence error will be printed when the convergence is failed after the algorithm reached \code{maxiter}. The default value is \code{TRUE}.}
+\item{trace}{If \code{trace = TRUE}, progress per each iteration will be printed. The default value is \code{FALSE}.}
 }
 \value{
 \code{find_w12bic} returns a data.frame containing
@@ -47,5 +45,5 @@ find_w12bic(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
 }
 }
 \description{
-wrapper function for lassobic function in cpp
+Internal mixedCCA function finding w1 and w2 given R1, R2 and R12
 }

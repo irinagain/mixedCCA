@@ -5,9 +5,9 @@
 \title{Sparse CCA for data of mixed types with BIC criterion}
 \usage{
 mixedCCA(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL,
-  initlam1 = NULL, initlam2 = NULL, nlamseq = 20, lam.eps = 0.01,
-  w1init = NULL, w2init = NULL, BICtype, KendallR = NULL,
-  tol = 0.001, maxiter = 1000, verbose = FALSE, convcheck = TRUE)
+  nlamseq = 20, lam.eps = 0.01, w1init = NULL, w2init = NULL,
+  BICtype, KendallR = NULL, maxiter = 100, tol = 0.01,
+  trace = FALSE)
 }
 \arguments{
 \item{X1}{A numeric data matrix (n by p1).}
@@ -22,10 +22,6 @@ mixedCCA(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL,
 
 \item{lamseq2}{A tuning parameter sequence for \code{X2}. The length should be the same as \code{lamseq1}.}
 
-\item{initlam1}{An initial value to generate a tuning parameter sequence for \code{X1}, which is the maximum value of tuning parameter grid.}
-
-\item{initlam2}{An initial value to generate a tuning parameter sequence for \code{X2}, which is the maximum value of tuning parameter grid.}
-
 \item{nlamseq}{The number of tuning parameter sequence lambda - default is 20.}
 
 \item{lam.eps}{A ratio of the smallest value for lambda to the maximum value of lambda.}
@@ -38,13 +34,11 @@ mixedCCA(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL,
 
 \item{KendallR}{An estimated Kendall \eqn{\tau} matrix. The default is NULL, which means that it will be automatically estimated by Kendall's \eqn{\tau} estimator unless the user supplies.}
 
-\item{tol}{The desired accuracy (convergence tolerance).}
-
 \item{maxiter}{The maximum number of iterations allowed.}
 
-\item{verbose}{If \code{verbose = TRUE}, error values in each iteration will be printed. The default value is \code{FALSE}.}
+\item{tol}{The desired accuracy (convergence tolerance).}
 
-\item{convcheck}{If \code{convcheck = TRUE}, the convergence error will be printed when the convergence is failed after the algorithm reached \code{maxiter}. The default value is \code{TRUE}.}
+\item{trace}{If \code{trace = TRUE}, progress per each iteration will be printed. The default value is \code{FALSE}.}
 }
 \value{
 \code{mixedCCA} returns a data.frame containing
@@ -54,43 +48,52 @@ mixedCCA(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL,
       \item{w1: }{estimated canonical direction \eqn{w1}.}
       \item{w2: }{estimated canonical direction \eqn{w2}.}
       \item{cancor: }{estimated canonical correlation.}
-      \item{selected_x1: }{indices of selected variables in \code{X1}.}
-      \item{selected_x2: }{indices of selected variables in \code{X2}.}
-      \item{fitresult: }{more details on selected lambda values in each iteration.}
+      \item{fitresult: }{more details regarding the progress at each iteration.}
 }
 }
 \description{
 Applies sparse canonical correlation analysis (CCA) for high-dimensional data of mixed types (continuous/biary/truncated continuous). Derived rank-based estimator instead of sample correlation matrix is implemented. There are two types of BIC criteria for variable selection. We found that BIC1 works best for variable selection, whereas BIC2 works best for prediction.
 }
 \examples{
-# Generate Data
-n <- 100; p1 <- 5; p2 <- 7
-maxcancor <- 0.9
-Sigma1 <- autocor(p1, 0.7)
-groupind <- c(rep(1, 2), rep(2, p2-2))
-Sigma2 <- blockcor(groupind, 0.7)
-copula1 <- "exp"; copula2 <- "cube"
-mu <- rep(0, p1+p2)
-type1 <- type2 <- "trunc"
-c1 <- rep(0, p1); c2 <- rep(0, p2)
-trueidx1 <- c(0, 0, 1, 1, 1)
-trueidx2 <- c(1, 0, 1, 0, 0, 1, 1)
+### Simple example
+
+# Data setting
+n <- 100; p1 <- 15; p2 <- 10 # sample size and dimensions for two datasets.
+maxcancor <- 0.9 # true canonical correlation
+
+# Correlation structure within each data set
+set.seed(0)
+perm1 <- sample(1:p1, size = p1);
+Sigma1 <- autocor(p1, 0.7)[perm1, perm1]
+blockind <- sample(1:3, size = p2, replace = TRUE);
+Sigma2 <- blockcor(blockind, 0.7)
+mu <- rbinom(p1+p2, 1, 0.5)
+
+# true variable indices for each dataset
+trueidx1 <- c(rep(1, 3), rep(0, p1-3))
+trueidx2 <- c(rep(1, 2), rep(0, p2-2))
+
+# Data generation
 simdata <- GenerateData(n=n, trueidx1 = trueidx1, trueidx2 = trueidx2, maxcancor = maxcancor,
                         Sigma1 = Sigma1, Sigma2 = Sigma2,
-                        copula1 = copula1, copula2 = copula2,
+                        copula1 = "exp", copula2 = "cube",
                         muZ = mu,
-                        type1 = type1, type2 = type2, c1 = c1, c2 = c2
+                        type1 = "trunc", type2 = "trunc",
+                        c1 = rep(1, p1), c2 =  rep(0, p2)
 )
-
 X1 <- simdata$X1
 X2 <- simdata$X2
 
+# Check the range of truncation levels of variables
+range(colMeans(X1 == 0))
+range(colMeans(X2 == 0))
+
 # Kendall CCA with BIC1
-kendallcca1 <- mixedCCA(X1, X2, type1 = type1, type2 = type2, BICtype = 1)
+kendallcca1 <- mixedCCA(X1, X2, type1 = "trunc", type2 = "trunc", BICtype = 1)
 
 # Kendall CCA with BIC2. Estimated correlation matrix is plugged in from the above result.
 R <- kendallcca1$KendallR
-kendallcca2 <- mixedCCA(X1, X2, type1 = type1, type2 = type2, KendallR = R, BICtype = 2)
+kendallcca2 <- mixedCCA(X1, X2, type1 = "trunc", type2 = "trunc", KendallR = R, BICtype = 2)
 }
 \references{
 Yoon G., Carroll R.J. and Gaynanova I. (2018+) \href{http://arxiv.org/abs/1807.05274}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}.
