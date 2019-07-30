@@ -30,7 +30,3 @@ X2 <- simdata$X2
 # Check the range of truncation levels of variables
 range(colMeans(X1 == 0))
 range(colMeans(X2 == 0))
-
-# Estimate latent correlation matrix
-estimateR(X1, type = "trunc")
-estimateR_mixed(X1, X2, type1 = "trunc", type2 = "trunc")
