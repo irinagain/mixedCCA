@@ -4,16 +4,11 @@
 \alias{lambdaseq_generate}
 \title{Internal data-driven lambda sequence generating function.}
 \usage{
-lambdaseq_generate(nlamseq = 20, initlam1 = NULL, initlam2 = NULL,
-  lam.eps = 0.01, Sigma1, Sigma2, Sigma12, w1init = NULL,
-  w2init = NULL)
+lambdaseq_generate(nlamseq = 20, lam.eps = 0.01, Sigma1, Sigma2,
+  Sigma12, w1init = NULL, w2init = NULL)
 }
 \arguments{
 \item{nlamseq}{The length of lambda sequence}
-
-\item{initlam1}{Maximum lambda value for \eqn{X1}}
-
-\item{initlam2}{Maximum lambda value for \eqn{X2}}
 
 \item{lam.eps}{The smallest value for lambda as a fraction of maximum lambda value}
 
@@ -31,5 +26,5 @@ lambdaseq_generate(nlamseq = 20, initlam1 = NULL, initlam2 = NULL,
 \code{lambdaseq_generate} returns a list of length 2. Each vector is of the same length \code{nlamseq} and will be used for each data set separately.
 }
 \description{
-Since this is for sparse CCA, it returns a list of two vectors. Each vector will be used for each data set \eqn{X1} and \eqn{X2}. And \eqn{w1} and \eqn{w2} denote canonical vector for each data set.
+This internal function generates lambda sequence of length \code{nlamseq} equally spaced on a logarithmic scale. Since this is for sparse CCA, it returns a list of two vectors. Each vector will be used for each data set \eqn{X1} and \eqn{X2}. And \eqn{w1} and \eqn{w2} denote canonical vector for each data set.
 }
