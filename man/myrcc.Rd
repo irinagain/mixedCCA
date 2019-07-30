@@ -13,9 +13,9 @@ myrcc(R1, R2, R12, lambda1, lambda2, tol = 1e-04)
 
 \item{R12}{correlation/covariance/rank-based correlation matrix between dataset \code{X1} and dataset \code{X2}.}
 
-\item{lambda1}{tuning parameter dataset \code{X1}. a scalar value.}
+\item{lambda1}{tuning parameter (a scalar value) for dataset \code{X1}.}
 
-\item{lambda2}{tuning parameter dataset \code{X2}. a scalar value.}
+\item{lambda2}{tuning parameter (a scalar value) for dataset \code{X2}.}
 
 \item{tol}{tolerance for eigenvalues. Refer to \code{standardCCA} function.}
 }
@@ -28,5 +28,5 @@ myrcc(R1, R2, R12, lambda1, lambda2, tol = 1e-04)
 }
 }
 \description{
-This function is modified from CCA package rcc function. This estimates are used for initial values for our algorithm as warm starts.
+This function is modified from CCA package rcc function. This function is used for simulation. Inputs should be correlation or covariance matrices of each data set and between datasets.
 }
