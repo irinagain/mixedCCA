@@ -1,8 +1,8 @@
 #' Construct a correlation matrix
 #'
 #' Functions to create autocorrelation matrix (p by p) with parameter rho and block correlation matrix (p by p) using group index (of length p) and (possibly) different parameter rho for each group.
-#' @name corrmat
-#' @rdname corrmat
+#' @name corrstructure
+#' @rdname corrstructure
 #' @aliases autocor
 #' @param p Specified matrix dimension.
 #' @param rho Correlation value(s), must be between -0.99 and 0.99. Should be a scalar for \code{autocor}, and either a scalar or a vector of the same length as the maximal \code{blockind} K for \code{blockcor}.
@@ -12,13 +12,12 @@ autocor <- function(p, rho){
   Sigma <- rho^abs(outer(1:p, 1:p, "-"))
   return(Sigma)
 }
-#' @rdname corrmat
+#' @rdname corrstructure
 #' @aliases blockcor
 #' @inheritParams rho
 #' @param blockind Block index 1,\dots, K for a poisitive integer K specifying which variable belongs to which block, the matrix dimension is equal to \code{length(blockind)}.
 #' @examples
-#'
-#' # For p=8,
+#' # For p = 8,
 #' # auto correlation matrix
 #' autocor(8, 0.8)
 #' # block correlation mattrix: two blocks with the same correlation within each block
@@ -84,41 +83,18 @@ blockcor <- function(blockind, rho){
 #' @export
 #'
 #' @importFrom MASS mvrnorm
-#' @examples
-#' n <- 100; p1 <- 5; p2 <- 7
-#' maxcancor <- 0.9
-#' Sigma1 <- autocor(p1, 0.7)
-#' blockind <- c(rep(1, 2), rep(2, p2-2))
-#' Sigma2 <- blockcor(blockind, 0.7)
-#' copula1 <- "exp"; copula2 <- "cube"
-#' mu <- rep(0, p1+p2)
-#' type1 <- type2 <- "trunc"
-#' c1 <- rep(0, p1); c2 <- rep(0, p2)
-#' trueidx1 <- c(0, 0, 1, 1, 1)
-#' trueidx2 <- c(1, 0, 1, 0, 0, 1, 1)
-#' simdata <- GenerateData(n=n, trueidx1 = trueidx1, trueidx2 = trueidx2, maxcancor = maxcancor,
-#'                        Sigma1 = Sigma1, Sigma2 = Sigma2,
-#'                        copula1 = copula1, copula2 = copula2,
-#'                        muZ = mu,
-#'                        type1 = type1, type2 = type2, c1 = c1, c2 = c2
-#' )
-#'
-#' X1 <- simdata$X1
-#' X2 <- simdata$X2
+#' @example man/examples/GenerateData_ex.R
 #'
 GenerateData <- function(n, trueidx1, trueidx2, Sigma1, Sigma2, maxcancor,
                          copula1 = "no", copula2 = "no",
                          type1 = "continuous", type2 = "continuous", muZ = NULL, c1 = NULL, c2 = NULL
-                         # , seed = 1
 ){
 
-  type <- rep(NA, 2); type[1] <- type1; type[2] <- type2
-
-  if (type[1] != "continuous"){
-    if(is.null(c1)){stop("c1 has to be defined for truncated continuous and binary data type.")}
+  if((type1 != "continuous") & is.null(c1)){
+    stop("c1 has to be defined for truncated continuous and binary data type.")
   }
-  if (type[2] != "continuous"){
-    if(is.null(c2)){stop("c2 has to be defined for truncated continuous and binary data type.")}
+  if((type2 != "continuous") & is.null(c2)){
+    stop("c2 has to be defined for truncated continuous and binary data type.")
   }
 
   p1 <- length(trueidx1)
@@ -132,13 +108,15 @@ GenerateData <- function(n, trueidx1, trueidx2, Sigma1, Sigma2, maxcancor,
   JSigma <- rbind(cbind(Sigma1, Sigma12), cbind(t(Sigma12), Sigma2))
 
   # jointly generate X and Y using two canonical pairs
-  # set.seed(seed)
-  if (is.null(muZ)) { muZ <- rep(0, p) }
-  dat <- MASS::mvrnorm(n, mu = muZ, Sigma = JSigma)
+  if (is.null(muZ)) {
+    muZ <- rep(0, p)
+  }
+  dat <- MASS::mvrnorm(n, mu = muZ, Sigma = JSigma) # generate a data matrix of size: n by length(muZ). length(muZ) should match with ncol(JSigma)=nrow(JSigma).
 
   Z1 <- dat[, 1:p1]
   Z2 <- dat[, (p1+1):p]
 
+  # Three different types of copula
   if(copula1 != "no"){
     if(copula1 == "exp"){
       Z1 <- exp(Z1)
@@ -155,18 +133,31 @@ GenerateData <- function(n, trueidx1, trueidx2, Sigma1, Sigma2, maxcancor,
   }
 
   if(type1 != "continuous"){
-    if(length(c1) != p1) { warning("The length of threshold vector does not match with the size of the data.") }
-    if(length(c1) == 1) { warning("Same therhold is applied to the all variables in the first set.") }
+    if(length(c1) != p1) { stop("The length of threshold vector c1 does not match with the size of the data X1.") }
+    if(length(c1) == 1) { warning("Same threshold is applied to the all variables in the first set.") }
   }
   if(type2 != "continuous"){
-    if(length(c2) != p2) { warning("The length of threshold vector does not match with the size of the data.") }
-    if(length(c2) == 1) { warning("Same therhold is applied to the all variables in the second set.") }
+    if(length(c2) != p2) { stop("The length of threshold vector c2 does not match with the size of the data X2.") }
+    if(length(c2) == 1) { warning("Same threshold is applied to the all variables in the second set.") }
   }
 
-  if(type1 == "continuous") { X1 <- Z1 }else if(type1 == "trunc") { X1 <- ifelse(Z1 > c1, Z1, 0) }else if (type1 == "binary") { X1 <- ifelse(Z1 > c1, 1, 0) }
-  if(type2 == "continuous") { X2 <- Z2 }else if(type2 == "trunc") { X2 <- ifelse(Z2 > c2, Z2, 0) }else if (type2 == "binary") { X2 <- ifelse(Z2 > c2, 1, 0) }
+  if(type1 == "continuous") {
+    X1 <- Z1
+  } else if(type1 == "trunc") {
+    X1 <- ifelse(Z1 > c1, Z1, 0)
+  } else if (type1 == "binary") {
+    X1 <- ifelse(Z1 > c1, 1, 0)
+  }
 
-  return(list(Z1 = Z1, Z2 = Z2, X1 = X1, X2 = X2, true_w1 = th1, true_w2 = th2, type = type, maxcancor = maxcancor, c1 = c1, c2 = c2, Sigma = JSigma))
+  if(type2 == "continuous") {
+    X2 <- Z2
+  } else if(type2 == "trunc") {
+    X2 <- ifelse(Z2 > c2, Z2, 0)
+  } else if (type2 == "binary") {
+    X2 <- ifelse(Z2 > c2, 1, 0)
+  }
+
+  return(list(Z1 = Z1, Z2 = Z2, X1 = X1, X2 = X2, true_w1 = th1, true_w2 = th2, type = c(type1, type2), maxcancor = maxcancor, c1 = c1, c2 = c2, Sigma = JSigma))
 }
 
 
