@@ -1,9 +1,8 @@
 #' @title Estimate latent correlation matrix
 #'
-#'
 #' @description Estimation of latent correlation matrix from observed data of (possibly) mixed types (continuous/biary/truncated continuous) based on the latent Gaussian copula model.
 #'
-#' @aliases estimateR estimateR_mixed
+#' @aliases estimateR_mixed
 #' @param X A numeric data matrix (n by p), n is the sample size and p is the number of variables.
 #' @param type A type of variables in \code{X}, must be one of "continuous", "binary" or "trunc".
 #' @param use.nearPD A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).
@@ -61,10 +60,9 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e
 #'
 #'
 #'
-#' @rdname estimateR
 #' @title Estimate latent correlation matrix
-#'
-#' @aliases estimateR estimateR_mixed
+#' @rdname estimateR
+#' @aliases estimateR_mixed
 #' @param X1 A numeric data matrix (n by p1).
 #' @param X2 A numeric data matrix (n by p2).
 #' @param type1 A type of variables in \code{X1}, must be one of "continuous", "binary" or "trunc".
@@ -88,20 +86,15 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e
 estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.nearPD = TRUE, rho = 0.01, tol = 1e-3){
   X1 <- as.matrix(X1)
   X2 <- as.matrix(X2)
-  if (nrow(X1) != nrow(X2)){ # Check of they have the same length.
+
+  if (nrow(X1) != nrow(X2)){ # Check of they have the same sample size.
     stop ("X1 and X2 must have the same sample size.")
   }
-  # if (!(type1 %in% c("continuous", "binary","trunc"))){
-  #   stop("Unrecognized type of dataset X1. Should be one of continuous, binary or trunc.")
-  # }
-  # if (!(type2 %in% c("continuous", "binary","trunc"))){
-  #   stop("Unrecognized type of dataset X2. Should be one of continuous, binary or trunc.")
-  # }
+
   n <- length(X1)
   p1 <- ncol(X1); p2 <- ncol(X2)
-  type <- rep(NA, 2); type[1] <- type1; type[2] <- type2
 
-  if (sum(type %in% c("continuous", "binary", "trunc")) != 2){
+  if (sum(c(type1, type2) %in% c("continuous", "binary", "trunc")) != 2){
     stop("Unrecognised type of variables. Should be one of continuous, binary or trunc.")
   }
 
@@ -125,33 +118,33 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
     if(sum(!(X2 %in% c(0, 1)))>0) {stop("The data X2 is not \"binary\".")}
   }
 
-  if (type[1] == type[2]) {
+  if (type1 == type2) {
     # both datasets are of the same type
     Xcomb <- cbind(X1, X2)
-    Rall <- estimateR(Xcomb, type = type[1], use.nearPD = use.nearPD, rho = rho, tol = tol)$R
+    Rall <- estimateR(Xcomb, type = type1, use.nearPD = use.nearPD, rho = rho, tol = tol)$R
     R1 <- Rall[1:p1, 1:p1]
     R2 <- Rall[(p1 + 1):(p1 + p2), (p1 + 1):(p1 + p2)]
     R12 <- Rall[1:p1, (p1 + 1):(p1 + p2)]
   } else {
     # datasets are of different type
-    if (type[1] == "continuous"){
+    if (type1 == "continuous"){
       zratio2 <- colMeans(X2==0)
       R1 <- sin(pi/2 * pcaPP::cor.fk(X1))
-      R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type[2], tol = tol)
-      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio2 = zratio2, type1 = type[1], type2 = type[2], tol = tol)
+      R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type2, tol = tol)
+      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio2 = zratio2, type1 = type1, type2 = type2, tol = tol)
       Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
-    } else if (type[2] == "continuous"){
+    } else if (type2 == "continuous"){
       zratio1 <- colMeans(X1==0)
-      R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type[1], tol = tol)
-      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, type1 = type[1], type2 = type[2], tol = tol)
+      R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type1, tol = tol)
+      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, type1 = type1, type2 = type2, tol = tol)
       R2 <- sin(pi/2 * pcaPP::cor.fk(X2))
       Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
     } else {
       zratio1 <- colMeans(X1==0)
       zratio2 <- colMeans(X2==0)
-      R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type[1], tol = tol)
-      R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type[2], tol = tol)
-      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, zratio2 = zratio2, type1 = type[1], type2 = type[2], tol = tol)
+      R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type1, tol = tol)
+      R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type2, tol = tol)
+      R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, zratio2 = zratio2, type1 = type1, type2 = type2, tol = tol)
       Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
     }
 
@@ -166,5 +159,5 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
     R12 <- Rall[1:p1, (p1 + 1):(p1 + p2)]
   }
 
-  return(list(type = type, R1 = R1, R2 = R2, R12 = R12, R = Rall))
+  return(list(type = c(type1, type2), R1 = R1, R2 = R2, R12 = R12, R = Rall))
 }
