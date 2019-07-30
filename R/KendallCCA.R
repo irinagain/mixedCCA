@@ -1,10 +1,8 @@
 #' @title Internal data-driven lambda sequence generating function.
 #'
-#' @description Since this is for sparse CCA, it returns a list of two vectors. Each vector will be used for each data set \eqn{X1} and \eqn{X2}. And \eqn{w1} and \eqn{w2} denote canonical vector for each data set.
+#' @description This internal function generates lambda sequence of length \code{nlamseq} equally spaced on a logarithmic scale. Since this is for sparse CCA, it returns a list of two vectors. Each vector will be used for each data set \eqn{X1} and \eqn{X2}. And \eqn{w1} and \eqn{w2} denote canonical vector for each data set.
 #'
 #' @param nlamseq The length of lambda sequence
-#' @param initlam1 Maximum lambda value for \eqn{X1}
-#' @param initlam2 Maximum lambda value for \eqn{X2}
 #' @param lam.eps The smallest value for lambda as a fraction of maximum lambda value
 #' @param Sigma1 Covariance/correlation matrix of \eqn{X1} (p1 by p1)
 #' @param Sigma2 Covariance/correlation matrix of \eqn{X2} (p2 by p2)
@@ -15,36 +13,31 @@
 #' @return \code{lambdaseq_generate} returns a list of length 2. Each vector is of the same length \code{nlamseq} and will be used for each data set separately.
 #' @export
 #'
-lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, lam.eps = 1e-02,
-                               Sigma1, Sigma2, Sigma12, w1init = NULL, w2init = NULL){
-  init.lamseq <- rep(NA, 2)
-  p1 <- nrow(Sigma1); p2 <- nrow(Sigma2)
-  if (is.null(initlam1)) {
-    if (is.null(w2init)) {
-      w2init <- rep(1,p2)/sqrt(as.numeric(crossprod(rep(1,p2), Sigma2 %*% rep(1,p2))))
-    }
-    init.lamseq[1] <- max(abs(Sigma12%*%w2init)) # estimated w1 for different (but close) lamseq could be used
-  }
+lambdaseq_generate <- function(nlamseq = 20, lam.eps = 1e-02, Sigma1, Sigma2, Sigma12, w1init = NULL, w2init = NULL){
 
-  if (is.null(initlam2)) {
-    if (is.null(w1init)) {
-      w1init <- rep(1,p1)/sqrt(as.numeric(crossprod(rep(1,p1), Sigma1 %*% rep(1,p1))))
+  p1 <- nrow(Sigma1); p2 <- nrow(Sigma2)
+    if (is.null(w2init)) {
+      w2init <- rep(1, p2)
     }
-    init.lamseq[2] <- max(abs(t(Sigma12)%*%w1init)) # estimated w2 for different (but close) lamseq could be used
-  }
+    w2init <- normalizedW(w2init, Sigma2)
+    init.lamseq1 <- max(abs(Sigma12%*%w2init)) # estimated w1 for different (but close) lamseq could be used
+
+    if (is.null(w1init)) {
+      w1init <- rep(1, p1)
+    }
+    w1init <- normalizedW(w1init, Sigma1)
+    init.lamseq2 <- max(abs(t(Sigma12)%*%w1init)) # estimated w2 for different (but close) lamseq could be used
 
   lamseq <- list("vector")
   # lamseq values in decreasing order.
-  lamseq[[1]] <- exp(seq(log(init.lamseq[1]), log(lam.eps*init.lamseq[1]), length.out = nlamseq))
-  lamseq[[2]] <- exp(seq(log(init.lamseq[2]), log(lam.eps*init.lamseq[2]), length.out = nlamseq))
+  lamseq[[1]] <- exp(seq(log(init.lamseq1), log(lam.eps*init.lamseq1), length.out = nlamseq))
+  lamseq[[2]] <- exp(seq(log(init.lamseq2), log(lam.eps*init.lamseq2), length.out = nlamseq))
 
   return(lamseq)
 }
 
-# wrapper function
-#' @title Internal mixedCCA function
-#'
-#' @description wrapper function for lassobic function in cpp
+
+#' @title Internal mixedCCA function finding w1 and w2 given R1, R2 and R12
 #'
 #' @param n Sample size
 #' @param R1 Correlation matrix of dataset \code{X1} (p1 by p1)
@@ -57,8 +50,8 @@ lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, l
 #' @param BICtype Either 1 or 2: For more details for two options, see the reference.
 #' @param maxiter The maximum number of iterations allowed.
 #' @param tol The desired accuracy (convergence tolerance).
-#' @param verbose If \code{verbose = TRUE}, error values in each iteration will be printed. The default value is \code{FALSE}.
-#' @param convcheck If \code{convcheck = TRUE}, the convergence error will be printed when the convergence is failed after the algorithm reached \code{maxiter}. The default value is \code{TRUE}.
+#' @param trace If \code{trace = TRUE}, progress per each iteration will be printed. The default value is \code{FALSE}.
+#'
 #'
 #' @return \code{find_w12bic} returns a data.frame containing
 #' \itemize{
@@ -72,40 +65,33 @@ lambdaseq_generate <- function(nlamseq = 20, initlam1 = NULL, initlam2 = NULL, l
 #' }
 #' @export
 #'
-find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
-                        maxiter = 1000, tol = 1e-3, verbose = FALSE, convcheck = TRUE){
-  # Same as find_w12 function. SolveLasso part is replaced with lassobic.
+find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype, maxiter = 100, tol = 1e-2, trace = FALSE){
+
   p1 = ncol(R1)
   p2 = ncol(R2)
 
-  error = 1000.0
+  diffobj = 1000
   iter = 0
   w1 <- w2 <- c()
-  wmat1 <- wmat2 <- c()
-  lam1.iter <- lam2.iter <- c()
-  obj <- c()
+  # For tracking the progress
+  wmat1 <- wmat2 <- lam1.iter <- lam2.iter <- obj <- c()
 
-  while( iter <= maxiter & error > tol ){
+  while( iter <= maxiter & diffobj > tol ){
     iter = iter + 1
-    error = 0
-
-
     ### for w1
-    if(sum(lamseq1 >= max(abs(R12%*%w2init)))>0){
+    d = R12%*%w2init
+    if(min(lamseq1) >= max(abs(d))){
       # since we're not interested in zero solutions, we do not want to even consider the large lambda values which result in zero solutions.
       # It might lead to the shorter length of lambda sequence.
-      ind <- which(lamseq1 >= max(abs(R12%*%w2init)))
-      res1 <- lassobic(n = n, R1 = R1, R2 = R2, R12 = R12,
-                       w1init = w1init, w2 = w2init, lamseq = lamseq1[-ind], BICtype = BICtype,
-                       maxiter = maxiter, tol = tol, convcheck = convcheck)
+      ind <- which(lamseq1 >= max(abs(d)))
+      res1 <- lassobic(n = n, R1 = R1, d = d, w1init = w1init, lamseq = lamseq1[-ind], BICtype = BICtype)
     } else {
-      res1 <- lassobic(n = n, R1 = R1, R2 = R2, R12 = R12,
-                       w1init = w1init, w2 = w2init, lamseq = lamseq1, BICtype = BICtype,
-                       maxiter = maxiter, tol = tol, convcheck = convcheck)
+      res1 <- lassobic(n = n, R1 = R1, d = d, w1init = w1init, lamseq = lamseq1, BICtype = BICtype)
     }
     w1 = res1$finalcoef
     wmat1 <- cbind(wmat1, w1)
     lam1.iter[iter] <- res1$lamseq[res1$bicInd]
+
     # if w1 is estimated as a vector of only zeros,
     if (sum(abs(w1))==0){
       return(list(w1 = rep(0, p1), w2 = rep(0, p2), lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
@@ -113,25 +99,29 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
     w1init = w1
 
     ### for w2
-    if(sum(lamseq2 >= max(abs(t(R12)%*%w1init)))>0){
+    d = t(R12)%*%w1init
+    if(min(lamseq2) >= max(abs(d))){
       # since we're not interested in zero solutions, we do not want to even consider the large lambda values which result in zero solutions.
       # It might lead to the shorter length of lambda sequence.
-      ind <- which(lamseq2 >= max(abs(t(R12)%*%w1init)))
-      res2 <- lassobic(n = n, R1 = R2, R2 = R1, R12 = t(R12),
-                       w1init = w2init, w2 = w1init, lamseq = lamseq2[-ind], BICtype = BICtype,
-                       maxiter = maxiter, tol = tol, convcheck = convcheck)
+      ind <- which(lamseq2 >= max(abs(d)))
+      res2 <- lassobic(n = n, R1 = R2, d = d, w1init = w2init, lamseq = lamseq2[-ind], BICtype = BICtype)
     } else {
-      res2 <- lassobic(n = n, R1 = R2, R2 = R1, R12 = t(R12),
-                       w1init = w2init, w2 = w1init, lamseq = lamseq2, BICtype = BICtype,
-                       maxiter = maxiter, tol = tol, convcheck = convcheck)
+      res2 <- lassobic(n = n, R1 = R2, d = d, w1init = w2init, lamseq = lamseq2, BICtype = BICtype)
     }
     w2 = res2$finalcoef
     wmat2 <- cbind(wmat2, w2)
     lam2.iter[iter] <- res2$lamseq[res2$bicInd]
+
+    # if w2 is estimated as a vector of only zeros,
     if (sum(abs(w2))==0){
       return(list(w1 = rep(0, p1), w2 = rep(0, p2), lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
     }
     w2init = w2
+
+
+    # It should be normalized when returned from lassobic but wanted to make sure the solutions are normalized.
+    w1init <- normalizedW(w1init, R1)
+    w2init <- normalizedW(w2init, R2)
 
     # If one scalar value is used on input for lambda sequence, then I track the whole objective function, which should be strictly increasing. On the other hand, when a vector is used on input for lambda sequence, then I track only the objective function without penalty part. Since we alternatively choose and update the tuning parameter, the objective function wouldn't be strictly increasing with changing tuning parameter values.
     if(length(lamseq1) == 1 & length(lamseq2) == 1){
@@ -140,18 +130,18 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
       obj[iter] <- t(w1)%*%R12%*%w2
     }
 
-    if(iter == 1){
-      error <- 1000
-    }else if(iter >1){
-      error <- abs(obj[iter] - obj[iter-1])/obj[iter-1]
+    # Since there is no previous objective value at the first iteration,
+    if(iter > 1){
+      diffobj <- abs(obj[iter] - obj[iter-1])/obj[iter-1]
     }
 
-    if (verbose){
+    # selected lambda values and objective value at each iteration will be printed
+    if (trace){
       cat("iteration = ", iter, " and selected lambda = ", lam1.iter[iter], "&", lam2.iter[iter], "and objective function = ", obj[iter], "\n")
     }
-  }
-  if (iter == (maxiter + 1) & convcheck){
-    cat("Failed to converge. (findw12 part)\n objective function = ", obj[iter], " and error = ", error, " where tol = ", tol, " with BICtype = ", BICtype, "\n")
+  } # This is the end of the while-loop
+  if (iter >= maxiter){
+    cat("Failed to converge. (findw12 part)\n objective function = ", obj[iter], " and difference of objective function = ", diffobj, " where tol = ", tol, " with BICtype = ", BICtype, "\n")
   }
   return(list(w1 = w1, w2 = w2, w1trace = wmat1, w2trace = wmat2, lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
 }
@@ -169,18 +159,15 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 #' @param type2 A type of data \code{X2} among "continuous", "binary", "trunc".
 #' @param lamseq1 A tuning parameter sequence for \code{X1}. The length should be the same as \code{lamseq2}.
 #' @param lamseq2 A tuning parameter sequence for \code{X2}. The length should be the same as \code{lamseq1}.
-#' @param initlam1 An initial value to generate a tuning parameter sequence for \code{X1}, which is the maximum value of tuning parameter grid.
-#' @param initlam2 An initial value to generate a tuning parameter sequence for \code{X2}, which is the maximum value of tuning parameter grid.
 #' @param nlamseq The number of tuning parameter sequence lambda - default is 20.
 #' @param lam.eps A ratio of the smallest value for lambda to the maximum value of lambda.
 #' @param w1init An initial vector of length p1 for canonical direction \eqn{w1}.
 #' @param w2init An initial vector of length p2 for canonical direction \eqn{w2}.
 #' @param BICtype Either 1 or 2: For more details for two options, see the reference.
 #' @param KendallR An estimated Kendall \eqn{\tau} matrix. The default is NULL, which means that it will be automatically estimated by Kendall's \eqn{\tau} estimator unless the user supplies.
-#' @param tol The desired accuracy (convergence tolerance).
 #' @param maxiter The maximum number of iterations allowed.
-#' @param verbose If \code{verbose = TRUE}, error values in each iteration will be printed. The default value is \code{FALSE}.
-#' @param convcheck If \code{convcheck = TRUE}, the convergence error will be printed when the convergence is failed after the algorithm reached \code{maxiter}. The default value is \code{TRUE}.
+#' @param tol The desired accuracy (convergence tolerance).
+#' @param trace If \code{trace = TRUE}, progress per each iteration will be printed. The default value is \code{FALSE}.
 #'
 #' @references
 #' Yoon G., Carroll R.J. and Gaynanova I. (2018+) \href{http://arxiv.org/abs/1807.05274}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}.
@@ -191,9 +178,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 #'       \item{w1: }{estimated canonical direction \eqn{w1}.}
 #'       \item{w2: }{estimated canonical direction \eqn{w2}.}
 #'       \item{cancor: }{estimated canonical correlation.}
-#'       \item{selected_x1: }{indices of selected variables in \code{X1}.}
-#'       \item{selected_x2: }{indices of selected variables in \code{X2}.}
-#'       \item{fitresult: }{more details on selected lambda values in each iteration.}
+#'       \item{fitresult: }{more details regarding the progress at each iteration.}
 #' }
 #'
 #' @example man/examples/mixedCCA_ex.R
@@ -201,16 +186,16 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 #' @import stats
 #' @importFrom Rcpp evalCpp
 #' @export
-mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initlam1 = NULL, initlam2 = NULL,
-                     nlamseq = 20, lam.eps = 1e-02,
+mixedCCA <- function(X1, X2, type1, type2,
+                     lamseq1 = NULL, lamseq2 = NULL, nlamseq = 20, lam.eps = 1e-02,
                      w1init = NULL, w2init = NULL, BICtype,
                      KendallR = NULL,
-                     tol = 1e-3, maxiter = 1000, verbose = FALSE, convcheck = TRUE){
+                     maxiter = 100, tol = 1e-2, trace = FALSE){
   n <- nrow(X1)
   p1 <- ncol(X1); p2 <- ncol(X2);
   p <- p1 + p2
 
-  ### Compute Kendall tau.
+  ### Compute Kendall tau if there is no input.
   if(is.null(KendallR)){
     R <- estimateR_mixed(X1, X2, type1 = type1, type2 = type2)$R
   } else {
@@ -231,42 +216,32 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
       }
   }
   # standardize initial starting points - for both lambda seq generation (lambdaseq_generate) and cca algorithm (find_w12bic)
-  w1init <- w1init/sqrt(as.numeric(crossprod(w1init, R1 %*% w1init)))
-  w2init <- w2init/sqrt(as.numeric(crossprod(w2init, R2 %*% w2init)))
+  w1init <- normalizedW(w1init, R1)
+  w2init <- normalizedW(w2init, R2)
 
-  ### Create lambda sequences based on standardized initial starting point
-  lambda_seq <- list()
-  if (is.null(lamseq1) & is.null(lamseq2)){
-    lambda_seq <- lambdaseq_generate(nlamseq = nlamseq, initlam1 = initlam1, initlam2 = initlam2, lam.eps = lam.eps,
+  ### If there is no input, create default lambda sequences based on standardized initial starting point
+  if (is.null(lamseq1) | is.null(lamseq2)){
+    lambda_seq <- lambdaseq_generate(nlamseq = nlamseq, lam.eps = lam.eps,
                                      Sigma1 = R1, Sigma2 = R2, Sigma12 = R12, w1init = w1init, w2init = w2init)
-  } else {
-    if(length(lamseq1) == length(lamseq2)){
-      lambda_seq[[1]] <- lamseq1
-      lambda_seq[[2]] <- lamseq2
-    } else {
-      warning( "The lengths of lambda sequences for two variables are different." );
-      stop;
-    }
+    lamseq1 <- lambda_seq[[1]]
+    lamseq2 <- lambda_seq[[2]]
   }
 
   ### Calculate canonical coefficients using BIC.
   fitresult <- find_w12bic(n = n, R1 = R1, R2 = R2, R12 = R12,
-                           lamseq1 = lambda_seq[[1]], lamseq2 = lambda_seq[[2]],
+                           lamseq1 = lamseq1, lamseq2 = lamseq2,
                            w1init = w1init, w2init = w2init, BICtype = BICtype, maxiter = maxiter, tol = tol,
-                           verbose = verbose, convcheck = convcheck)
+                           trace = trace)
 
   w1 <- fitresult$w1
   w2 <- fitresult$w2
-  ix1 <- which(w1!=0)
-  ix2 <- which(w2!=0)
-
   cancor <- t(w1)%*%R12%*%w2
 
   return(list(KendallR = R,
               lambda_seq = lambda_seq,
               w1 = w1, w2 = w2,
               cancor = cancor,
-              selected_x1 = ix1, selected_x2 = ix2, fitresult = fitresult))
+              fitresult = fitresult))
 }
 
 
@@ -276,7 +251,7 @@ mixedCCA <- function(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL, initl
 
 #' @title Internal standard CCA function.
 #'
-#' @description This function is modified from original CCA function to only deal with positive eigenvalues larger than the tolerance. Only returning the first pair of canonical covariates.
+#' @description This function is modified from original CCA function for two reasons: to deal with only positive eigenvalues larger than the tolerance and to compuate SVD using \code{\link[irlba]{irlba}} algorithm. Inputs should be correlation or covariance matrices of each data set and between datasets. This function returns only the first pair of canonical covariates.
 #'
 #' @param S1 correlation/covariance matrix of dataset \code{X1}.
 #' @param S2 correlation/covariance matrix of dataset \code{X2}.
@@ -316,19 +291,15 @@ standardCCA <- function(S1, S2, S12, tol = 1e-4){
   return(list(cancor = cancor, w1 = w1, w2 = w2))
 }
 
-# modified from CCA package rcc function
-# this estimates are used for initial values for our algorithm. warm starts.
-# inputs are rank-based estimator.
-# lambda 1 and lambda 2 are scalars.
 
 #' @title Internal RidgeCCA function
-#' @description This function is modified from CCA package rcc function. This estimates are used for initial values for our algorithm as warm starts.
+#' @description This function is modified from CCA package rcc function. This function is used for simulation. Inputs should be correlation or covariance matrices of each data set and between datasets.
 #'
 #' @param R1 correlation/covariance/rank-based correlation matrix of dataset \code{X1}.
 #' @param R2 correlation/covariance/rank-based correlation matrix of dataset \code{X2}.
 #' @param R12 correlation/covariance/rank-based correlation matrix between dataset \code{X1} and dataset \code{X2}.
-#' @param lambda1 tuning parameter dataset \code{X1}. a scalar value.
-#' @param lambda2 tuning parameter dataset \code{X2}. a scalar value.
+#' @param lambda1 tuning parameter (a scalar value) for dataset \code{X1}.
+#' @param lambda2 tuning parameter (a scalar value) for dataset \code{X2}.
 #' @param tol tolerance for eigenvalues. Refer to \code{standardCCA} function.
 #'
 #' @return \code{myrcc} returns a data.frame containing

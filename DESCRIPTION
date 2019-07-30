@@ -1,8 +1,8 @@
 Package: mixedCCA
 Type: Package
 Title: Sparse CCA for high-dimensional mixed data
-Version: 1.1
-Date: 2019-04-12
+Version: 1.1.2
+Date: 2019-07-29
 Author: Grace Yoon and Irina Gaynanova
 Maintainer: Grace Yoon <gyoon@stat.tamu.edu>
 Description: Semi-parametric approach for sparse CCA which can handle mixed data: continuous, binary and truncated continuous. Bridge functions are provided to connect Kendall's tau to latent correlation matrix under the Gaussian copula model.
