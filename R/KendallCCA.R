@@ -232,7 +232,17 @@ mixedCCA <- function(X1, X2, type1, type2,
                            lamseq1 = lamseq1, lamseq2 = lamseq2,
                            w1init = w1init, w2init = w2init, BICtype = BICtype, maxiter = maxiter, tol = tol,
                            trace = trace)
-
+  if(length(fitresult$obj) >= maxiter){
+    cat("Tried finer lambda sequences.\n") # Tried twice length of lambda sequence to the same function. The whold range should be the same.
+    lambda_seq <- lambdaseq_generate(nlamseq = nlamseq*2, lam.eps = lam.eps,
+                                     Sigma1 = R1, Sigma2 = R2, Sigma12 = R12, w1init = w1init, w2init = w2init)
+    lamseq1 <- lambda_seq[[1]]
+    lamseq2 <- lambda_seq[[2]]
+    fitresult <- find_w12bic(n = n, R1 = R1, R2 = R2, R12 = R12,
+                             lamseq1 = lamseq1, lamseq2 = lamseq2,
+                             w1init = w1init, w2init = w2init, BICtype = BICtype, maxiter = maxiter, tol = tol,
+                             trace = trace)
+  }
   w1 <- fitresult$w1
   w2 <- fitresult$w2
   cancor <- as.numeric(crossprod(w1, R12 %*% w2))
