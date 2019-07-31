@@ -125,9 +125,9 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 
     # If one scalar value is used on input for lambda sequence, then I track the whole objective function, which should be strictly increasing. On the other hand, when a vector is used on input for lambda sequence, then I track only the objective function without penalty part. Since we alternatively choose and update the tuning parameter, the objective function wouldn't be strictly increasing with changing tuning parameter values.
     if(length(lamseq1) == 1 & length(lamseq2) == 1){
-      obj[iter] <- t(w1)%*%R12%*%w2 - lamseq1*sum(abs(w1)) - lamseq2*sum(abs(w2))
+      obj[iter] <- as.numeric(crossprod(w1, R12 %*% w2)) - lamseq1*sum(abs(w1)) - lamseq2*sum(abs(w2))
     } else {
-      obj[iter] <- t(w1)%*%R12%*%w2
+      obj[iter] <- as.numeric(crossprod(w1, R12 %*% w2))
     }
 
     # Since there is no previous objective value at the first iteration,
@@ -235,7 +235,7 @@ mixedCCA <- function(X1, X2, type1, type2,
 
   w1 <- fitresult$w1
   w2 <- fitresult$w2
-  cancor <- t(w1)%*%R12%*%w2
+  cancor <- as.numeric(crossprod(w1, R12 %*% w2))
 
   return(list(KendallR = R,
               lambda_seq = lambda_seq,

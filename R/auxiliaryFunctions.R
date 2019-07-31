@@ -63,7 +63,7 @@ cancorhat <- function(w1, w2, Sigma1, Sigma2, Sigma12){
   if (norm1 == 0 | norm2 == 0){
     output <- 0
   } else {
-    output <- abs(t(w1)%*%Sigma12%*%w2)/sqrt(norm1)/sqrt(norm2)
+    output <- as.numeric(crossprod(w1, Sigma12 %*% w2))/sqrt(norm1)/sqrt(norm2)
   }
   return(output)
 }
