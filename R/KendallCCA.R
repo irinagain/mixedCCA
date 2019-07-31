@@ -80,7 +80,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
     iter = iter + 1
     ### for w1
     d = R12%*%w2init
-    if(min(lamseq1) >= max(abs(d))){
+    if(max(lamseq1) >= max(abs(d))){
       # since we're not interested in zero solutions, we do not want to even consider the large lambda values which result in zero solutions.
       # It might lead to the shorter length of lambda sequence.
       ind <- which(lamseq1 >= max(abs(d)))
@@ -100,7 +100,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 
     ### for w2
     d = t(R12)%*%w1init
-    if(min(lamseq2) >= max(abs(d))){
+    if(max(lamseq2) >= max(abs(d))){
       # since we're not interested in zero solutions, we do not want to even consider the large lambda values which result in zero solutions.
       # It might lead to the shorter length of lambda sequence.
       ind <- which(lamseq2 >= max(abs(d)))
@@ -238,7 +238,7 @@ mixedCCA <- function(X1, X2, type1, type2,
   cancor <- as.numeric(crossprod(w1, R12 %*% w2))
 
   return(list(KendallR = R,
-              lambda_seq = lambda_seq,
+              lambda_seq = list(lamseq1, lamseq2),
               w1 = w1, w2 = w2,
               cancor = cancor,
               fitresult = fitresult))
