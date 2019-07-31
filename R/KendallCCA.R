@@ -70,6 +70,9 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
   p1 = ncol(R1)
   p2 = ncol(R2)
 
+  w1init <- normalizedW(w1init, R1)
+  w2init <- normalizedW(w2init, R2)
+
   diffobj = 1000
   iter = 0
   w1 <- w2 <- c()
@@ -80,10 +83,11 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
     iter = iter + 1
     ### for w1
     d = R12%*%w2init
-    if(max(lamseq1) >= max(abs(d))){
+    ind = NULL # do not want to use previous iteration results.
+    if(max(lamseq1) >= max(abs(d)) | iter == 1){
       # since we're not interested in zero solutions, we do not want to even consider the large lambda values which result in zero solutions.
       # It might lead to the shorter length of lambda sequence.
-      ind <- which(lamseq1 >= max(abs(d)))
+      ind <- which(lamseq1 >= max(abs(d))); if(iter == 1 & is.null(ind)){ ind <- 1 }  # At the first iteration, due to some computation roundings, max(lamseq1) >= max(abs(d)) does not hold, but it should ignore the largest lambda value.
       res1 <- lassobic(n = n, R1 = R1, d = d, w1init = w1init, lamseq = lamseq1[-ind], BICtype = BICtype)
     } else {
       res1 <- lassobic(n = n, R1 = R1, d = d, w1init = w1init, lamseq = lamseq1, BICtype = BICtype)
@@ -100,10 +104,11 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 
     ### for w2
     d = t(R12)%*%w1init
-    if(max(lamseq2) >= max(abs(d))){
+    ind = NULL # do not want to use previous iteration results.
+    if(max(lamseq2) >= max(abs(d)) | iter == 1){
       # since we're not interested in zero solutions, we do not want to even consider the large lambda values which result in zero solutions.
       # It might lead to the shorter length of lambda sequence.
-      ind <- which(lamseq2 >= max(abs(d)))
+      ind <- which(lamseq2 >= max(abs(d))); if(iter == 1 & is.null(ind)){ ind <- 1 }  # At the first iteration, due to some computation roundings, max(lamseq1) >= max(abs(d)) does not hold, but it should ignore the largest lambda value.
       res2 <- lassobic(n = n, R1 = R2, d = d, w1init = w2init, lamseq = lamseq2[-ind], BICtype = BICtype)
     } else {
       res2 <- lassobic(n = n, R1 = R2, d = d, w1init = w2init, lamseq = lamseq2, BICtype = BICtype)
