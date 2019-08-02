@@ -84,7 +84,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
     ### for w1
     d = R12%*%w2init
     ind = NULL # do not want to use previous iteration results.
-    if(max(lamseq1) >= max(abs(d)) | iter == 1){
+    if((max(lamseq1) >= max(abs(d)) | iter == 1) & length(lamseq1) > 1){
       # since we're not interested in zero solutions, we do not want to even consider the large lambda values which result in zero solutions.
       # It might lead to the shorter length of lambda sequence.
       ind <- which(lamseq1 >= max(abs(d))); if(iter == 1 & length(ind) == 0){ ind <- 1 }  # At the first iteration, due to some computation roundings, max(lamseq1) >= max(abs(d)) does not hold, but it should ignore the largest lambda value.
@@ -105,7 +105,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
     ### for w2
     d = t(R12)%*%w1init
     ind = NULL # do not want to use previous iteration results.
-    if(max(lamseq2) >= max(abs(d)) | iter == 1){
+    if((max(lamseq2) >= max(abs(d)) | iter == 1) & length(lamseq2) > 1){
       # since we're not interested in zero solutions, we do not want to even consider the large lambda values which result in zero solutions.
       # It might lead to the shorter length of lambda sequence.
       ind <- which(lamseq2 >= max(abs(d))); if(iter == 1 & length(ind) == 0){ ind <- 1 }  # At the first iteration, due to some computation roundings, max(lamseq1) >= max(abs(d)) does not hold, but it should ignore the largest lambda value.
