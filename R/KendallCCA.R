@@ -245,8 +245,11 @@ mixedCCA <- function(X1, X2, type1, type2,
     lamseq2 <- lambda_seq[[2]]
     fitresult <- find_w12bic(n = n, R1 = R1, R2 = R2, R12 = R12,
                              lamseq1 = lamseq1, lamseq2 = lamseq2,
-                             w1init = w1init, w2init = w2init, BICtype = BICtype, maxiter = maxiter, tol = tol,
+                             w1init = fitresult$w1, w2init = fitresult$w2, BICtype = BICtype, maxiter = maxiter, tol = tol,
                              trace = trace)
+    if(length(fitresult$obj)<=maxiter){
+      cat("Converged.\n")
+    }
   }
   w1 <- fitresult$w1
   w2 <- fitresult$w2
