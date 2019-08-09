@@ -79,7 +79,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
   # For tracking the progress
   wmat1 <- wmat2 <- lam1.iter <- lam2.iter <- obj <- c()
 
-  while( iter <= maxiter & diffobj > tol ){
+  while( iter <= maxiter & abs(diffobj) > tol ){
     iter = iter + 1
     ### for w1
     d = R12%*%w2init
@@ -137,7 +137,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 
     # Since there is no previous objective value at the first iteration,
     if(iter > 1){
-      diffobj <- abs(obj[iter] - obj[iter-1])/obj[iter-1]
+      diffobj <- abs(obj[iter] - obj[iter-1])/abs(obj[iter-1])
     }
 
     # selected lambda values and objective value at each iteration will be printed
@@ -298,7 +298,7 @@ standardCCA <- function(S1, S2, S12, tol = 1e-4){
   subset <- which(S2eig$values > tol)
   S2isqrt <- as.matrix(S2eig$vectors[, subset] %*% diag(1/sqrt(S2eig$values[subset])) %*% t(S2eig$vectors[, subset]))
 
-  outsvd <- irlba::irlba(S1isqrt %*% S12 %*% S2isqrt, nv = 1) # svd2(S1isqrt %*% S12 %*% S2isqrt, nu = 1, nv = 1)
+  outsvd <- irlba::irlba(S1isqrt %*% S12 %*% S2isqrt, nv = 1, tol = 1e-9) # svd2(S1isqrt %*% S12 %*% S2isqrt, nu = 1, nv = 1)
 
   # We are considering only one pair of canonical covariates.
   cancor <- max(outsvd$d)
