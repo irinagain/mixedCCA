@@ -137,7 +137,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 
     # Since there is no previous objective value at the first iteration,
     if(iter > 1){
-      diffobj <- abs(obj[iter] - obj[iter-1])/abs(obj[iter-1])
+      diffobj <- abs( (obj[iter] - obj[iter-1])/obj[iter-1] )
     }
 
     # selected lambda values and objective value at each iteration will be printed
@@ -248,7 +248,9 @@ mixedCCA <- function(X1, X2, type1, type2,
                              w1init = fitresult$w1, w2init = fitresult$w2, BICtype = BICtype, maxiter = maxiter, tol = tol,
                              trace = trace)
     if(length(fitresult$obj)<=maxiter){
-      cat("Converged.\n")
+      len <- fitresult$obj
+      diffobj <- abs((fitresult$obj[len] - fitresult$obj[len-1])/fitresult$obj[len-1])
+      cat("Converged. The final difference of objective function = ", diffobj, " where tol = ", tol, " with BICtype = ", BICtype, "\n")
     }
   }
   w1 <- fitresult$w1
@@ -269,7 +271,7 @@ mixedCCA <- function(X1, X2, type1, type2,
 
 #' @title Internal standard CCA function.
 #'
-#' @description This function is modified from original CCA function for two reasons: to deal with only positive eigenvalues larger than the tolerance and to compuate SVD using \code{\link[irlba]{irlba}} algorithm. Inputs should be correlation or covariance matrices of each data set and between datasets. This function returns only the first pair of canonical covariates.
+#' @description This function is modified from original CCA function for two reasons: to deal with only positive eigenvalues larger than the tolerance when calculating the inverse of the matrices and to compuate Singular Value Decomposition using \code{\link[irlba]{irlba}} algorithm. Inputs should be correlation or covariance matrices of each data set and between datasets. This function returns only the first pair of canonical covariates.
 #'
 #' @param S1 correlation/covariance matrix of dataset \code{X1}.
 #' @param S2 correlation/covariance matrix of dataset \code{X2}.
@@ -290,6 +292,10 @@ standardCCA <- function(S1, S2, S12, tol = 1e-4){
   S1 <- as.matrix(S1)
   S2 <- as.matrix(S2)
   S12 <- matrix(S12, nrow = dim(S1)[1], ncol = dim(S2)[1])
+
+  if(!isSymmetric(S1)|!isSymmetric(S2)){
+    stop("The inuput matrices S1 and S2 should be symmetric.\n")
+  }
 
   S1eig <- eigen(S1, symmetric=TRUE)
   subset <- which(S1eig$values > tol)
