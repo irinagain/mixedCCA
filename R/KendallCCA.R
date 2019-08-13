@@ -247,8 +247,8 @@ mixedCCA <- function(X1, X2, type1, type2,
                              lamseq1 = lamseq1, lamseq2 = lamseq2,
                              w1init = fitresult$w1, w2init = fitresult$w2, BICtype = BICtype, maxiter = maxiter, tol = tol,
                              trace = trace)
-    if(length(fitresult$obj)<=maxiter){
-      len <- fitresult$obj
+    if(length(fitresult$obj)<=maxiter){ # If this additional step is converged, the following information will be printed.
+      len <- length(fitresult$obj) # the length of traced object to extract the last element.
       diffobj <- abs((fitresult$obj[len] - fitresult$obj[len-1])/fitresult$obj[len-1])
       cat("Converged. The final difference of objective function = ", diffobj, " where tol = ", tol, " with BICtype = ", BICtype, "\n")
     }
