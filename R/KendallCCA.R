@@ -211,8 +211,9 @@ mixedCCA <- function(X1, X2, type1, type2,
   R2 <- as.matrix(R[(p1+1):p, (p1+1):p])
   R12 <- as.matrix(R[1:p1, (p1+1):p])
 
+  ### Default initial starting point
   if (is.null(w1init) | is.null(w2init)){
-      RCCA <- standardCCA(S1 = R1, S2 = R2, S12 = R12)
+      RCCA <- myrcc(R1 = R1, R2 = R2, R12 = R12, lambda1 = 0.25, lambda2 = 0.25)
       if (is.null(w1init)){
         w1init <- as.matrix(RCCA$w1, ncol=1)
       }
