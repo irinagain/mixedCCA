@@ -32,18 +32,18 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e
   }
 
   if (type == "trunc"){
-    if(sum(X<0)>0) {stop("The data contains negative values.")}
-    if(sum(colSums(X==0))==0){
+    if(sum(X < 0) > 0) {stop("The data contains negative values.")}
+    if(sum(colSums(X == 0)) == 0){
       message("The data does not contain zeros. Consider changing the type to \"continuous\".")
     }
   }
   if (type == "binary"){
-    if(sum(!(X %in% c(0, 1)))>0) {stop("The data is not \"binary\".")}
+    if(sum(!(X %in% c(0, 1))) > 0) {stop("The data is not \"binary\".")}
   }
   if (type == "continuous"){
     R1 <- sin(pi/2 * pcaPP::cor.fk(X))
   } else {
-    zratio1 <- colMeans(X==0)
+    zratio1 <- colMeans(X == 0)
     R1 <- fromKtoR(Kendall_matrix(X), zratio = zratio1, type = type, tol = tol)
   }
 
@@ -52,8 +52,11 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e
     R1 <- as.matrix(Matrix::nearPD(R1, corr = TRUE)$mat)
   }
   # shrinkage method
-  if(rho<0 | rho>1){ stop("rho must be be between 0 and 1.") }
-  R1 <- (1-rho)*R1 + rho*diag(p1)
+  if(rho < 0 | rho > 1){ stop("rho must be be between 0 and 1.") }
+  R1 <- (1 - rho)*R1 + rho*diag(p1)
+
+  ### Want to keep the correct column names for each matrices
+  colnames(R1) <- rownames(R1) <- c(colnames(X))
 
   return(list(type = type, R = R1))
 }
@@ -99,49 +102,51 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
   }
 
   if (type1 == "trunc"){
-    if(sum(X1<0)>0) {stop("The data X1 contains negative values.")}
-    if(sum(colSums(X1==0))==0){
+    if(sum(X1 < 0) > 0) {stop("The data X1 contains negative values.")}
+    if(sum(colSums(X1 == 0)) == 0){
       message("The data X1 does not contain zeros. Consider changing the type to \"continuous\".")
     }
   }
   if (type1 == "binary"){
-    if(sum(!(X1 %in% c(0, 1)))>0) {stop("The data X1 is not \"binary\".")}
+    if(sum(!(X1 %in% c(0, 1))) > 0) {stop("The data X1 is not \"binary\".")}
   }
 
   if (type2 == "trunc"){
-    if(sum(X2<0)>0) {stop("The data X2 contains negative values.")}
-    if(sum(colSums(X2==0))==0){
+    if(sum(X2 < 0) > 0) {stop("The data X2 contains negative values.")}
+    if(sum(colSums(X2 == 0)) == 0){
       message("The data X2 does not contain zeros. Consider changing the type to \"continuous\".")
     }
   }
   if (type2 == "binary"){
-    if(sum(!(X2 %in% c(0, 1)))>0) {stop("The data X2 is not \"binary\".")}
+    if(sum(!(X2 %in% c(0, 1))) > 0) {stop("The data X2 is not \"binary\".")}
   }
 
   if (type1 == type2) {
-    # both datasets are of the same type
+    # both datasets are of the same type. CC, TT or BB case.
+
     Xcomb <- cbind(X1, X2)
     Rall <- estimateR(Xcomb, type = type1, use.nearPD = use.nearPD, rho = rho, tol = tol)$R
     R1 <- Rall[1:p1, 1:p1]
     R2 <- Rall[(p1 + 1):(p1 + p2), (p1 + 1):(p1 + p2)]
     R12 <- Rall[1:p1, (p1 + 1):(p1 + p2)]
+
   } else {
     # datasets are of different type
-    if (type1 == "continuous"){
-      zratio2 <- colMeans(X2==0)
+    if (type1 == "continuous"){ # These are CT or CB case.
+      zratio2 <- colMeans(X2 == 0)
       R1 <- sin(pi/2 * pcaPP::cor.fk(X1))
       R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type2, tol = tol)
       R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio2 = zratio2, type1 = type1, type2 = type2, tol = tol)
       Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
-    } else if (type2 == "continuous"){
-      zratio1 <- colMeans(X1==0)
+    } else if (type2 == "continuous"){ # These are TC or BC case.
+      zratio1 <- colMeans(X1 == 0)
       R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type1, tol = tol)
       R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, type1 = type1, type2 = type2, tol = tol)
       R2 <- sin(pi/2 * pcaPP::cor.fk(X2))
       Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
-    } else {
-      zratio1 <- colMeans(X1==0)
-      zratio2 <- colMeans(X2==0)
+    } else { # These are TB or BT case.
+      zratio1 <- colMeans(X1 == 0)
+      zratio2 <- colMeans(X2 == 0)
       R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type1, tol = tol)
       R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type2, tol = tol)
       R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, zratio2 = zratio2, type1 = type1, type2 = type2, tol = tol)
@@ -153,7 +158,13 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
       Rall <- as.matrix(Matrix::nearPD(Rall, corr = TRUE)$mat)
     }
     # shrinkage method
-    Rall <- (1-rho)*Rall + rho*diag(p1+p2)
+    if(rho < 0 | rho > 1){ stop("rho must be be between 0 and 1.") }
+    Rall <- (1 - rho)*Rall + rho*diag(p1 + p2)
+
+    ### Want to keep the correct column names for each matrices
+    colnames(Rall) <- rownames(Rall) <- c(colnames(X1), colnames(X2))
+
+    # For conveninence, split the R matrices
     R1 <- Rall[1:p1, 1:p1]
     R2 <- Rall[(p1 + 1):(p1 + p2), (p1 + 1):(p1 + p2)]
     R12 <- Rall[1:p1, (p1 + 1):(p1 + p2)]
