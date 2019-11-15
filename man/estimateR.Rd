@@ -6,10 +6,10 @@
 \title{Estimate latent correlation matrix}
 \usage{
 estimateR(X, type = "trunc", use.nearPD = TRUE, rho = 0.01,
-  tol = 0.001)
+  tol = 0.001, verbose = TRUE)
 
 estimateR_mixed(X1, X2, type1 = "trunc", type2 = "continuous",
-  use.nearPD = TRUE, rho = 0.01, tol = 0.001)
+  use.nearPD = TRUE, rho = 0.01, tol = 0.001, verbose = TRUE)
 }
 \arguments{
 \item{X}{A numeric data matrix (n by p), n is the sample size and p is the number of variables.}
@@ -21,6 +21,8 @@ estimateR_mixed(X1, X2, type1 = "trunc", type2 = "continuous",
 \item{rho}{Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.}
 
 \item{tol}{Desired accuracy when calculating the solution of bridge function.}
+
+\item{verbose}{If \code{verbose = FALSE}, printing information whether nearPD is used or not is disabled. The defalut value is TRUE.}
 
 \item{X1}{A numeric data matrix (n by p1).}
 

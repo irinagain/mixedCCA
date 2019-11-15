@@ -8,6 +8,7 @@
 #' @param use.nearPD A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).
 #' @param rho Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.
 #' @param tol Desired accuracy when calculating the solution of bridge function.
+#' @param verbose If \code{verbose = FALSE}, printing information whether nearPD is used or not is disabled. The defalut value is TRUE.
 #' @return \code{estimateR} returns
 #' \itemize{
 #'       \item{type: }{Type of the data matrix \code{X}}
@@ -21,7 +22,7 @@
 #' @import stats
 #' @importFrom Matrix nearPD
 #' @example man/examples/estimateR_ex.R
-estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e-3){
+estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e-3, verbose = TRUE){
   X <- as.matrix(X)
 
   n <- nrow(X)
@@ -48,7 +49,9 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e
   }
 
   if ( use.nearPD == TRUE & min(eigen(R1)$values) < 0 ) {
-    message(" minimum eigenvalue of correlation estimator is ", min(eigen(R1)$values), "\n nearPD is used")
+    if( verbose ){
+      message(" minimum eigenvalue of correlation estimator is ", min(eigen(R1)$values), "\n nearPD is used")
+    }
     R1 <- as.matrix(Matrix::nearPD(R1, corr = TRUE)$mat)
   }
   # shrinkage method
@@ -73,6 +76,7 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e
 #' @inheritParams use.nearPD
 #' @inheritParams rho
 #' @inheritParams tol
+#' @inheritParams verbose
 #'
 #' @return \code{estimateR_mixed} returns
 #' \itemize{
@@ -86,7 +90,7 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e
 #'
 #' @export
 #' @importFrom Matrix nearPD
-estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.nearPD = TRUE, rho = 0.01, tol = 1e-3){
+estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.nearPD = TRUE, rho = 0.01, tol = 1e-3, verbose = TRUE){
   X1 <- as.matrix(X1)
   X2 <- as.matrix(X2)
 
@@ -154,7 +158,9 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
     }
 
     if ( use.nearPD == TRUE & min(eigen(Rall)$values) < 0 ) {
-      message(" minimum eigenvalue of correlation estimator is ", min(eigen(Rall)$values), "\n nearPD is used")
+      if( verbose ){
+        message(" minimum eigenvalue of correlation estimator is ", min(eigen(Rall)$values), "\n nearPD is used")
+      }
       Rall <- as.matrix(Matrix::nearPD(Rall, corr = TRUE)$mat)
     }
     # shrinkage method
