@@ -6,7 +6,7 @@
 #' @param X A numeric data matrix (n by p), n is the sample size and p is the number of variables.
 #' @param type A type of variables in \code{X}, must be one of "continuous", "binary" or "trunc".
 #' @param use.nearPD A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).
-#' @param rho Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.
+#' @param nu Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.
 #' @param tol Desired accuracy when calculating the solution of bridge function.
 #' @param verbose If \code{verbose = FALSE}, printing information whether nearPD is used or not is disabled. The defalut value is TRUE.
 #' @return \code{estimateR} returns
@@ -22,7 +22,7 @@
 #' @import stats
 #' @importFrom Matrix nearPD
 #' @example man/examples/estimateR_ex.R
-estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e-3, verbose = TRUE){
+estimateR <- function(X, type = "trunc", use.nearPD = TRUE, nu = 0.01, tol = 1e-3, verbose = TRUE){
   X <- as.matrix(X)
 
   n <- nrow(X)
@@ -55,8 +55,8 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e
     R1 <- as.matrix(Matrix::nearPD(R1, corr = TRUE)$mat)
   }
   # shrinkage method
-  if(rho < 0 | rho > 1){ stop("rho must be be between 0 and 1.") }
-  R1 <- (1 - rho)*R1 + rho*diag(p1)
+  if(nu < 0 | nu > 1){ stop("nu must be be between 0 and 1.") }
+  R1 <- (1 - nu)*R1 + nu*diag(p1)
 
   ### Want to keep the correct column names for each matrices
   colnames(R1) <- rownames(R1) <- c(colnames(X))
@@ -74,7 +74,7 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e
 #' @param type1 A type of variables in \code{X1}, must be one of "continuous", "binary" or "trunc".
 #' @param type2 A type of variables in \code{X2}, must be one of "continuous", "binary" or "trunc".
 #' @inheritParams use.nearPD
-#' @inheritParams rho
+#' @inheritParams nu
 #' @inheritParams tol
 #' @inheritParams verbose
 #'
@@ -90,7 +90,7 @@ estimateR <- function(X, type = "trunc", use.nearPD = TRUE, rho = 0.01, tol = 1e
 #'
 #' @export
 #' @importFrom Matrix nearPD
-estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.nearPD = TRUE, rho = 0.01, tol = 1e-3, verbose = TRUE){
+estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.nearPD = TRUE, nu = 0.01, tol = 1e-3, verbose = TRUE){
   X1 <- as.matrix(X1)
   X2 <- as.matrix(X2)
 
@@ -129,7 +129,7 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
     # both datasets are of the same type. CC, TT or BB case.
 
     Xcomb <- cbind(X1, X2)
-    Rall <- estimateR(Xcomb, type = type1, use.nearPD = use.nearPD, rho = rho, tol = tol)$R
+    Rall <- estimateR(Xcomb, type = type1, use.nearPD = use.nearPD, nu = nu, tol = tol)$R
     R1 <- Rall[1:p1, 1:p1]
     R2 <- Rall[(p1 + 1):(p1 + p2), (p1 + 1):(p1 + p2)]
     R12 <- Rall[1:p1, (p1 + 1):(p1 + p2)]
@@ -164,8 +164,8 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", use.n
       Rall <- as.matrix(Matrix::nearPD(Rall, corr = TRUE)$mat)
     }
     # shrinkage method
-    if(rho < 0 | rho > 1){ stop("rho must be be between 0 and 1.") }
-    Rall <- (1 - rho)*Rall + rho*diag(p1 + p2)
+    if(nu < 0 | nu > 1){ stop("nu must be be between 0 and 1.") }
+    Rall <- (1 - nu)*Rall + nu*diag(p1 + p2)
 
     ### Want to keep the correct column names for each matrices
     colnames(Rall) <- rownames(Rall) <- c(colnames(X1), colnames(X2))
