@@ -4,8 +4,20 @@
 \alias{find_w12bic}
 \title{Internal mixedCCA function finding w1 and w2 given R1, R2 and R12}
 \usage{
-find_w12bic(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype,
-  maxiter = 100, tol = 0.01, trace = FALSE)
+find_w12bic(
+  n,
+  R1,
+  R2,
+  R12,
+  lamseq1,
+  lamseq2,
+  w1init,
+  w2init,
+  BICtype,
+  maxiter = 100,
+  tol = 0.01,
+  trace = FALSE
+)
 }
 \arguments{
 \item{n}{Sample size}

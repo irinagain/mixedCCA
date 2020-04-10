@@ -5,20 +5,38 @@
 \alias{estimateR_mixed}
 \title{Estimate latent correlation matrix}
 \usage{
-estimateR(X, type = "trunc", use.nearPD = TRUE, rho = 0.01,
-  tol = 0.001, verbose = TRUE)
+estimateR(
+  X,
+  type = "trunc",
+  method = "approx",
+  use.nearPD = TRUE,
+  nu = 0.01,
+  tol = 0.001,
+  verbose = TRUE
+)
 
-estimateR_mixed(X1, X2, type1 = "trunc", type2 = "continuous",
-  use.nearPD = TRUE, rho = 0.01, tol = 0.001, verbose = TRUE)
+estimateR_mixed(
+  X1,
+  X2,
+  type1 = "trunc",
+  type2 = "continuous",
+  method = "approx",
+  use.nearPD = TRUE,
+  nu = 0.01,
+  tol = 0.001,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{X}{A numeric data matrix (n by p), n is the sample size and p is the number of variables.}
 
 \item{type}{A type of variables in \code{X}, must be one of "continuous", "binary" or "trunc".}
 
+\item{method}{Either "original" method or "approx". If \code{method = "approx"}, multilinear approximation method is used, which is much faster than the original method. If \code{method = "original"}, optimization of the bridge inverse function is used. The default is "approx".}
+
 \item{use.nearPD}{A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).}
 
-\item{rho}{Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.}
+\item{nu}{Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.}
 
 \item{tol}{Desired accuracy when calculating the solution of bridge function.}
 
