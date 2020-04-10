@@ -1,7 +1,7 @@
 Package: mixedCCA
 Type: Package
 Title: Sparse CCA for high-dimensional mixed data
-Version: 1.1.4
+Version: 1.2.0
 Date: 2019-07-29
 Author: Grace Yoon and Irina Gaynanova
 Maintainer: Grace Yoon <gyoon@stat.tamu.edu>
@@ -9,7 +9,8 @@ Description: Semi-parametric approach for sparse CCA which can handle mixed data
 License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 3.0.1), stats, MASS
-Imports: Rcpp, RcppArmadillo, pcaPP, Matrix, fMultivar, mnormt, irlba
+Imports: Rcpp, RcppArmadillo, pcaPP, Matrix, fMultivar, mnormt, irlba, chebpol
 NeedsCompilation: yes
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 LinkingTo: Rcpp, RcppArmadillo
+LazyData: true
