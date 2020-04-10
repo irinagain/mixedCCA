@@ -107,6 +107,39 @@ range(colMeans(X2 == 0))
 # Estimate latent correlation matrix
 estimateR(X1, type = "trunc")
 estimateR_mixed(X1, X2, type1 = "trunc", type2 = "trunc")
+
+
+
+##### Additional mixedCCA example after the major updates with fast approximation.
+
+library(microbenchmark)
+# devtools::install_github("GraceYoon/SPRING")
+library(SPRING)
+data("QMP") # data dimension: 106 (sample size) by 91 (dimension)
+microbenchmark(R_approx <- estimateR(QMP, type = "trunc", method = "approx"), times = 1)
+
+
+\dontrun{
+  microbenchmark(R_org <- estimateR(QMP, type = "trunc", method = "original"),
+                 R_approx <- estimateR(QMP, type = "trunc", method = "approx"),
+                 times = 1)
+
+  ###### One time microbenchmark result
+  # Unit: seconds
+  #                                                       expr
+  # R_org <- estimateR(QMP, type = "trunc", method = "original")
+  # R_approx <- estimateR(QMP, type = "trunc", method = "approx")
+  #     min        lq        mean    median        uq       max neval
+  # 58.760676 58.760676 58.760676 58.760676 58.760676 58.760676     1
+  #  2.134736  2.134736  2.134736  2.134736  2.134736  2.134736     1
+
+  max(abs(R_org$R - R_approx$R))
+  # [1] 0.0006894046
+  mean(abs(R_org$R - R_approx$R))
+  # [1] 0.0001085416
+}
+
+
 }
 \references{
 Fan J., Liu H., Ning Y. and Zou H. (2017) \href{https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssb.12168}{"High dimensional semiparametric latent graphicalmodel for mixed data"}, \emph{J. R. Statist. Soc. B}, 79: 405-421.

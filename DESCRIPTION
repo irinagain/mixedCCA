@@ -10,6 +10,7 @@ License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 3.0.1), stats, MASS
 Imports: Rcpp, RcppArmadillo, pcaPP, Matrix, fMultivar, mnormt, irlba, chebpol
+Suggests: SPRING, microbenchmark
 NeedsCompilation: yes
 RoxygenNote: 7.1.0
 LinkingTo: Rcpp, RcppArmadillo
