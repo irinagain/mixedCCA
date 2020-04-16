@@ -27,6 +27,7 @@ fromKtoR_ml <- function(K, zratio = NULL, type = "trunc", tol = 1e-3) {
           hatR <- (hatR + t(hatR))/2 # even without this step, hatR is very close to symmetric but not exactly. (symmetric within the error 1e-5)
 
           # check if there is any element that is outside of the safe boundary for interpolation.
+          ##### only considering off-diagonal matrix.
           cutoff_matrix <- matrix(cutoff(zratio1 = rep(zratio, d1), zratio2 = rep(zratio, each = d1)), nrow = d1)
           ind_cutoff <- which(abs(K[upper.tri(K)]) > cutoff_matrix[upper.tri(cutoff_matrix)], arr.ind = TRUE)
 
@@ -94,15 +95,14 @@ fromKtoR_ml_mixed <- function(K12, zratio1 = NULL, zratio2 = NULL, type1 = "trun
     cutoff_matrix <- matrix(cutoff(zratio1 = rep(zratio1, d2), zratio2 = rep(zratio2, each = d1)), nrow = d1)
     ind_cutoff <- which(abs(K12) > cutoff_matrix, arr.ind = TRUE)
 
-    if (length(ind_cutoff) > 0){
+    if (nrow(ind_cutoff) > 0){
       bridge <- bridge_select(type1 = type1, type2 = type2)
-      ind_cutoff_mat <- cbind(floor(sqrt(ind_cutoff*2)), ceiling(sqrt(ind_cutoff*2)))
 
-      for(rind in 1:length(ind_cutoff)){
+      for(rind in 1:nrow(ind_cutoff)){
         # if there is any element that is outside of the safe boundary for interpolation,
         # then calculate using original bridge inverse optimization elementwise.
-        i <- ind_cutoff_mat[rind, 1]
-        j <- ind_cutoff_mat[rind, 2]
+        i <- ind_cutoff[rind, 1]
+        j <- ind_cutoff[rind, 2]
         if(sum(c(type1, type2) %in% c("trunc", "continuous")) == 2 & sum(zratio1[i], zratio2[j]) < 1e-6){
           hatR[i, j] <- hatR[j, i] <- sin(pi/2 * K12[i, j])
         } else {
