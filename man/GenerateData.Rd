@@ -4,9 +4,21 @@
 \alias{GenerateData}
 \title{Mixed type simulation data generator for sparse CCA}
 \usage{
-GenerateData(n, trueidx1, trueidx2, Sigma1, Sigma2, maxcancor,
-  copula1 = "no", copula2 = "no", type1 = "continuous",
-  type2 = "continuous", muZ = NULL, c1 = NULL, c2 = NULL)
+GenerateData(
+  n,
+  trueidx1,
+  trueidx2,
+  Sigma1,
+  Sigma2,
+  maxcancor,
+  copula1 = "no",
+  copula2 = "no",
+  type1 = "continuous",
+  type2 = "continuous",
+  muZ = NULL,
+  c1 = NULL,
+  c2 = NULL
+)
 }
 \arguments{
 \item{n}{Sample size}

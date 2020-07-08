@@ -4,8 +4,15 @@
 \alias{lambdaseq_generate}
 \title{Internal data-driven lambda sequence generating function.}
 \usage{
-lambdaseq_generate(nlamseq = 20, lam.eps = 0.01, Sigma1, Sigma2,
-  Sigma12, w1init = NULL, w2init = NULL)
+lambdaseq_generate(
+  nlamseq = 20,
+  lam.eps = 0.01,
+  Sigma1,
+  Sigma2,
+  Sigma12,
+  w1init = NULL,
+  w2init = NULL
+)
 }
 \arguments{
 \item{nlamseq}{The length of lambda sequence}

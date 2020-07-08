@@ -5,20 +5,38 @@
 \alias{estimateR_mixed}
 \title{Estimate latent correlation matrix}
 \usage{
-estimateR(X, type = "trunc", use.nearPD = TRUE, rho = 0.01,
-  tol = 0.001, verbose = TRUE)
+estimateR(
+  X,
+  type = "trunc",
+  method = "approx",
+  use.nearPD = TRUE,
+  nu = 0.01,
+  tol = 0.001,
+  verbose = TRUE
+)
 
-estimateR_mixed(X1, X2, type1 = "trunc", type2 = "continuous",
-  use.nearPD = TRUE, rho = 0.01, tol = 0.001, verbose = TRUE)
+estimateR_mixed(
+  X1,
+  X2,
+  type1 = "trunc",
+  type2 = "continuous",
+  method = "approx",
+  use.nearPD = TRUE,
+  nu = 0.01,
+  tol = 0.001,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{X}{A numeric data matrix (n by p), n is the sample size and p is the number of variables.}
 
 \item{type}{A type of variables in \code{X}, must be one of "continuous", "binary" or "trunc".}
 
+\item{method}{Either "original" method or "approx". If \code{method = "approx"}, multilinear approximation method is used, which is much faster than the original method. If \code{method = "original"}, optimization of the bridge inverse function is used. The default is "approx".}
+
 \item{use.nearPD}{A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).}
 
-\item{rho}{Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.}
+\item{nu}{Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.}
 
 \item{tol}{Desired accuracy when calculating the solution of bridge function.}
 
@@ -89,6 +107,39 @@ range(colMeans(X2 == 0))
 # Estimate latent correlation matrix
 estimateR(X1, type = "trunc")
 estimateR_mixed(X1, X2, type1 = "trunc", type2 = "trunc")
+
+
+
+##### Additional mixedCCA example after the major updates with fast approximation.
+
+library(microbenchmark)
+# devtools::install_github("GraceYoon/SPRING")
+library(SPRING)
+data("QMP") # data dimension: 106 (sample size) by 91 (dimension)
+microbenchmark(R_approx <- estimateR(QMP, type = "trunc", method = "approx"), times = 1)
+
+
+\dontrun{
+  microbenchmark(R_org <- estimateR(QMP, type = "trunc", method = "original"),
+                 R_approx <- estimateR(QMP, type = "trunc", method = "approx"),
+                 times = 1)
+
+  ###### One time microbenchmark result
+  # Unit: seconds
+  #                                                       expr
+  # R_org <- estimateR(QMP, type = "trunc", method = "original")
+  # R_approx <- estimateR(QMP, type = "trunc", method = "approx")
+  #     min        lq        mean    median        uq       max neval
+  # 58.760676 58.760676 58.760676 58.760676 58.760676 58.760676     1
+  #  2.134736  2.134736  2.134736  2.134736  2.134736  2.134736     1
+
+  max(abs(R_org$R - R_approx$R))
+  # [1] 0.0006894046
+  mean(abs(R_org$R - R_approx$R))
+  # [1] 0.0001085416
+}
+
+
 }
 \references{
 Fan J., Liu H., Ning Y. and Zou H. (2017) \href{https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssb.12168}{"High dimensional semiparametric latent graphicalmodel for mixed data"}, \emph{J. R. Statist. Soc. B}, 79: 405-421.

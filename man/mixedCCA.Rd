@@ -4,10 +4,23 @@
 \alias{mixedCCA}
 \title{Sparse CCA for data of mixed types with BIC criterion}
 \usage{
-mixedCCA(X1, X2, type1, type2, lamseq1 = NULL, lamseq2 = NULL,
-  nlamseq = 20, lam.eps = 0.01, w1init = NULL, w2init = NULL,
-  BICtype, KendallR = NULL, maxiter = 100, tol = 0.01,
-  trace = FALSE)
+mixedCCA(
+  X1,
+  X2,
+  type1,
+  type2,
+  lamseq1 = NULL,
+  lamseq2 = NULL,
+  nlamseq = 20,
+  lam.eps = 0.01,
+  w1init = NULL,
+  w2init = NULL,
+  BICtype,
+  KendallR = NULL,
+  maxiter = 100,
+  tol = 0.01,
+  trace = FALSE
+)
 }
 \arguments{
 \item{X1}{A numeric data matrix (n by p1).}

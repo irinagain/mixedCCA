@@ -1,9 +1,9 @@
 #' Construct a correlation matrix
 #'
 #' Functions to create autocorrelation matrix (p by p) with parameter rho and block correlation matrix (p by p) using group index (of length p) and (possibly) different parameter rho for each group.
-#' @name corrstructure
-#' @rdname corrstructure
-#' @aliases autocor
+
+#' @rdname CorrStructure
+#' @aliases autocor blockcor
 #' @param p Specified matrix dimension.
 #' @param rho Correlation value(s), must be between -0.99 and 0.99. Should be a scalar for \code{autocor}, and either a scalar or a vector of the same length as the maximal \code{blockind} K for \code{blockcor}.
 #' @export
@@ -12,10 +12,13 @@ autocor <- function(p, rho){
   Sigma <- rho^abs(outer(1:p, 1:p, "-"))
   return(Sigma)
 }
-#' @rdname corrstructure
-#' @aliases blockcor
-#' @inheritParams rho
+
+
+#' Construct a correlation matrix
+#' @rdname CorrStructure
+#' @aliases autocor blockcor
 #' @param blockind Block index 1,\dots, K for a poisitive integer K specifying which variable belongs to which block, the matrix dimension is equal to \code{length(blockind)}.
+#' @param rho Correlation value(s), must be between -0.99 and 0.99. Should be a scalar for \code{autocor}, and either a scalar or a vector of the same length as the maximal \code{blockind} K for \code{blockcor}.
 #' @examples
 #' # For p = 8,
 #' # auto correlation matrix
