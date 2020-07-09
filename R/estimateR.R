@@ -5,10 +5,11 @@
 #' @aliases estimateR estimateR_mixed
 #' @param X A numeric data matrix (n by p), n is the sample size and p is the number of variables.
 #' @param type A type of variables in \code{X}, must be one of "continuous", "binary" or "trunc".
+#' @param method Either "original" method or "approx". If \code{method = "approx"}, multilinear approximation method is used, which is much faster than the original method. If \code{method = "original"}, optimization of the bridge inverse function is used. The default is "approx".
 #' @param use.nearPD A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).
 #' @param nu Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.
 #' @param tol Desired accuracy when calculating the solution of bridge function.
-#' @param verbose If \code{verbose = FALSE}, printing information whether nearPD is used or not is disabled. The defalut value is TRUE.
+#' @param verbose If \code{verbose = FALSE}, printing information whether nearPD is used or not is disabled. The default value is FALSE.
 #' @return \code{estimateR} returns
 #' \itemize{
 #'       \item{type: }{Type of the data matrix \code{X}}
@@ -22,7 +23,7 @@
 #' @import stats
 #' @importFrom Matrix nearPD
 #' @example man/examples/estimateR_ex.R
-estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, nu = 0.01, tol = 1e-3, verbose = TRUE){
+estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, nu = 0.01, tol = 1e-3, verbose = FALSE){
   X <- as.matrix(X)
 
   n <- nrow(X)
@@ -85,7 +86,7 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
 #' @param use.nearPD A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).
 #' @param nu Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.
 #' @param tol Desired accuracy when calculating the solution of bridge function.
-#' @param verbose If \code{verbose = FALSE}, printing information whether nearPD is used or not is disabled. The defalut value is TRUE.
+#' @param verbose If \code{verbose = FALSE}, printing information whether nearPD is used or not is disabled. The default value is FALSE.
 #'
 #' @return \code{estimateR_mixed} returns
 #' \itemize{
@@ -99,7 +100,7 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
 #'
 #' @export
 #' @importFrom Matrix nearPD
-estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", method = "approx", use.nearPD = TRUE, nu = 0.01, tol = 1e-3, verbose = TRUE){
+estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", method = "approx", use.nearPD = TRUE, nu = 0.01, tol = 1e-3, verbose = FALSE){
   X1 <- as.matrix(X1)
   X2 <- as.matrix(X2)
 

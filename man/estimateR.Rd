@@ -12,7 +12,7 @@ estimateR(
   use.nearPD = TRUE,
   nu = 0.01,
   tol = 0.001,
-  verbose = TRUE
+  verbose = FALSE
 )
 
 estimateR_mixed(
@@ -24,7 +24,7 @@ estimateR_mixed(
   use.nearPD = TRUE,
   nu = 0.01,
   tol = 0.001,
-  verbose = TRUE
+  verbose = FALSE
 )
 }
 \arguments{
@@ -40,7 +40,7 @@ estimateR_mixed(
 
 \item{tol}{Desired accuracy when calculating the solution of bridge function.}
 
-\item{verbose}{If \code{verbose = FALSE}, printing information whether nearPD is used or not is disabled. The defalut value is TRUE.}
+\item{verbose}{If \code{verbose = FALSE}, printing information whether nearPD is used or not is disabled. The default value is FALSE.}
 
 \item{X1}{A numeric data matrix (n by p1).}
 
@@ -105,8 +105,8 @@ range(colMeans(X1 == 0))
 range(colMeans(X2 == 0))
 
 # Estimate latent correlation matrix
-estimateR(X1, type = "trunc")
-estimateR_mixed(X1, X2, type1 = "trunc", type2 = "trunc")
+R1 <- estimateR(X1, type = "trunc")$R
+R12 <- estimateR_mixed(X1, X2, type1 = "trunc", type2 = "trunc")$R12
 
 
 

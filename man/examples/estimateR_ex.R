@@ -32,8 +32,8 @@ range(colMeans(X1 == 0))
 range(colMeans(X2 == 0))
 
 # Estimate latent correlation matrix
-estimateR(X1, type = "trunc")
-estimateR_mixed(X1, X2, type1 = "trunc", type2 = "trunc")
+R1 <- estimateR(X1, type = "trunc")$R
+R12 <- estimateR_mixed(X1, X2, type1 = "trunc", type2 = "trunc")$R12
 
 
 
