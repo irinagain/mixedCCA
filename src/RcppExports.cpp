@@ -7,8 +7,8 @@
 using namespace Rcpp;
 
 // lassobic
-Rcpp::List lassobic(int n, const arma::mat& R1, const arma::colvec& d, arma::colvec w1init, const arma::colvec& lamseq, int BICtype, int maxiter, double tol);
-RcppExport SEXP _mixedCCA_lassobic(SEXP nSEXP, SEXP R1SEXP, SEXP dSEXP, SEXP w1initSEXP, SEXP lamseqSEXP, SEXP BICtypeSEXP, SEXP maxiterSEXP, SEXP tolSEXP) {
+Rcpp::List lassobic(int n, const arma::mat& R1, const arma::colvec& d, arma::colvec w1init, const arma::colvec& lamseq, int BICtype, int maxiter, double tol, int lassoverbose);
+RcppExport SEXP _mixedCCA_lassobic(SEXP nSEXP, SEXP R1SEXP, SEXP dSEXP, SEXP w1initSEXP, SEXP lamseqSEXP, SEXP BICtypeSEXP, SEXP maxiterSEXP, SEXP tolSEXP, SEXP lassoverboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,13 +20,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type BICtype(BICtypeSEXP);
     Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    rcpp_result_gen = Rcpp::wrap(lassobic(n, R1, d, w1init, lamseq, BICtype, maxiter, tol));
+    Rcpp::traits::input_parameter< int >::type lassoverbose(lassoverboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(lassobic(n, R1, d, w1init, lamseq, BICtype, maxiter, tol, lassoverbose));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_mixedCCA_lassobic", (DL_FUNC) &_mixedCCA_lassobic, 8},
+    {"_mixedCCA_lassobic", (DL_FUNC) &_mixedCCA_lassobic, 9},
     {NULL, NULL, 0}
 };
 

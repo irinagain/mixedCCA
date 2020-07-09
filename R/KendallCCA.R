@@ -51,6 +51,7 @@ lambdaseq_generate <- function(nlamseq = 20, lam.eps = 1e-02, Sigma1, Sigma2, Si
 #' @param maxiter The maximum number of iterations allowed.
 #' @param tol The desired accuracy (convergence tolerance).
 #' @param trace If \code{trace = TRUE}, progress per each iteration will be printed. The default value is \code{FALSE}.
+#' @param lassoverbose If \code{lassoverbose = TRUE}, all warnings from lassobic optimization regarding convergence will be printed. The default value is \code{lassoverbose = FALSE}.
 #'
 #'
 #' @return \code{find_w12bic} returns a data.frame containing
@@ -65,13 +66,16 @@ lambdaseq_generate <- function(nlamseq = 20, lam.eps = 1e-02, Sigma1, Sigma2, Si
 #' }
 #' @export
 #'
-find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype, maxiter = 100, tol = 1e-2, trace = FALSE){
+find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype, maxiter = 100, tol = 1e-2, trace = FALSE, lassoverbose = FALSE){
 
   p1 = ncol(R1)
   p2 = ncol(R2)
 
   w1init <- normalizedW(w1init, R1)
   w2init <- normalizedW(w2init, R2)
+
+  # lassoverbose = TRUE will be converted to 1. lassoverbose = FALSE will be converted to 0 for "lassobic" cpp function
+  lassoverbose <- as.numeric(lassoverbose)
 
   diffobj = 1000
   iter = 0
@@ -88,9 +92,9 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
       # since we're not interested in zero solutions, we do not want to even consider the large lambda values which result in zero solutions.
       # It might lead to the shorter length of lambda sequence.
       ind <- which(lamseq1 >= max(abs(d))); if(iter == 1 & length(ind) == 0){ ind <- 1 }  # At the first iteration, due to some computation roundings, max(lamseq1) >= max(abs(d)) does not hold, but it should ignore the largest lambda value.
-      res1 <- lassobic(n = n, R1 = R1, d = d, w1init = w1init, lamseq = lamseq1[-ind], BICtype = BICtype)
+      res1 <- lassobic(n = n, R1 = R1, d = d, w1init = w1init, lamseq = lamseq1[-ind], BICtype = BICtype, lassoverbose = lassoverbose)
     } else {
-      res1 <- lassobic(n = n, R1 = R1, d = d, w1init = w1init, lamseq = lamseq1, BICtype = BICtype)
+      res1 <- lassobic(n = n, R1 = R1, d = d, w1init = w1init, lamseq = lamseq1, BICtype = BICtype, lassoverbose = lassoverbose)
     }
     w1 = res1$finalcoef
     wmat1 <- cbind(wmat1, w1)
@@ -109,9 +113,9 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
       # since we're not interested in zero solutions, we do not want to even consider the large lambda values which result in zero solutions.
       # It might lead to the shorter length of lambda sequence.
       ind <- which(lamseq2 >= max(abs(d))); if(iter == 1 & length(ind) == 0){ ind <- 1 }  # At the first iteration, due to some computation roundings, max(lamseq1) >= max(abs(d)) does not hold, but it should ignore the largest lambda value.
-      res2 <- lassobic(n = n, R1 = R2, d = d, w1init = w2init, lamseq = lamseq2[-ind], BICtype = BICtype)
+      res2 <- lassobic(n = n, R1 = R2, d = d, w1init = w2init, lamseq = lamseq2[-ind], BICtype = BICtype, lassoverbose = lassoverbose)
     } else {
-      res2 <- lassobic(n = n, R1 = R2, d = d, w1init = w2init, lamseq = lamseq2, BICtype = BICtype)
+      res2 <- lassobic(n = n, R1 = R2, d = d, w1init = w2init, lamseq = lamseq2, BICtype = BICtype, lassoverbose = lassoverbose)
     }
     w2 = res2$finalcoef
     wmat2 <- cbind(wmat2, w2)
@@ -173,6 +177,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 #' @param maxiter The maximum number of iterations allowed.
 #' @param tol The desired accuracy (convergence tolerance).
 #' @param trace If \code{trace = TRUE}, progress per each iteration will be printed. The default value is \code{FALSE}.
+#' @param lassoverbose If \code{lassoverbose = TRUE}, all warnings from lassobic optimization regarding convergence will be printed. The default value is \code{lassoverbose = FALSE}.
 #'
 #' @references
 #' Yoon G., Carroll R.J. and Gaynanova I. (2018+) \href{http://arxiv.org/abs/1807.05274}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}.
@@ -195,7 +200,7 @@ mixedCCA <- function(X1, X2, type1, type2,
                      lamseq1 = NULL, lamseq2 = NULL, nlamseq = 20, lam.eps = 1e-02,
                      w1init = NULL, w2init = NULL, BICtype,
                      KendallR = NULL,
-                     maxiter = 100, tol = 1e-2, trace = FALSE){
+                     maxiter = 100, tol = 1e-2, trace = FALSE, lassoverbose = FALSE){
   n <- nrow(X1)
   p1 <- ncol(X1); p2 <- ncol(X2);
   p <- p1 + p2
@@ -233,11 +238,14 @@ mixedCCA <- function(X1, X2, type1, type2,
     lamseq2 <- lambda_seq[[2]]
   }
 
+  # lassoverbose = TRUE will be converted to 1. lassoverbose = FALSE will be converted to 0 for "lassobic" cpp function
+  lassoverbose <- as.numeric(lassoverbose)
+
   ### Calculate canonical coefficients using BIC.
   fitresult <- find_w12bic(n = n, R1 = R1, R2 = R2, R12 = R12,
                            lamseq1 = lamseq1, lamseq2 = lamseq2,
                            w1init = w1init, w2init = w2init, BICtype = BICtype, maxiter = maxiter, tol = tol,
-                           trace = trace)
+                           trace = trace, lassoverbose = lassoverbose)
   if(length(fitresult$obj) >= maxiter){
     cat("Tried finer lambda sequences.\n") # Tried twice length of lambda sequence to the same function. The whold range should be the same.
     lambda_seq <- lambdaseq_generate(nlamseq = nlamseq*2, lam.eps = lam.eps,
@@ -247,7 +255,7 @@ mixedCCA <- function(X1, X2, type1, type2,
     fitresult <- find_w12bic(n = n, R1 = R1, R2 = R2, R12 = R12,
                              lamseq1 = lamseq1, lamseq2 = lamseq2,
                              w1init = fitresult$w1, w2init = fitresult$w2, BICtype = BICtype, maxiter = maxiter, tol = tol,
-                             trace = trace)
+                             trace = trace, lassoverbose = lassoverbose)
     if(length(fitresult$obj)<=maxiter){ # If this additional step is converged, the following information will be printed.
       len <- length(fitresult$obj) # the length of traced object to extract the last element.
       diffobj <- abs((fitresult$obj[len] - fitresult$obj[len-1])/fitresult$obj[len-1])

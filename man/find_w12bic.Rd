@@ -16,7 +16,8 @@ find_w12bic(
   BICtype,
   maxiter = 100,
   tol = 0.01,
-  trace = FALSE
+  trace = FALSE,
+  lassoverbose = FALSE
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ find_w12bic(
 \item{tol}{The desired accuracy (convergence tolerance).}
 
 \item{trace}{If \code{trace = TRUE}, progress per each iteration will be printed. The default value is \code{FALSE}.}
+
+\item{lassoverbose}{If \code{lassoverbose = TRUE}, all warnings from lassobic optimization regarding convergence will be printed. The default value is \code{lassoverbose = FALSE}.}
 }
 \value{
 \code{find_w12bic} returns a data.frame containing

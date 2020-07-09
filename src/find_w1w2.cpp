@@ -37,7 +37,7 @@ double BICw1(int n, const arma::mat& R1, const arma::colvec& d,
 // [[Rcpp::export]]
 Rcpp::List lassobic(int n, const arma::mat& R1, const arma::colvec& d, //d = R12*w2
                     arma::colvec w1init, const arma::colvec& lamseq,
-                    int BICtype, int maxiter = 1000, double tol = 0.0001){
+                    int BICtype, int maxiter = 1000, double tol = 0.0001, int lassoverbose = 1){
   // basically same as solveLasso for fixed w2 and all lambda values.
   // find w1 with smallest bic
 
@@ -73,7 +73,7 @@ Rcpp::List lassobic(int n, const arma::mat& R1, const arma::colvec& d, //d = R12
           wmat.col(j) = w1init; // save
           bicvec[j] = BICw1(n, R1, d, w1init, BICtype);
             // print error if iter reach maxiter
-            if (iter >= maxiter){
+            if (iter >= maxiter & lassoverbose == 1){
               warning("Failed to converge: lasso part at %i-th lambda = %f with error = %f\n", j, lamseq[j], error);
             }
         }// finished checking all lambda values.

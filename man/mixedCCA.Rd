@@ -19,7 +19,8 @@ mixedCCA(
   KendallR = NULL,
   maxiter = 100,
   tol = 0.01,
-  trace = FALSE
+  trace = FALSE,
+  lassoverbose = FALSE
 )
 }
 \arguments{
@@ -52,6 +53,8 @@ mixedCCA(
 \item{tol}{The desired accuracy (convergence tolerance).}
 
 \item{trace}{If \code{trace = TRUE}, progress per each iteration will be printed. The default value is \code{FALSE}.}
+
+\item{lassoverbose}{If \code{lassoverbose = TRUE}, all warnings from lassobic optimization regarding convergence will be printed. The default value is \code{lassoverbose = FALSE}.}
 }
 \value{
 \code{mixedCCA} returns a data.frame containing
