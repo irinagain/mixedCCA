@@ -13,9 +13,10 @@ canonical correlation analysis for data of mixed types”.
 
 The faster version of latent correlation computation part is now fully
 available and implemented to the R package `mixedCCA`. The corresponding
-reference is available on arXiv: [Grace Yoon, Christian L. Müller and
-Irina Gaynanova, “Fast computation of latent
-correlations”](https://arxiv.org/abs/2006.13875).
+reference is available on arXiv:
+
+[Yoon G., Müller C.L. and Gaynanova I., “Fast computation of latent
+correlations” *arXiv*](https://arxiv.org/abs/2006.13875).
 
 Installation
 ------------
