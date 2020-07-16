@@ -32,7 +32,7 @@ estimateR_mixed(
 
 \item{type}{A type of variables in \code{X}, must be one of "continuous", "binary" or "trunc".}
 
-\item{method}{Either "original" method or "approx". If \code{method = "approx"}, multilinear approximation method is used, which is much faster than the original method. If \code{method = "original"}, optimization of the bridge inverse function is used. The default is "approx".}
+\item{method}{The calculation method of latent correlation. Either "original" method or "approx". If \code{method = "approx"}, multilinear approximation method is used, which is much faster than the original method. If \code{method = "original"}, optimization of the bridge inverse function is used. The default is "approx".}
 
 \item{use.nearPD}{A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).}
 
