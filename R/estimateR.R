@@ -27,51 +27,93 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
   X <- as.matrix(X)
 
   n <- nrow(X)
-  p1 <- ncol(X)
+  p <- ncol(X)
 
   if (!(type %in% c("continuous", "binary","trunc"))){
     stop("Unrecognized type of data. Should be one of continuous, binary or trunc.")
   }
 
-  if (type == "trunc"){
-    if(sum(X < 0) > 0) {stop("The data contains negative values.")}
-    if(sum(colSums(X == 0)) == 0){
-      message("The data does not contain zeros. Consider changing the type to \"continuous\".")
-    }
-  }
-  if (type == "binary"){
-    if(sum(!(X %in% c(0, 1))) > 0) {stop("The data is not \"binary\".")}
-  }
   if (type == "continuous"){
-    R1 <- sin(pi/2 * pcaPP::cor.fk(X))
-  } else {
-    zratio1 <- colMeans(X == 0)
+        K <- pcaPP::cor.fk(X)
+        R <- sin(pi/2 * K)
+  } else if (type == "trunc"){
+        # checking data type
+        if(sum(X < 0) > 0) {
+          stop("The data contains negative values.")
+        }
+    # checking proportion of zero values
+    zratio <- colMeans(X == 0)
+        if(sum(zratio) == 0){
+          message("The data does not contain zeros. Consider changing the type to \"continuous\".")
+        }
+        if (sum(zratio == 1) > 0){
+          stop("There are variables in the data that have only zeros.\n")
+        } else if (sum(zratio > 0.9) > 0){
+          message("There are variables in the data that have high proporiton of zeros (>99%).\n")
+        }
 
-    if(method == "approx"){
-      R1 <- fromKtoR_ml(Kendall_matrix(X), zratio = zratio1, type = type, tol = tol)
-    } else if(method == "original"){
-      R1 <- fromKtoR(Kendall_matrix(X), zratio = zratio1, type = type, tol = tol)
-    } else {
-      stop("Unrecognized method.")
-    }
+        K <- Kendall_matrix(X)
+        if(sum(is.nan(K)) > 0){
+          stop("There are NaN values in Kendall's tau matrix.\n")
+        }
 
+        if(method == "approx"){
+          R <- fromKtoR_ml(K, zratio = zratio, type = type, tol = tol)
+        } else if(method == "original"){
+          R <- fromKtoR(K, zratio = zratio, type = type, tol = tol)
+        } else {
+          stop("Unrecognized method.")
+        }
+
+  } else if (type == "binary"){
+        # checking data type
+        if(sum(!(X %in% c(0, 1))) > 0) {
+          stop("The data is not \"binary\".")
+        }
+        # checking proportion of zero values
+        zratio <- colMeans(X == 0)
+        if (sum(zratio == 1) > 0 | sum(zratio == 0) > 0){
+          stop("There are binary variables in the data that have only zeros or only ones.\n")
+        } else if (sum(zratio > 0.99) > 0 | sum(zratio < 0.01) > 0){
+          if( verbose ){
+            message("There are variables in the data that have high proporiton of zeros or ones (>99%).\n")
+          }
+        }
+
+        K <- Kendall_matrix(X)
+        if(sum(is.nan(K)) > 0){
+          stop("There are NaN values in Kendall's tau matrix.\n")
+        }
+
+        if(method == "approx"){
+          R <- fromKtoR_ml(K, zratio = zratio, type = type, tol = tol)
+        } else if(method == "original"){
+          R <- fromKtoR(K, zratio = zratio, type = type, tol = tol)
+        } else {
+          stop("Unrecognized method.")
+        }
   }
 
-  if ( use.nearPD == TRUE & min(eigen(R1)$values) < 0 ) {
-    if( verbose ){
-      message(" minimum eigenvalue of correlation estimator is ", min(eigen(R1)$values), "\n nearPD is used")
-    }
-    R1 <- as.matrix(Matrix::nearPD(R1, corr = TRUE)$mat)
+  # nearPD
+  if ( use.nearPD == TRUE & min(eigen(R)$values) < 0 ) {
+        if( verbose ){
+          message(" minimum eigenvalue of correlation estimator is ", min(eigen(R)$values), "\n nearPD is used")
+        }
+        R <- as.matrix(Matrix::nearPD(R, corr = TRUE)$mat)
   }
   # shrinkage method
-  if(nu < 0 | nu > 1){ stop("nu must be be between 0 and 1.") }
-  R1 <- (1 - nu)*R1 + nu*diag(p1)
+  if(nu < 0 | nu > 1){
+    stop("nu must be be between 0 and 1.")
+  }
 
-  ### Want to keep the correct column names for each matrices
-  colnames(R1) <- rownames(R1) <- c(colnames(X))
+  R <- (1 - nu)*R + nu*diag(p)
 
-  return(list(type = type, R = R1))
+  ### To keep the correct column names for each matrices
+  colnames(R) <- rownames(R) <- c(colnames(X))
+
+  return(list(type = type, R = R))
 }
+
 #'
 #'
 #'
@@ -116,27 +158,67 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
   }
 
   if (type1 == "trunc"){
-    if(sum(X1 < 0) > 0) {stop("The data X1 contains negative values.")}
-    if(sum(colSums(X1 == 0)) == 0){
-      message("The data X1 does not contain zeros. Consider changing the type to \"continuous\".")
-    }
+        if(sum(X1 < 0) > 0) {
+          stop("The data X1 contains negative values.")
+        }
+    zratio1 <- colMeans(X1 == 0)
+        if(sum(zratio1) == 0){
+          message("The data X1 does not contain zeros. Consider changing the type to \"continuous\".")
+        }
+        if (sum(zratio1 == 1) > 0){
+          stop("There are truncated variables in the data that have only zeros.\n")
+        } else if (sum(zratio1 > 0.99) > 0){
+          if( verbose ){
+            message("There are variables in the data that have high proporiton of zeros (>99%).\n")
+          }
+        }
   }
   if (type1 == "binary"){
-    if(sum(!(X1 %in% c(0, 1))) > 0) {stop("The data X1 is not \"binary\".")}
+        if(sum(!(X1 %in% c(0, 1))) > 0) {
+          stop("The data X1 is not \"binary\".")
+        }
+    zratio1 <- colMeans(X1 == 0)
+        if (sum(zratio1 == 1) > 0 | sum(zratio1 == 0) > 0){
+          stop("There are binary variables in the data that have only zeros or only ones.\n")
+        } else if (sum(zratio1 > 0.99) > 0 | sum(zratio1 < 0.01) > 0){
+          if( verbose ){
+            message("There are variables in the data that have high proporiton of zeros or ones (>99%).\n")
+          }
+        }
   }
 
   if (type2 == "trunc"){
-    if(sum(X2 < 0) > 0) {stop("The data X2 contains negative values.")}
-    if(sum(colSums(X2 == 0)) == 0){
-      message("The data X2 does not contain zeros. Consider changing the type to \"continuous\".")
-    }
+        if(sum(X2 < 0) > 0) {
+          stop("The data X2 contains negative values.")
+        }
+    zratio2 <- colMeans(X2 == 0)
+        if(sum(zratio2) == 0){
+          message("The data X2 does not contain zeros. Consider changing the type to \"continuous\".")
+        }
+        if (sum(zratio2 == 1) > 0){
+          stop("There are truncated variables in the data that have only zeros.\n")
+        } else if (sum(zratio2 > 0.99) > 0){
+          if( verbose ){
+            message("There are variables in the data that have high proporiton of zeros (>99%).\n")
+          }
+        }
   }
   if (type2 == "binary"){
-    if(sum(!(X2 %in% c(0, 1))) > 0) {stop("The data X2 is not \"binary\".")}
+        if(sum(!(X2 %in% c(0, 1))) > 0) {
+          stop("The data X2 is not \"binary\".")
+        }
+    zratio2 <- colMeans(X2 == 0)
+        if (sum(zratio2 == 1) > 0 | sum(zratio2 == 0) > 0){
+          stop("There are binary variables in the data that have only zeros or only ones.\n")
+        } else if (sum(zratio2 > 0.99) > 0 | sum(zratio2 < 0.01) > 0){
+          if( verbose ){
+            message("There are variables in the data that have high proporiton of zeros or ones (>99%).\n")
+          }
+        }
   }
 
   if (type1 == type2) {
-    # both datasets are of the same type. CC, TT or BB case.
+    ################### both datasets are of the same type. CC, TT or BB case.
 
     Xcomb <- cbind(X1, X2)
     Rall <- estimateR(Xcomb, type = type1, method = method, use.nearPD = use.nearPD, nu = nu, tol = tol)$R
@@ -145,50 +227,79 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
     R12 <- Rall[1:p1, (p1 + 1):(p1 + p2)]
 
   } else {
-    # datasets are of different type
-    if (type1 == "continuous"){ # These are CT or CB case.
+    ################### datasets are of different type
+    if (type1 == "continuous"){
+      ################### These are CT or CB case.
+      K1 <- pcaPP::cor.fk(X1)
+      R1 <- sin(pi/2 * K1)
+
       zratio2 <- colMeans(X2 == 0)
-      R1 <- sin(pi/2 * pcaPP::cor.fk(X1))
+      # check Kendall's tau calculation.
+      K2 <- Kendall_matrix(X2)
+      K12 <- Kendall_matrix(X1, X2)
+      if(sum(is.nan(K2)) + sum(is.nan(K12)) > 0){
+        stop("There are NaN values in Kendall's tau matrix.\n")
+      }
 
       if(method == "approx"){
-        R2 <- fromKtoR_ml(Kendall_matrix(X2), zratio = zratio2, type = type2, tol = tol)
-        R12 <- fromKtoR_ml_mixed(Kendall_matrix(X1, X2), zratio2 = zratio2, type1 = type1, type2 = type2, tol = tol)
+        R2 <- fromKtoR_ml(K2, zratio = zratio2, type = type2, tol = tol)
+        R12 <- fromKtoR_ml_mixed(K12, zratio2 = zratio2, type1 = type1, type2 = type2, tol = tol)
       } else if(method == "original"){
-        R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type2, tol = tol)
-        R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio2 = zratio2, type1 = type1, type2 = type2, tol = tol)
+        R2 <- fromKtoR(K2, zratio = zratio2, type = type2, tol = tol)
+        R12 <- fromKtoR_mixed(K12, zratio2 = zratio2, type1 = type1, type2 = type2, tol = tol)
       } else {
         stop("Unrecognized method.")
       }
 
       Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
-    } else if (type2 == "continuous"){ # These are TC or BC case.
+
+    } else if (type2 == "continuous"){
+      ################### These are TC or BC case.
+      K2 <- pcaPP::cor.fk(X2)
+      R2 <- sin(pi/2 * K2)
+
       zratio1 <- colMeans(X1 == 0)
+      # check Kendall's tau calculation.
+      K1 <- Kendall_matrix(X1)
+      K12 <- Kendall_matrix(X1, X2)
+      if(sum(is.nan(K1)) + sum(is.nan(K12)) > 0){
+        stop("There are NaN values in Kendall's tau matrix.\n")
+      }
 
       if(method == "approx"){
-        R1 <- fromKtoR_ml(Kendall_matrix(X1), zratio = zratio1, type = type1, tol = tol)
-        R12 <- fromKtoR_ml_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, type1 = type1, type2 = type2, tol = tol)
+        R1 <- fromKtoR_ml(K1, zratio = zratio1, type = type1, tol = tol)
+        R12 <- fromKtoR_ml_mixed(K12, zratio1 = zratio1, type1 = type1, type2 = type2, tol = tol)
       } else if(method == "original"){
-        R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type1, tol = tol)
-        R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, type1 = type1, type2 = type2, tol = tol)
+        R1 <- fromKtoR(K1, zratio = zratio1, type = type1, tol = tol)
+        R12 <- fromKtoR_mixed(K12, zratio1 = zratio1, type1 = type1, type2 = type2, tol = tol)
       } else {
         stop("Unrecognized method.")
       }
 
-      R2 <- sin(pi/2 * pcaPP::cor.fk(X2))
       Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
-    } else { # These are TB or BT case.
+
+    } else {
+      ################### These are TB or BT case.
 
       zratio1 <- colMeans(X1 == 0)
       zratio2 <- colMeans(X2 == 0)
 
+      # check Kendall's tau calculation.
+      K1 <- Kendall_matrix(X1)
+      K2 <- Kendall_matrix(X2)
+      K12 <- Kendall_matrix(X1, X2)
+      if(sum(is.nan(K1)) + sum(is.nan(K2)) + sum(is.nan(K12)) > 0){
+        stop("There are NaN values in Kendall's tau matrix.\n")
+      }
+
       if(method == "approx"){
-        R1 <- fromKtoR_ml(Kendall_matrix(X1), zratio = zratio1, type = type1, tol = tol)
-        R2 <- fromKtoR_ml(Kendall_matrix(X2), zratio = zratio2, type = type2, tol = tol)
-        R12 <- fromKtoR_ml_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, zratio2 = zratio2, type1 = type1, type2 = type2, tol = tol)
+        R1 <- fromKtoR_ml(K1, zratio = zratio1, type = type1, tol = tol)
+        R2 <- fromKtoR_ml(K2, zratio = zratio2, type = type2, tol = tol)
+        R12 <- fromKtoR_ml_mixed(K12, zratio1 = zratio1, zratio2 = zratio2, type1 = type1, type2 = type2, tol = tol)
       } else if(method == "original"){
-        R1 <- fromKtoR(Kendall_matrix(X1), zratio = zratio1, type = type1, tol = tol)
-        R2 <- fromKtoR(Kendall_matrix(X2), zratio = zratio2, type = type2, tol = tol)
-        R12 <- fromKtoR_mixed(Kendall_matrix(X1, X2), zratio1 = zratio1, zratio2 = zratio2, type1 = type1, type2 = type2, tol = tol)
+        R1 <- fromKtoR(K1, zratio = zratio1, type = type1, tol = tol)
+        R2 <- fromKtoR(K2, zratio = zratio2, type = type2, tol = tol)
+        R12 <- fromKtoR_mixed(K12, zratio1 = zratio1, zratio2 = zratio2, type1 = type1, type2 = type2, tol = tol)
       } else {
         stop("Unrecognized method.")
       }
@@ -209,7 +320,7 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
     ### Want to keep the correct column names for each matrices
     colnames(Rall) <- rownames(Rall) <- c(colnames(X1), colnames(X2))
 
-    # For conveninence, split the R matrices
+    # For convenience, split the R matrices
     R1 <- Rall[1:p1, 1:p1]
     R2 <- Rall[(p1 + 1):(p1 + p2), (p1 + 1):(p1 + p2)]
     R12 <- Rall[1:p1, (p1 + 1):(p1 + p2)]
