@@ -104,14 +104,14 @@ fromKtoR_ml_mixed <- function(K12, zratio1 = NULL, zratio2 = NULL, type1 = "trun
         i <- ind_cutoff[rind, 1]
         j <- ind_cutoff[rind, 2]
         if(sum(c(type1, type2) %in% c("trunc", "continuous")) == 2 & sum(zratio1[i], zratio2[j]) < 1e-6){
-          hatR[i, j] <- hatR[j, i] <- sin(pi/2 * K12[i, j])
+          hatR[i, j] <- sin(pi/2 * K12[i, j])
         } else {
           f1 <- function(r)(bridge(r, zratio1 = zratio1[i], zratio2 = zratio2[j]) - K12[i,j])^2
           op <- tryCatch(optimize(f1, lower = -0.99, upper = 0.99, tol = tol)[1], error = function(e) 100)
           if(op == 100) {
             warning("Check pairs bewteen variable ", i, " and variable ", j, "\n")
           } else {
-            hatR[i, j] <- hatR[j, i] <- unlist(op)
+            hatR[i, j] <- unlist(op)
           }
         }
       }
