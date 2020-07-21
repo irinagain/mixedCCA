@@ -52,7 +52,12 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
 
         K <- Kendall_matrix(X)
         if(sum(is.nan(K)) > 0){
-          stop("There are NaN values in Kendall's tau matrix.\n")
+          warning("There are NaN values in Kendall's tau matrix.\n")
+          ind.NaN <- which(colSums(is.nan(K)) == (p-1))
+          K <- K[-ind.NaN, -ind.NaN]
+          zratio <- zratio[-ind.NaN]
+        } else if (sum(is.nan(K)) == 0){
+          ind.NaN <- NULL
         }
 
         if(method == "approx"){
@@ -76,7 +81,12 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
 
         K <- Kendall_matrix(X)
         if(sum(is.nan(K)) > 0){
-          stop("There are NaN values in Kendall's tau matrix.\n")
+          warning("There are NaN values in Kendall's tau matrix.\n")
+          ind.NaN <- which(colSums(is.nan(K)) == (p-1))
+          K <- K[-ind.NaN, -ind.NaN]
+          zratio <- zratio[-ind.NaN]
+        } else if (sum(is.nan(K)) == 0){
+          ind.NaN <- NULL
         }
 
         if(method == "approx"){
@@ -100,12 +110,20 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
     stop("nu must be be between 0 and 1.")
   }
 
-  R <- (1 - nu)*R + nu*diag(p)
+  if (length(ind.NaN) > 0){
+    R <- (1 - nu)*R + nu*diag(p - length(ind.NaN))
+    R.final <- matrix(NaN, nrow = p, ncol = p)
+    R.final[-ind.NaN, -ind.NaN] <- R
+  } else if (length(ind.NaN) == 0){
+    R.final <- (1 - nu)*R + nu*diag(p)
+  }
 
   ### To keep the correct column names for each matrices
-  colnames(R) <- rownames(R) <- c(colnames(X))
+  if(length(colnames(X)) == p){
+    colnames(R.final) <- rownames(R.final) <- c(colnames(X))
+  }
 
-  return(list(type = type, R = R))
+  return(list(type = type, R = R.final))
 }
 
 #'
@@ -199,10 +217,10 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
     ################### both datasets are of the same type. CC, TT or BB case.
 
     Xcomb <- cbind(X1, X2)
-    Rall <- estimateR(Xcomb, type = type1, method = method, use.nearPD = use.nearPD, nu = nu, tol = tol)$R
-    R1 <- Rall[1:p1, 1:p1]
-    R2 <- Rall[(p1 + 1):(p1 + p2), (p1 + 1):(p1 + p2)]
-    R12 <- Rall[1:p1, (p1 + 1):(p1 + p2)]
+    R.final <- estimateR(Xcomb, type = type1, method = method, use.nearPD = use.nearPD, nu = nu, tol = tol)$R
+    R1 <- R.final[1:p1, 1:p1]
+    R2 <- R.final[(p1 + 1):(p1 + p2), (p1 + 1):(p1 + p2)]
+    R12 <- R.final[1:p1, (p1 + 1):(p1 + p2)]
 
   } else {
     ################### datasets are of different type
@@ -216,7 +234,14 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
       K2 <- Kendall_matrix(X2)
       K12 <- Kendall_matrix(X1, X2)
       if(sum(is.nan(K2)) + sum(is.nan(K12)) > 0){
-        stop("There are NaN values in Kendall's tau matrix.\n")
+        warning("There are NaN values in Kendall's tau matrix.\n")
+        ind.NaN <- which(colSums(is.nan(K2)) == (p2-1))
+        K12 <- K12[, -ind.NaN]
+        K2 <- K2[-ind.NaN, -ind.NaN]
+        zratio2 <- zratio2[-ind.NaN]
+        ind.NaN <- ind.NaN + p1
+      } else if (sum(is.nan(K2)) + sum(is.nan(K12)) == 0){
+        ind.NaN <- NULL
       }
 
       if(method == "approx"){
@@ -241,7 +266,13 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
       K1 <- Kendall_matrix(X1)
       K12 <- Kendall_matrix(X1, X2)
       if(sum(is.nan(K1)) + sum(is.nan(K12)) > 0){
-        stop("There are NaN values in Kendall's tau matrix.\n")
+        warning("There are NaN values in Kendall's tau matrix.\n")
+        ind.NaN <- which(colSums(is.nan(K1)) == (p1-1))
+        K12 <- K12[-ind.NaN, ]
+        K1 <- K1[-ind.NaN, -ind.NaN]
+        zratio1 <- zratio1[-ind.NaN]
+      } else if (sum(is.nan(K1)) + sum(is.nan(K12)) == 0){
+        ind.NaN <- NULL
       }
 
       if(method == "approx"){
@@ -267,7 +298,17 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
       K2 <- Kendall_matrix(X2)
       K12 <- Kendall_matrix(X1, X2)
       if(sum(is.nan(K1)) + sum(is.nan(K2)) + sum(is.nan(K12)) > 0){
-        stop("There are NaN values in Kendall's tau matrix.\n")
+        warning("There are NaN values in Kendall's tau matrix.\n")
+        ind.NaN1 <- which(colSums(is.nan(K1)) == (p1-1))
+        ind.NaN2 <- which(colSums(is.nan(K2)) == (p2-1))
+        K12 <- K12[-ind.NaN1, -ind.NaN2]
+        K1 <- K1[-ind.NaN1, -ind.NaN1]
+        K2 <- K2[-ind.NaN2, -ind.NaN2]
+        zratio1 <- zratio1[-ind.NaN1]
+        zratio2 <- zratio2[-ind.NaN2]
+        ind.NaN <- c(ind.NaN1, ind.NaN2+p1)
+      } else {
+        ind.NaN <- NULL
       }
 
       if(method == "approx"){
@@ -292,17 +333,34 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
       Rall <- as.matrix(Matrix::nearPD(Rall, corr = TRUE)$mat)
     }
     # shrinkage method
-    if(nu < 0 | nu > 1){ stop("nu must be be between 0 and 1.") }
-    Rall <- (1 - nu)*Rall + nu*diag(p1 + p2)
+    if(nu < 0 | nu > 1){
+      stop("nu must be be between 0 and 1.")
+    }
 
-    ### Want to keep the correct column names for each matrices
-    colnames(Rall) <- rownames(Rall) <- c(colnames(X1), colnames(X2))
+    if (length(ind.NaN) > 0){
+      Rall <- (1 - nu)*Rall + nu*diag(p1 + p2 - length(ind.NaN))
+      R.final <- matrix(NaN, nrow = (p1 + p2), ncol = (p1 + p2))
+      R.final[-ind.NaN, -ind.NaN] <- Rall
+    } else if (length(ind.NaN) == 0){
+      R.final <- (1 - nu)*Rall + nu*diag(p1 + p2)
+    }
+
+    ### To keep the correct column names for each matrices
+    if(length(colnames(X1)) == p1 & length(colnames(X2)) == p2){
+      colnames(R.final) <- rownames(R.final) <- c(colnames(X1), colnames(X2))
+    } else if(length(colnames(X1)) != p1 & length(colnames(X2)) == p2){
+      colnames(R.final) <- rownames(R.final) <- rep(NA, p1 + p2)
+      colnames(R.final)[(p1 + 1):(p1 + p2)] <- rownames(R.final)[(p1 + 1):(p1 + p2)] <- colnames(X2)
+    } else if(length(colnames(X1)) == p1 & length(colnames(X2)) != p2){
+      colnames(R.final) <- rownames(R.final) <- rep(NA, p1 + p2)
+      colnames(R.final)[1:p1] <- rownames(R.final)[1:p1] <- colnames(X1)
+    }
 
     # For convenience, split the R matrices
-    R1 <- Rall[1:p1, 1:p1]
-    R2 <- Rall[(p1 + 1):(p1 + p2), (p1 + 1):(p1 + p2)]
-    R12 <- Rall[1:p1, (p1 + 1):(p1 + p2)]
+    R1 <- R.final[1:p1, 1:p1]
+    R2 <- R.final[(p1 + 1):(p1 + p2), (p1 + 1):(p1 + p2)]
+    R12 <- R.final[1:p1, (p1 + 1):(p1 + p2)]
   }
 
-  return(list(type = c(type1, type2), R1 = R1, R2 = R2, R12 = R12, R = Rall))
+  return(list(type = c(type1, type2), R1 = R1, R2 = R2, R12 = R12, R = R.final))
 }
