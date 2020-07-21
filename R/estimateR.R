@@ -47,9 +47,7 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
           message("The data does not contain zeros. Consider changing the type to \"continuous\".")
         }
         if (sum(zratio == 1) > 0){
-          stop("There are variables in the data that have only zeros.\n")
-        } else if (sum(zratio > 0.9) > 0){
-          message("There are variables in the data that have high proporiton of zeros (>99%).\n")
+          warning("There are variables in the data that have only zeros.\n")
         }
 
         K <- Kendall_matrix(X)
@@ -73,11 +71,7 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
         # checking proportion of zero values
         zratio <- colMeans(X == 0)
         if (sum(zratio == 1) > 0 | sum(zratio == 0) > 0){
-          stop("There are binary variables in the data that have only zeros or only ones.\n")
-        } else if (sum(zratio > 0.99) > 0 | sum(zratio < 0.01) > 0){
-          if( verbose ){
-            message("There are variables in the data that have high proporiton of zeros or ones (>99%).\n")
-          }
+          warning("There are binary variables in the data that have only zeros or only ones.\n")
         }
 
         K <- Kendall_matrix(X)
@@ -166,11 +160,7 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
           message("The data X1 does not contain zeros. Consider changing the type to \"continuous\".")
         }
         if (sum(zratio1 == 1) > 0){
-          stop("There are truncated variables in the data that have only zeros.\n")
-        } else if (sum(zratio1 > 0.99) > 0){
-          if( verbose ){
-            message("There are variables in the data that have high proporiton of zeros (>99%).\n")
-          }
+          warning("There are truncated variables in the data that have only zeros.\n")
         }
   }
   if (type1 == "binary"){
@@ -179,11 +169,7 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
         }
     zratio1 <- colMeans(X1 == 0)
         if (sum(zratio1 == 1) > 0 | sum(zratio1 == 0) > 0){
-          stop("There are binary variables in the data that have only zeros or only ones.\n")
-        } else if (sum(zratio1 > 0.99) > 0 | sum(zratio1 < 0.01) > 0){
-          if( verbose ){
-            message("There are variables in the data that have high proporiton of zeros or ones (>99%).\n")
-          }
+          warning("There are binary variables in the data that have only zeros or only ones.\n")
         }
   }
 
@@ -196,11 +182,7 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
           message("The data X2 does not contain zeros. Consider changing the type to \"continuous\".")
         }
         if (sum(zratio2 == 1) > 0){
-          stop("There are truncated variables in the data that have only zeros.\n")
-        } else if (sum(zratio2 > 0.99) > 0){
-          if( verbose ){
-            message("There are variables in the data that have high proporiton of zeros (>99%).\n")
-          }
+          warning("There are truncated variables in the data that have only zeros.\n")
         }
   }
   if (type2 == "binary"){
@@ -209,11 +191,7 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
         }
     zratio2 <- colMeans(X2 == 0)
         if (sum(zratio2 == 1) > 0 | sum(zratio2 == 0) > 0){
-          stop("There are binary variables in the data that have only zeros or only ones.\n")
-        } else if (sum(zratio2 > 0.99) > 0 | sum(zratio2 < 0.01) > 0){
-          if( verbose ){
-            message("There are variables in the data that have high proporiton of zeros or ones (>99%).\n")
-          }
+          warning("There are binary variables in the data that have only zeros or only ones.\n")
         }
   }
 
