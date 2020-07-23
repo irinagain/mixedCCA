@@ -73,7 +73,7 @@ Rcpp::List lassobic(int n, const arma::mat& R1, const arma::colvec& d, //d = R12
           wmat.col(j) = w1init; // save
           bicvec[j] = BICw1(n, R1, d, w1init, BICtype);
             // print error if iter reach maxiter
-            if (iter >= maxiter & lassoverbose == 1){
+            if (iter >= maxiter && lassoverbose == 1){
               warning("Failed to converge: lasso part at %i-th lambda = %f with error = %f\n", j, lamseq[j], error);
             }
         }// finished checking all lambda values.
