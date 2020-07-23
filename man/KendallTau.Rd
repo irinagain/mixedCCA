@@ -18,10 +18,15 @@ Kendall_matrix(X, Y = NULL)
 
 \item{Y}{A numeric matrix (n by p2).}
 }
+\value{
+\code{KendallTau(x, y)} returns one Kendall's tau correlation value between two vectors, \code{x} and \code{y}.
+
+\code{Kendall_matrix(X)} returns a p1 by p1 matrix of Kendall's tau correlation coefficients. \code{Kendall_matrix(X, Y)} returns a p1 by p2 matrix of Kendall's tau correlation coefficients.
+}
 \description{
 Calculate Kendall's tau correlation.
 \deqn{ \hat{\tau}_{jk} = \frac{2}{n(n-1)}\sum_{1\le i<i'\le n} sign(X_{ji}-X_{ji'}) sign(X_{ki}-X_{ki'}) }
-The function \code{KendallTau} calculates Kendall's tau correlation between two variables, returning a single correlation value. The function \code{Kendall_matrix} returns a correlation matrix (p1 by p2).
+The function \code{KendallTau} calculates Kendall's tau correlation between two variables, returning a single correlation value. The function \code{Kendall_matrix} returns a correlation matrix.
 }
 \examples{
 
