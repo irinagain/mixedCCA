@@ -51,12 +51,12 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
         }
 
         K <- Kendall_matrix(X)
-        if(sum(is.nan(K)) > 0){
+        if(sum(is.na(K)) > 0){
           warning("There are NaN values in Kendall's tau matrix.\n")
-          ind.NaN <- which(colSums(is.nan(K)) == (p-1))
+          ind.NaN <- which(colSums(is.na(K)) == (p-1))
           K <- K[-ind.NaN, -ind.NaN]
           zratio <- zratio[-ind.NaN]
-        } else if (sum(is.nan(K)) == 0){
+        } else if (sum(is.na(K)) == 0){
           ind.NaN <- NULL
         }
 
@@ -80,12 +80,12 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
         }
 
         K <- Kendall_matrix(X)
-        if(sum(is.nan(K)) > 0){
+        if(sum(is.na(K)) > 0){
           warning("There are NaN values in Kendall's tau matrix.\n")
-          ind.NaN <- which(colSums(is.nan(K)) == (p-1))
+          ind.NaN <- which(colSums(is.na(K)) == (p-1))
           K <- K[-ind.NaN, -ind.NaN]
           zratio <- zratio[-ind.NaN]
-        } else if (sum(is.nan(K)) == 0){
+        } else if (sum(is.na(K)) == 0){
           ind.NaN <- NULL
         }
 
@@ -233,14 +233,14 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
       # check Kendall's tau calculation.
       K2 <- Kendall_matrix(X2)
       K12 <- Kendall_matrix(X1, X2)
-      if(sum(is.nan(K2)) + sum(is.nan(K12)) > 0){
+      if(sum(is.na(K2)) + sum(is.na(K12)) > 0){
         warning("There are NaN values in Kendall's tau matrix.\n")
-        ind.NaN <- which(colSums(is.nan(K2)) == (p2-1))
+        ind.NaN <- which(colSums(is.na(K2)) == (p2-1))
         K12 <- K12[, -ind.NaN]
         K2 <- K2[-ind.NaN, -ind.NaN]
         zratio2 <- zratio2[-ind.NaN]
         ind.NaN <- ind.NaN + p1
-      } else if (sum(is.nan(K2)) + sum(is.nan(K12)) == 0){
+      } else if (sum(is.na(K2)) + sum(is.na(K12)) == 0){
         ind.NaN <- NULL
       }
 
@@ -265,13 +265,13 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
       # check Kendall's tau calculation.
       K1 <- Kendall_matrix(X1)
       K12 <- Kendall_matrix(X1, X2)
-      if(sum(is.nan(K1)) + sum(is.nan(K12)) > 0){
+      if(sum(is.na(K1)) + sum(is.na(K12)) > 0){
         warning("There are NaN values in Kendall's tau matrix.\n")
-        ind.NaN <- which(colSums(is.nan(K1)) == (p1-1))
+        ind.NaN <- which(colSums(is.na(K1)) == (p1-1))
         K12 <- K12[-ind.NaN, ]
         K1 <- K1[-ind.NaN, -ind.NaN]
         zratio1 <- zratio1[-ind.NaN]
-      } else if (sum(is.nan(K1)) + sum(is.nan(K12)) == 0){
+      } else if (sum(is.na(K1)) + sum(is.na(K12)) == 0){
         ind.NaN <- NULL
       }
 
@@ -297,10 +297,10 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
       K1 <- Kendall_matrix(X1)
       K2 <- Kendall_matrix(X2)
       K12 <- Kendall_matrix(X1, X2)
-      if(sum(is.nan(K1)) + sum(is.nan(K2)) + sum(is.nan(K12)) > 0){
+      if(sum(is.na(K1)) + sum(is.na(K2)) + sum(is.na(K12)) > 0){
         warning("There are NaN values in Kendall's tau matrix.\n")
-        ind.NaN1 <- which(colSums(is.nan(K1)) == (p1-1))
-        ind.NaN2 <- which(colSums(is.nan(K2)) == (p2-1))
+        ind.NaN1 <- which(colSums(is.na(K1)) == (p1-1))
+        ind.NaN2 <- which(colSums(is.na(K2)) == (p2-1))
         K12 <- K12[-ind.NaN1, -ind.NaN2]
         K1 <- K1[-ind.NaN1, -ind.NaN1]
         K2 <- K2[-ind.NaN2, -ind.NaN2]
