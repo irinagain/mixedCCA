@@ -1,4 +1,4 @@
-##### This is going to be approximate version of fromKtoR which is much faster using multilinear interpolation. (03-26-2020)
+##### This is going to be approximate version of fromKtoR which is much faster using multilinear interpolation. (07-23-2020)
 ##### multilinear interpolation method is from ipol package.
 
 # K: Kendall's tau matrix.

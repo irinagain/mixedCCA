@@ -18,7 +18,10 @@
 #' @references
 #' Fan J., Liu H., Ning Y. and Zou H. (2017) \href{https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssb.12168}{"High dimensional semiparametric latent graphicalmodel for mixed data"}, \emph{J. R. Statist. Soc. B}, 79: 405-421.
 #'
-#' Yoon G., Carroll R.J. and Gaynanova I. (2018+) \href{http://arxiv.org/abs/1807.05274}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{arXiv 1807.05274}.
+#' Yoon G., Carroll R.J. and Gaynanova I. (2020) \href{https://doi.org/10.1093/biomet/asaa007}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{Biometrika}, asaa007.
+#'
+#' Yoon G., M&uuml;ller C.L., Gaynanova I. (2020) \href{https://arxiv.org/abs/2006.13875}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{arXiv 2006.13875}.
+#'
 #' @export
 #' @import stats
 #' @importFrom Matrix nearPD
@@ -141,6 +144,7 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
 #' @param nu Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.
 #' @param tol Desired accuracy when calculating the solution of bridge function.
 #' @param verbose If \code{verbose = FALSE}, printing information whether nearPD is used or not is disabled. The default value is FALSE.
+#'
 #'
 #' @return \code{estimateR_mixed} returns
 #' \itemize{

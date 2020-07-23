@@ -112,5 +112,5 @@ R <- kendallcca1$KendallR
 kendallcca2 <- mixedCCA(X1, X2, type1 = "trunc", type2 = "trunc", KendallR = R, BICtype = 2)
 }
 \references{
-Yoon G., Carroll R.J. and Gaynanova I. (2018+) \href{http://arxiv.org/abs/1807.05274}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}.
+Yoon G., Carroll R.J. and Gaynanova I. (2020) \href{https://doi.org/10.1093/biomet/asaa007}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{Biometrika}, asaa007.
 }
