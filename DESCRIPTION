@@ -23,5 +23,3 @@ NeedsCompilation: yes
 RoxygenNote: 7.1.0
 LinkingTo: Rcpp, RcppArmadillo
 LazyData: true
-Suggests: 
-    testthat
