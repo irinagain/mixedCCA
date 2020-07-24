@@ -39,26 +39,24 @@ R12 <- estimateR_mixed(X1, X2, type1 = "trunc", type2 = "trunc")$R12
 
 ##### Additional mixedCCA example after the major updates with fast approximation.
 
+\dontrun{
 library(microbenchmark)
 # devtools::install_github("GraceYoon/SPRING")
 library(SPRING)
 data("QMP") # data dimension: 106 (sample size) by 91 (dimension)
-microbenchmark(R_approx <- estimateR(QMP, type = "trunc", method = "approx"), times = 1)
 
-
-\dontrun{
-  microbenchmark(R_org <- estimateR(QMP, type = "trunc", method = "original"),
-                 R_approx <- estimateR(QMP, type = "trunc", method = "approx"),
-                 times = 1)
+microbenchmark(R_org <- estimateR(QMP, type = "trunc", method = "original"),
+               R_approx <- estimateR(QMP, type = "trunc", method = "approx"),
+               times = 1)
 
   ###### One time microbenchmark result
   # Unit: seconds
   #                                                       expr
   # R_org <- estimateR(QMP, type = "trunc", method = "original")
   # R_approx <- estimateR(QMP, type = "trunc", method = "approx")
-  #     min        lq        mean    median        uq       max neval
-  # 58.760676 58.760676 58.760676 58.760676 58.760676 58.760676     1
-  #  2.134736  2.134736  2.134736  2.134736  2.134736  2.134736     1
+  #       min        lq      mean    median        uq       max neval
+  # 50.288691 50.288691 50.288691 50.288691 50.288691 50.288691     1
+  #  1.394477  1.394477  1.394477  1.394477  1.394477  1.394477     1
 
   max(abs(R_org$R - R_approx$R))
   # [1] 0.0006894046

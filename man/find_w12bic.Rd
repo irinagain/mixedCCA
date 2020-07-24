@@ -62,3 +62,6 @@ find_w12bic(
 \description{
 Internal mixedCCA function finding w1 and w2 given R1, R2 and R12
 }
+\references{
+Yoon G., Carroll R.J. and Gaynanova I. (2020) \href{https://doi.org/10.1093/biomet/asaa007}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{Biometrika}, asaa007. <doi:10.1093/biomet/asaa007>.
+}

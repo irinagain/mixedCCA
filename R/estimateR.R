@@ -16,11 +16,11 @@
 #'       \item{R: }{Estimated p by p latent correlation matrix of \code{X}}
 #' }
 #' @references
-#' Fan J., Liu H., Ning Y. and Zou H. (2017) \href{https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssb.12168}{"High dimensional semiparametric latent graphicalmodel for mixed data"}, \emph{J. R. Statist. Soc. B}, 79: 405-421.
+#' Fan J., Liu H., Ning Y. and Zou H. (2017) \href{https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssb.12168}{"High dimensional semiparametric latent graphicalmodel for mixed data"}, \emph{J. R. Statist. Soc. B}, 79: 405-421. <doi:10.1111/rssb.12168>.
 #'
-#' Yoon G., Carroll R.J. and Gaynanova I. (2020) \href{https://doi.org/10.1093/biomet/asaa007}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{Biometrika}, asaa007.
+#' Yoon G., Carroll R.J. and Gaynanova I. (2020) \href{https://doi.org/10.1093/biomet/asaa007}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{Biometrika}, asaa007. <doi:10.1093/biomet/asaa007>.
 #'
-#' Yoon G., M&uuml;ller C.L., Gaynanova I. (2020) \href{https://arxiv.org/abs/2006.13875}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{arXiv 2006.13875}.
+#' Yoon G., M&uuml;ller C.L., Gaynanova I. (2020) \href{https://arxiv.org/abs/2006.13875}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, <arXiv:2006.13875>.
 #'
 #' @export
 #' @import stats

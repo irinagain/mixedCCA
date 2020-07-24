@@ -64,6 +64,10 @@ lambdaseq_generate <- function(nlamseq = 20, lam.eps = 1e-02, Sigma1, Sigma2, Si
 #'       \item{lam2.iter: }{For each iteration, what lambda value is selected for \eqn{w2} is stored.}
 #'       \item{obj: }{objective function value without penalty: \eqn{w1^T * R12 * w2}. If lamseq1 and lamseq2 are scalar, then original objective function including penalty part will be used.}
 #' }
+#'
+#' @references
+#' Yoon G., Carroll R.J. and Gaynanova I. (2020) \href{https://doi.org/10.1093/biomet/asaa007}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{Biometrika}, asaa007. <doi:10.1093/biomet/asaa007>.
+#'
 #' @export
 #'
 find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype, maxiter = 100, tol = 1e-2, trace = FALSE, lassoverbose = FALSE){
@@ -180,7 +184,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 #' @param lassoverbose If \code{lassoverbose = TRUE}, all warnings from lassobic optimization regarding convergence will be printed. The default value is \code{lassoverbose = FALSE}.
 #'
 #' @references
-#' Yoon G., Carroll R.J. and Gaynanova I. (2020) \href{https://doi.org/10.1093/biomet/asaa007}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{Biometrika}, asaa007.
+#' Yoon G., Carroll R.J. and Gaynanova I. (2020) \href{https://doi.org/10.1093/biomet/asaa007}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{Biometrika}, asaa007. <doi:10.1093/biomet/asaa007>.
 #' @return \code{mixedCCA} returns a data.frame containing
 #' \itemize{
 #'       \item{KendallR: }{estimated Kendall's \eqn{\tau} matrix estimator.}

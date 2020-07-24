@@ -112,26 +112,24 @@ R12 <- estimateR_mixed(X1, X2, type1 = "trunc", type2 = "trunc")$R12
 
 ##### Additional mixedCCA example after the major updates with fast approximation.
 
+\dontrun{
 library(microbenchmark)
 # devtools::install_github("GraceYoon/SPRING")
 library(SPRING)
 data("QMP") # data dimension: 106 (sample size) by 91 (dimension)
-microbenchmark(R_approx <- estimateR(QMP, type = "trunc", method = "approx"), times = 1)
 
-
-\dontrun{
-  microbenchmark(R_org <- estimateR(QMP, type = "trunc", method = "original"),
-                 R_approx <- estimateR(QMP, type = "trunc", method = "approx"),
-                 times = 1)
+microbenchmark(R_org <- estimateR(QMP, type = "trunc", method = "original"),
+               R_approx <- estimateR(QMP, type = "trunc", method = "approx"),
+               times = 1)
 
   ###### One time microbenchmark result
   # Unit: seconds
   #                                                       expr
   # R_org <- estimateR(QMP, type = "trunc", method = "original")
   # R_approx <- estimateR(QMP, type = "trunc", method = "approx")
-  #     min        lq        mean    median        uq       max neval
-  # 58.760676 58.760676 58.760676 58.760676 58.760676 58.760676     1
-  #  2.134736  2.134736  2.134736  2.134736  2.134736  2.134736     1
+  #       min        lq      mean    median        uq       max neval
+  # 50.288691 50.288691 50.288691 50.288691 50.288691 50.288691     1
+  #  1.394477  1.394477  1.394477  1.394477  1.394477  1.394477     1
 
   max(abs(R_org$R - R_approx$R))
   # [1] 0.0006894046
@@ -142,9 +140,9 @@ microbenchmark(R_approx <- estimateR(QMP, type = "trunc", method = "approx"), ti
 
 }
 \references{
-Fan J., Liu H., Ning Y. and Zou H. (2017) \href{https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssb.12168}{"High dimensional semiparametric latent graphicalmodel for mixed data"}, \emph{J. R. Statist. Soc. B}, 79: 405-421.
+Fan J., Liu H., Ning Y. and Zou H. (2017) \href{https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssb.12168}{"High dimensional semiparametric latent graphicalmodel for mixed data"}, \emph{J. R. Statist. Soc. B}, 79: 405-421. <doi:10.1111/rssb.12168>.
 
-Yoon G., Carroll R.J. and Gaynanova I. (2020) \href{https://doi.org/10.1093/biomet/asaa007}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{Biometrika}, asaa007.
+Yoon G., Carroll R.J. and Gaynanova I. (2020) \href{https://doi.org/10.1093/biomet/asaa007}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{Biometrika}, asaa007. <doi:10.1093/biomet/asaa007>.
 
-Yoon G., M&uuml;ller C.L., Gaynanova I. (2020) \href{https://arxiv.org/abs/2006.13875}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{arXiv 2006.13875}.
+Yoon G., M&uuml;ller C.L., Gaynanova I. (2020) \href{https://arxiv.org/abs/2006.13875}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, <arXiv:2006.13875>.
 }
