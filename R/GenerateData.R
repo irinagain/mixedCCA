@@ -1,9 +1,12 @@
 #' Construct a correlation matrix
 #'
 #' Functions to create autocorrelation matrix (p by p) with parameter rho and block correlation matrix (p by p) using group index (of length p) and (possibly) different parameter rho for each group.
+#' @name CorrStructure
+NULL
+#> NULL
+
 
 #' @rdname CorrStructure
-#' @aliases autocor blockcor
 #' @param p Specified matrix dimension.
 #' @param rho Correlation value(s), must be between -0.99 and 0.99. Should be a scalar for \code{autocor}, and either a scalar or a vector of the same length as the maximal \code{blockind} K for \code{blockcor}.
 #' @export
@@ -16,16 +19,15 @@ autocor <- function(p, rho){
 
 #' Construct a correlation matrix
 #' @rdname CorrStructure
-#' @aliases autocor blockcor
-#' @param blockind Block index 1,\dots, K for a poisitive integer K specifying which variable belongs to which block, the matrix dimension is equal to \code{length(blockind)}.
+#' @param blockind Block index 1,\dots, K for a positive integer K specifying which variable belongs to which block, the matrix dimension is equal to \code{length(blockind)}.
 #' @param rho Correlation value(s), must be between -0.99 and 0.99. Should be a scalar for \code{autocor}, and either a scalar or a vector of the same length as the maximal \code{blockind} K for \code{blockcor}.
 #' @examples
 #' # For p = 8,
 #' # auto correlation matrix
 #' autocor(8, 0.8)
-#' # block correlation mattrix: two blocks with the same correlation within each block
+#' # block correlation matrix: two blocks with the same correlation within each block
 #' blockcor(c(rep(1,3), rep(2,5)), 0.8)
-#' # block correlation mattrix: two blocks with different correlation within each block
+#' # block correlation matrix: two blocks with different correlation within each block
 #' blockcor(c(rep(1,3), rep(2,5)), c(0.8, 0.3))
 #'
 #' @export
