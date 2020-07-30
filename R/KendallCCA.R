@@ -66,8 +66,7 @@ lambdaseq_generate <- function(nlamseq = 20, lam.eps = 1e-02, Sigma1, Sigma2, Si
 #' }
 #'
 #' @references
-#' Yoon G., Carroll R.J. and Gaynanova I. (2020) \href{https://doi.org/10.1093/biomet/asaa007}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{Biometrika}, asaa007. <doi:10.1093/biomet/asaa007>.
-#'
+#' Yoon G., Carroll R.J. and Gaynanova I. (2020) "Sparse semiparametric canonical correlation analysis for data of mixed types" <doi:10.1093/biomet/asaa007>.
 #' @export
 #'
 find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtype, maxiter = 100, tol = 1e-2, trace = FALSE, lassoverbose = FALSE){
@@ -154,7 +153,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
     }
   } # This is the end of the while-loop
   if (iter >= maxiter){
-    cat("Failed to converge. (findw12 part)\n objective function = ", obj[iter], " and difference of objective function = ", diffobj, " where tol = ", tol, " with BICtype = ", BICtype, "\n")
+    warning("Failed to converge. (findw12 part)\n objective function = ", obj[iter], " and difference of objective function = ", diffobj, " where tol = ", tol, " with BICtype = ", BICtype, "\n")
   }
   return(list(w1 = w1, w2 = w2, w1trace = wmat1, w2trace = wmat2, lam1.iter = lam1.iter, lam2.iter = lam2.iter, obj = obj))
 }
@@ -184,7 +183,8 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 #' @param lassoverbose If \code{lassoverbose = TRUE}, all warnings from lassobic optimization regarding convergence will be printed. The default value is \code{lassoverbose = FALSE}.
 #'
 #' @references
-#' Yoon G., Carroll R.J. and Gaynanova I. (2020) \href{https://doi.org/10.1093/biomet/asaa007}{"Sparse semiparametric canonical correlation analysis for data of mixed types"}, \emph{Biometrika}, asaa007. <doi:10.1093/biomet/asaa007>.
+#' Yoon G., Carroll R.J. and Gaynanova I. (2020) "Sparse semiparametric canonical correlation analysis for data of mixed types" <doi:10.1093/biomet/asaa007>.
+#'
 #' @return \code{mixedCCA} returns a data.frame containing
 #' \itemize{
 #'       \item{KendallR: }{estimated Kendall's \eqn{\tau} matrix estimator.}
@@ -251,7 +251,7 @@ mixedCCA <- function(X1, X2, type1, type2,
                            w1init = w1init, w2init = w2init, BICtype = BICtype, maxiter = maxiter, tol = tol,
                            trace = trace, lassoverbose = lassoverbose)
   if(length(fitresult$obj) >= maxiter){
-    cat("Tried finer lambda sequences.\n") # Tried twice length of lambda sequence to the same function. The whold range should be the same.
+    message("Tried finer lambda sequences.\n") # Tried twice length of lambda sequence to the same function. The whold range should be the same.
     lambda_seq <- lambdaseq_generate(nlamseq = nlamseq*2, lam.eps = lam.eps,
                                      Sigma1 = R1, Sigma2 = R2, Sigma12 = R12, w1init = w1init, w2init = w2init)
     lamseq1 <- lambda_seq[[1]]
@@ -263,7 +263,7 @@ mixedCCA <- function(X1, X2, type1, type2,
     if(length(fitresult$obj)<=maxiter){ # If this additional step is converged, the following information will be printed.
       len <- length(fitresult$obj) # the length of traced object to extract the last element.
       diffobj <- abs((fitresult$obj[len] - fitresult$obj[len-1])/fitresult$obj[len-1])
-      cat("Converged. The final difference of objective function = ", diffobj, " where tol = ", tol, " with BICtype = ", BICtype, "\n")
+      message("Converged. The final difference of objective function = ", diffobj, " where tol = ", tol, " with BICtype = ", BICtype, "\n")
     }
   }
   w1 <- fitresult$w1

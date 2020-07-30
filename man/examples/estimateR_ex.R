@@ -1,10 +1,8 @@
-### Simple example
-
-# Data setting
+### Data setting
 n <- 100; p1 <- 15; p2 <- 10 # sample size and dimensions for two datasets.
 maxcancor <- 0.9 # true canonical correlation
 
-# Correlation structure within each data set
+### Correlation structure within each data set
 set.seed(0)
 perm1 <- sample(1:p1, size = p1);
 Sigma1 <- autocor(p1, 0.7)[perm1, perm1]
@@ -12,56 +10,30 @@ blockind <- sample(1:3, size = p2, replace = TRUE);
 Sigma2 <- blockcor(blockind, 0.7)
 mu <- rbinom(p1+p2, 1, 0.5)
 
-# true variable indices for each dataset
+### true variable indices for each dataset
 trueidx1 <- c(rep(1, 3), rep(0, p1-3))
 trueidx2 <- c(rep(1, 2), rep(0, p2-2))
 
-# Data generation
+### Data generation
 simdata <- GenerateData(n=n, trueidx1 = trueidx1, trueidx2 = trueidx2, maxcancor = maxcancor,
                         Sigma1 = Sigma1, Sigma2 = Sigma2,
                         copula1 = "exp", copula2 = "cube",
                         muZ = mu,
-                        type1 = "trunc", type2 = "trunc",
+                        type1 = "trunc", type2 = "continuous",
                         c1 = rep(1, p1), c2 =  rep(0, p2)
 )
 X1 <- simdata$X1
 X2 <- simdata$X2
 
-# Check the range of truncation levels of variables
+### Check the range of truncation levels of variables
 range(colMeans(X1 == 0))
 range(colMeans(X2 == 0))
 
-# Estimate latent correlation matrix
-R1 <- estimateR(X1, type = "trunc")$R
-R12 <- estimateR_mixed(X1, X2, type1 = "trunc", type2 = "trunc")$R12
-
-
-
-##### Additional mixedCCA example after the major updates with fast approximation.
-
-\dontrun{
-library(microbenchmark)
-# devtools::install_github("GraceYoon/SPRING")
-library(SPRING)
-data("QMP") # data dimension: 106 (sample size) by 91 (dimension)
-
-microbenchmark(R_org <- estimateR(QMP, type = "trunc", method = "original"),
-               R_approx <- estimateR(QMP, type = "trunc", method = "approx"),
-               times = 1)
-
-  ###### One time microbenchmark result
-  # Unit: seconds
-  #                                                       expr
-  # R_org <- estimateR(QMP, type = "trunc", method = "original")
-  # R_approx <- estimateR(QMP, type = "trunc", method = "approx")
-  #       min        lq      mean    median        uq       max neval
-  # 50.288691 50.288691 50.288691 50.288691 50.288691 50.288691     1
-  #  1.394477  1.394477  1.394477  1.394477  1.394477  1.394477     1
-
-  max(abs(R_org$R - R_approx$R))
-  # [1] 0.0006894046
-  mean(abs(R_org$R - R_approx$R))
-  # [1] 0.0001085416
-}
+### Estimate latent correlation matrix
+# with original method
+R1_org <- estimateR(X1, type = "trunc", method = "original")$R
+# with faster approximation method
+R1_approx <- estimateR(X1, type = "trunc", method = "approx")$R
+R12_approx <- estimateR_mixed(X1, X2, type1 = "trunc", type2 = "continuous", method = "approx")$R12
 
 

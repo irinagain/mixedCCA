@@ -12,16 +12,7 @@ fromKtoR <- function(K, zratio = NULL, type = "trunc", tol = 1e-3) {
     # Below code is from Yang Ning
     hatR <- matrix(1, d1, d1)
 
-    if (d1 <= 1){ # for scalar K: one Kendall tau value
-      i <- j <- 1
-      f1 <- function(r)(bridge(r, zratio = zratio[i], zratio2 = zratio[j]) - K[i,j])^2
-      op <- tryCatch(optimize(f1, lower = -0.99, upper = 0.99, tol = tol)[1], error = function(e) 100)
-      if(op == 100) {
-        hatR[i, j] <- hatR[j, i] <-0
-      } else {
-        hatR[i, j] <- hatR[j, i] <- unlist(op)
-      }
-    } else { # for matrix K
+    if (d1 > 1){ # for matrix K
       for(i in 1:(d1-1)) {
         for(j in (i+1):d1){
           # Below change to use the bridgeF_mix function that was selected previously, no need to supply the type anymore
@@ -64,7 +55,7 @@ fromKtoR_mixed <- function(K12, zratio1 = NULL, zratio2 = NULL, type1 = "trunc",
     # Below code is from Yang Ning
     hatR <- matrix(1, d1, d2)
 
-    if ( d1 <= 1 & d2 <= 1 ){
+    if ( d1 == 1 & d2 == 1 ){ # for scalar K: one Kendall tau value
       i <- j <- 1
       f1 <- function(r)(bridge(r, zratio1 = zratio1[i], zratio2 = zratio2[j]) - K12[i,j])^2
       op <- tryCatch(optimize(f1, lower = -0.99, upper = 0.99, tol = tol)[1], error = function(e) 100)
