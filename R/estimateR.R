@@ -35,6 +35,7 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
   if (!(type %in% c("continuous", "binary","trunc"))){
     stop("Unrecognized type of data. Should be one of continuous, binary or trunc.")
   }
+  ind.NaN <- NULL # initialization of the variable. The default is assuming there is no NA or NaN.
 
   if (type == "continuous"){
         K <- pcaPP::cor.fk(X)
@@ -59,8 +60,6 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
           ind.NaN <- which(colSums(is.na(K)) == (p-1))
           K <- K[-ind.NaN, -ind.NaN]
           zratio <- zratio[-ind.NaN]
-        } else if (sum(is.na(K)) == 0){
-          ind.NaN <- NULL
         }
 
         if(method == "approx"){
@@ -88,8 +87,6 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
           ind.NaN <- which(colSums(is.na(K)) == (p-1))
           K <- K[-ind.NaN, -ind.NaN]
           zratio <- zratio[-ind.NaN]
-        } else if (sum(is.na(K)) == 0){
-          ind.NaN <- NULL
         }
 
         if(method == "approx"){
@@ -165,6 +162,8 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
   if (nrow(X1) != nrow(X2)){ # Check of they have the same sample size.
     stop ("X1 and X2 must have the same sample size.")
   }
+
+  ind.NaN <- NULL  # initialization of the variable. The default is assuming there is no NA or NaN.
 
   n <- length(X1)
   p1 <- ncol(X1); p2 <- ncol(X2)
@@ -244,8 +243,6 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
         K2 <- K2[-ind.NaN, -ind.NaN]
         zratio2 <- zratio2[-ind.NaN]
         ind.NaN <- ind.NaN + p1
-      } else if (sum(is.na(K2)) + sum(is.na(K12)) == 0){
-        ind.NaN <- NULL
       }
 
       if(method == "approx"){
@@ -275,8 +272,6 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
         K12 <- K12[-ind.NaN, ]
         K1 <- K1[-ind.NaN, -ind.NaN]
         zratio1 <- zratio1[-ind.NaN]
-      } else if (sum(is.na(K1)) + sum(is.na(K12)) == 0){
-        ind.NaN <- NULL
       }
 
       if(method == "approx"){
@@ -311,8 +306,6 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
         zratio1 <- zratio1[-ind.NaN1]
         zratio2 <- zratio2[-ind.NaN2]
         ind.NaN <- c(ind.NaN1, ind.NaN2+p1)
-      } else {
-        ind.NaN <- NULL
       }
 
       if(method == "approx"){
