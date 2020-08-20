@@ -1,8 +1,8 @@
 Package: mixedCCA
 Type: Package
 Title: Sparse Canonical Correlation Analysis for High-Dimensional Mixed Data
-Version: 1.2.3
-Date: 2020-07-23
+Version: 1.3.0
+Date: 2020-08-20
 Authors@R: c(
     person(given = "Grace",
            family = "Yoon",
@@ -14,7 +14,11 @@ Authors@R: c(
            role = c("aut"),
            email = "irinag@stat.tamu.edu",
            comment = c(ORCID = "0000-0002-4116-0268")))
-Description: Semi-parametric approach for sparse canonical correlation analysis which can handle mixed data types: continuous, binary and truncated continuous. Bridge functions are provided to connect Kendall's tau to latent correlation matrix under the Gaussian copula model. The methods are described in Yoon, Carroll and Gaynanova (2020) <doi:10.1093/biomet/asaa007> and Yoon, M&uuml;ller and Gaynanova (2020) <arXiv:2006.13875>. 
+Description: Semi-parametric approach for sparse canonical correlation analysis 
+    which can handle mixed data types: continuous, binary and truncated continuous.
+    Bridge functions are provided to connect Kendall's tau to latent correlation
+    under the Gaussian copula model. The methods are described in 
+    Yoon, Carroll and Gaynanova (2020) <doi:10.1093/biomet/asaa007>.
 License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 3.0.1), stats, MASS
