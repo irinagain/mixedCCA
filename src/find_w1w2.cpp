@@ -13,7 +13,7 @@ double soft(double a, double lambda){
 }
 
 // BIC criterion for w1, given w2.
-double BICw1(int n, const arma::mat& R1, const arma::colvec& d,
+double BICw1(double n, const arma::mat& R1, const arma::colvec& d,
            const arma::colvec& w1, int BICtype){
   // d = R12*w2. w1 should not be normalized.
   double myBIC = 0.0;
@@ -35,7 +35,7 @@ double BICw1(int n, const arma::mat& R1, const arma::colvec& d,
 
 // find lasso solution for w1 given w2.
 // [[Rcpp::export]]
-Rcpp::List lassobic(int n, const arma::mat& R1, const arma::colvec& d, //d = R12*w2
+Rcpp::List lassobic(double n, const arma::mat& R1, const arma::colvec& d, //d = R12*w2
                     arma::colvec w1init, const arma::colvec& lamseq,
                     int BICtype, int maxiter = 1000, double tol = 0.0001, int lassoverbose = 1){
   // basically same as solveLasso for fixed w2 and all lambda values.

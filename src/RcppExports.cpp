@@ -7,12 +7,12 @@
 using namespace Rcpp;
 
 // lassobic
-Rcpp::List lassobic(int n, const arma::mat& R1, const arma::colvec& d, arma::colvec w1init, const arma::colvec& lamseq, int BICtype, int maxiter, double tol, int lassoverbose);
+Rcpp::List lassobic(double n, const arma::mat& R1, const arma::colvec& d, arma::colvec w1init, const arma::colvec& lamseq, int BICtype, int maxiter, double tol, int lassoverbose);
 RcppExport SEXP _mixedCCA_lassobic(SEXP nSEXP, SEXP R1SEXP, SEXP dSEXP, SEXP w1initSEXP, SEXP lamseqSEXP, SEXP BICtypeSEXP, SEXP maxiterSEXP, SEXP tolSEXP, SEXP lassoverboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type n(nSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type R1(R1SEXP);
     Rcpp::traits::input_parameter< const arma::colvec& >::type d(dSEXP);
     Rcpp::traits::input_parameter< arma::colvec >::type w1init(w1initSEXP);

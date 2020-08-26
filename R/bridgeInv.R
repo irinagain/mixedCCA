@@ -4,6 +4,8 @@
 # For multilinear interpolation approximation for bridge Inverse
 ############################################################################################
 
+#' @importFrom chebpol ipol
+NULL
 
 ############################################################################################
 # Cutoff criteria based on the combination of variable types

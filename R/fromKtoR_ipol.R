@@ -1,5 +1,5 @@
 ##### This is going to be approximate version of fromKtoR which is much faster using multilinear interpolation. (07-23-2020)
-##### multilinear interpolation method is from ipol package.
+##### multilinear interpolation method is from ipol in chebpol package.
 
 # K: Kendall's tau matrix.
 # zratio: a column vector of zero proportion values.
