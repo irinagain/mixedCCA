@@ -6,54 +6,51 @@
 fromKtoR_ml <- function(K, zratio = NULL, type = "trunc", tol = 1e-3) {
   K <- as.matrix(K)
   d1 <- nrow(K)
-  # K is d1 by d1 square matrix. zratio should be a vector of length d1. If the type is "continuous", no input is necessary for zratio.
+  # If this is just 1 variable, then correlation is automatically 1
+  if (d1 == 1){return(as.matrix(1))}
 
   if (type == "continuous") {
     hatR <- sin(pi/2 * K)
   } else { # if the type is either "trunc" or "binary"
+    # based on the data type, select bridgeInv and cutoff functions.
+    bridgeInv <- bridgeInv_select(type1 = type, type2 = type)
+    cutoff <- cutoff_select(type1 = type, type2 = type)
 
-    if (is.null(zratio)){ stop ("The input for zratio is required for \"trunc\" and \"binary\" types.") }
-    if (length(zratio)!=d1){ stop ("The length of zratio must match with the number of columns in K.") }
+    # multi-linear interpolation part using saved ipol function.
+    hatR <- bridgeInv(K, zratio1 = zratio, zratio2 = zratio)
 
-          # based on the data type, select bridgeInv and cutoff functions.
-          bridgeInv <- bridgeInv_select(type1 = type, type2 = type)
-          cutoff <- cutoff_select(type1 = type, type2 = type)
+    # make sure the diagonal elements are all one and they are symmetric.
+    diag(hatR) <- 1
+    hatR <- (hatR + t(hatR))/2 # even without this step, hatR is very close to symmetric but not exactly. (symmetric within the error 1e-5)
 
-          # much faster multi-linear interpolation part using saved ipol function.
-          hatR <- bridgeInv(K, zratio1 = zratio, zratio2 = zratio)
+    # check if there is any element that is outside of the safe boundary for interpolation.
+    ##### only considering off-diagonal matrix.
+    cutoff_matrix <- matrix(cutoff(zratio1 = rep(zratio, d1), zratio2 = rep(zratio, each = d1)), nrow = d1)
+    ind_cutoff <- which(abs(K[upper.tri(K)]) > cutoff_matrix[upper.tri(cutoff_matrix)], arr.ind = TRUE)
 
-          # make sure the diagonal elements are all one and they are symmetric.
-          diag(hatR) <- 1
-          hatR <- (hatR + t(hatR))/2 # even without this step, hatR is very close to symmetric but not exactly. (symmetric within the error 1e-5)
+    if (length(ind_cutoff) > 0){
+      # if there is any element that is outside of the safe boundary for interpolation,
+      # then calculate using original bridge inverse optimization elementwise.
+      ind_cutoff_mat <- cbind(floor(sqrt(ind_cutoff*2)), ceiling(sqrt(ind_cutoff*2)))
+      bridge <- bridge_select(type1 = type, type2 = type)
 
-          # check if there is any element that is outside of the safe boundary for interpolation.
-          ##### only considering off-diagonal matrix.
-          cutoff_matrix <- matrix(cutoff(zratio1 = rep(zratio, d1), zratio2 = rep(zratio, each = d1)), nrow = d1)
-          ind_cutoff <- which(abs(K[upper.tri(K)]) > cutoff_matrix[upper.tri(cutoff_matrix)], arr.ind = TRUE)
-
-          if (length(ind_cutoff) > 0){
-            # if there is any element that is outside of the safe boundary for interpolation,
-            # then calculate using original bridge inverse optimization elementwise.
-            ind_cutoff_mat <- cbind(floor(sqrt(ind_cutoff*2)), ceiling(sqrt(ind_cutoff*2)))
-            bridge <- bridge_select(type1 = type, type2 = type)
-
-            for(rind in 1:length(ind_cutoff)){
-              i <- ind_cutoff_mat[rind, 1]
-              j <- ind_cutoff_mat[rind, 2]
-              if(type == "trunc" & sum(zratio[c(i, j)]) < 1e-6){
-                hatR[i, j] <- hatR[j, i] <- sin(pi/2 * K[i, j])
-              } else {
-                f1 <- function(r)(bridge(r, zratio1 = zratio[i], zratio2 = zratio[j]) - K[i,j])^2
-                op <- tryCatch(optimize(f1, lower = -0.99, upper = 0.99, tol = tol)[1], error = function(e) 100)
-                if(op == 100) {
-                  warning("Check pairs bewteen variable ", i, " and variable ", j, "\n")
-                } else {
-                  hatR[i, j] <- hatR[j, i] <- unlist(op)
-                }
-              }
-            }
-          } # done with for the pairs that are outside of the safe boundary for multi-linear interpolation.
-    }
+      for(rind in 1:length(ind_cutoff)){
+        i <- ind_cutoff_mat[rind, 1]
+        j <- ind_cutoff_mat[rind, 2]
+        if(type == "trunc" & sum(zratio[c(i, j)]) < 1e-6){
+          hatR[i, j] <- hatR[j, i] <- sin(pi/2 * K[i, j])
+        } else {
+          f1 <- function(r)(bridge(r, zratio1 = zratio[i], zratio2 = zratio[j]) - K[i,j])^2
+          op <- tryCatch(optimize(f1, lower = -0.99, upper = 0.99, tol = tol)[1], error = function(e) 100)
+          if(op == 100) {
+            warning("Check pairs bewteen variable ", i, " and variable ", j, "\n")
+          } else {
+            hatR[i, j] <- hatR[j, i] <- unlist(op)
+          }
+        }
+      }
+    } # done with for the pairs that are outside of the safe boundary for multi-linear interpolation.
+  }
 
   return(hatR)
 }
@@ -66,22 +63,11 @@ fromKtoR_ml_mixed <- function(K12, zratio1 = NULL, zratio2 = NULL, type1 = "trun
   K12 <- as.matrix(K12)
   d1 <- nrow(K12)
   d2 <- ncol(K12)
-  # K12 is d1 by d2 matrix.
-  # zratio1 should be a vector of length d1. zratio2 should be a vector of length d2.
-  # If the both types are "continuous", no input is necessary for zratio1 and zratio2.
 
   if (type1 == "continuous" & type2 == "continuous") {
     hatR <- sin(pi/2 * K12)
   } else {
     # if the case is either CT, TC, TT, BC, BB or TB.
-    if (type1 != "continuous"){
-      if (is.null(zratio1)){ stop ("The input for zratio1 is required for \"trunc\" and \"binary\" types.") }
-      if (length(zratio1)!=d1){ stop ("The length of zratio1 must match with the number of rows in K12.") }
-    }
-    if (type2 != "continuous"){
-      if (is.null(zratio2)){ stop ("The input for zratio2 is required for \"trunc\" and \"binary\" types.") }
-      if (length(zratio2)!=d2){ stop ("The length of zratio2 must match with the number of columns in K12.") }
-    }
 
     # based on the data type, select bridgeInv and cutoff functions.
     bridgeInv <- bridgeInv_select(type1 = type1, type2 = type2)
@@ -89,7 +75,6 @@ fromKtoR_ml_mixed <- function(K12, zratio1 = NULL, zratio2 = NULL, type1 = "trun
 
     # much faster multi-linear interpolation part using saved ipol function.
     hatR <- bridgeInv(K12, zratio1 = zratio1, zratio2 = zratio2)
-    # Here, there is no step to make sure about the diagonal elements and symmetrize.
 
     # check if there is any element that is outside of the safe boundary for interpolation.
     cutoff_matrix <- matrix(cutoff(zratio1 = rep(zratio1, d2), zratio2 = rep(zratio2, each = d1)), nrow = d1)
@@ -116,6 +101,7 @@ fromKtoR_ml_mixed <- function(K12, zratio1 = NULL, zratio2 = NULL, type1 = "trun
         }
       }
     } # done with for the pairs that are outside of the safe boundary for multi-linear interpolation.
-    }
+  }
+
   return(hatR)
 }
