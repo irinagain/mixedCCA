@@ -37,9 +37,9 @@ GenerateData(
 
 \item{copula2}{Copula type for the second dataset. U2 = f(Z2), which could be either "exp", "cube".}
 
-\item{type1}{Type of the first dataset \code{X1}.}
+\item{type1}{Type of the first dataset \code{X1}. Could be "continuous", "trunc" or "binary".}
 
-\item{type2}{Type of the second dataset \code{X2}.}
+\item{type2}{Type of the second dataset \code{X2}. Could be "continuous", "trunc" or "binary".}
 
 \item{muZ}{Mean of latent multivariate normal.}
 

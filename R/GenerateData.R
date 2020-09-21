@@ -65,8 +65,8 @@ blockcor <- function(blockind, rho){
 #' @param maxcancor True canonical correlation between \code{Z1} and \code{Z2}.
 #' @param copula1 Copula type for the first dataset. U1 = f(Z1), which could be either "exp", "cube".
 #' @param copula2 Copula type for the second dataset. U2 = f(Z2), which could be either "exp", "cube".
-#' @param type1 Type of the first dataset \code{X1}.
-#' @param type2 Type of the second dataset \code{X2}.
+#' @param type1 Type of the first dataset \code{X1}. Could be "continuous", "trunc" or "binary".
+#' @param type2 Type of the second dataset \code{X2}. Could be "continuous", "trunc" or "binary".
 #' @param muZ Mean of latent multivariate normal.
 #' @param c1 Constant threshold for \code{X1} needed for "trunc" and "binary" data type - the default is NULL.
 #' @param c2 Constant threshold for \code{X2} needed for "trunc" and "binary" data type - the default is NULL.
