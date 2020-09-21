@@ -32,6 +32,11 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
   n <- nrow(X)
   p <- ncol(X)
 
+  # shrinkage method
+  if(nu < 0 | nu > 1){
+    stop("nu must be be between 0 and 1.")
+  }
+
   if (!(type %in% c("continuous", "binary","trunc"))){
     stop("Unrecognized type of data. Should be one of continuous, binary or trunc.")
   }
@@ -105,10 +110,7 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
         }
         R <- as.matrix(Matrix::nearPD(R, corr = TRUE)$mat)
   }
-  # shrinkage method
-  if(nu < 0 | nu > 1){
-    stop("nu must be be between 0 and 1.")
-  }
+
 
   if (length(ind.NaN) > 0){
     R <- (1 - nu)*R + nu*diag(p - length(ind.NaN))
@@ -161,6 +163,11 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
 
   if (nrow(X1) != nrow(X2)){ # Check of they have the same sample size.
     stop ("X1 and X2 must have the same sample size.")
+  }
+
+  # shrinkage method
+  if(nu < 0 | nu > 1){
+    stop("nu must be be between 0 and 1.")
   }
 
   ind.NaN <- NULL  # initialization of the variable. The default is assuming there is no NA or NaN.
@@ -218,7 +225,6 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
 
   if (type1 == type2) {
     ################### both datasets are of the same type. CC, TT or BB case.
-
     Xcomb <- cbind(X1, X2)
     R.final <- estimateR(Xcomb, type = type1, method = method, use.nearPD = use.nearPD, nu = nu, tol = tol)$R
     R1 <- R.final[1:p1, 1:p1]
@@ -323,15 +329,11 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
       Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
     }
 
-    if ( use.nearPD == TRUE & min(eigen(Rall)$values) < 0 ) {
+    if (use.nearPD == TRUE & min(eigen(Rall)$values) < 0 ) {
       if( verbose ){
         message(" minimum eigenvalue of correlation estimator is ", min(eigen(Rall)$values), "\n nearPD is used")
       }
       Rall <- as.matrix(Matrix::nearPD(Rall, corr = TRUE)$mat)
-    }
-    # shrinkage method
-    if(nu < 0 | nu > 1){
-      stop("nu must be be between 0 and 1.")
     }
 
     if (length(ind.NaN) > 0){
