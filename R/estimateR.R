@@ -47,39 +47,32 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
       K <- pcaPP::cor.fk(X)
     }
     R <- sin(pi/2 * K)
-  } else if (type == "trunc"){
-    # checking data type
-    if(sum(X < 0) > 0) {
-      stop("The data of truncated type contains negative values.")
-    }
-    # checking proportion of zero values
+  } else {
     zratio <- colMeans(X == 0)
-    if(sum(zratio) == 0){
-      message("The data does not contain zeros. Consider changing the type to \"continuous\".")
-    }
-    if (sum(zratio == 1) > 0){
-      stop("There are variables in the data that have only zeros. Filter those variables before continuing. \n")
+    if (type == "trunc"){
+      # checking data type
+        if(sum(X < 0) > 0) {
+          stop("The data of truncated type contains negative values.")
+        }
+      # checking proportion of zero values
+        if(sum(zratio) == 0){
+          message("The data does not contain zeros. Consider changing the type to \"continuous\".")
+        }
+        if (sum(zratio == 1) > 0){
+          stop("There are variables in the data that have only zeros. Filter those     variables before continuing. \n")
+        }
+    }else{
+      # checking data type
+      if(sum(!(X %in% c(0, 1))) > 0) {
+        stop("The data is not \"binary\".")
+      }
+      if (sum(zratio == 1) > 0 | sum(zratio == 0) > 0){
+        stop("There are binary variables in the data that have only zeros or only ones. Filter those variables before continuing. \n")
+      }
     }
     K <- Kendall_matrix(X)
 
     if (method == "approx"){
-      R <- fromKtoR_ml(K, zratio = zratio, type = type, tol = tol)
-    } else {
-      R <- fromKtoR(K, zratio = zratio, type = type, tol = tol)
-    }
-  } else if (type == "binary"){
-    # checking data type
-    if(sum(!(X %in% c(0, 1))) > 0) {
-      stop("The data is not \"binary\".")
-    }
-    # checking proportion of zero values
-    zratio <- colMeans(X == 0)
-    if (sum(zratio == 1) > 0 | sum(zratio == 0) > 0){
-      stop("There are binary variables in the data that have only zeros or only ones. Filter those variables before continuing. \n")
-    }
-    K <- Kendall_matrix(X)
-
-    if(method == "approx"){
       R <- fromKtoR_ml(K, zratio = zratio, type = type, tol = tol)
     } else {
       R <- fromKtoR(K, zratio = zratio, type = type, tol = tol)
