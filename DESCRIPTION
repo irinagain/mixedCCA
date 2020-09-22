@@ -2,12 +2,12 @@ Package: mixedCCA
 Type: Package
 Title: Sparse Canonical Correlation Analysis for High-Dimensional Mixed Data
 Version: 1.4.0
-Date: 2020-08-26
+Date: 2020-09-21
 Authors@R: c(
     person(given = "Grace",
            family = "Yoon",
            role = c("aut", "cre"),
-           email = "gyoon@stat.tamu.edu",
+           email = "gyoon6067@gmail.com",
            comment = c(ORCID = "0000-0003-3263-1352")),
     person(given = "Irina",
            family = "Gaynanova",
