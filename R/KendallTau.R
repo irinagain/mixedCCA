@@ -39,33 +39,40 @@
 KendallTau <- function(x, y){ # both x and y are vectors, not matrix.
   # Based on cor.fk function from pcaPP package to make the computation faster.
   # It can handle ties.
-  if (length(x) != length(y)){ # Check of they have the same length.
+  if (length(x) != length(y)){ # Check of they have the same length
     stop ("x and y must have same length.")
   }
   if (sum(is.na(x)) + sum(is.na(y)) > 0){
-      tau <- NA
-  } else if (sum(is.na(x)) + sum(is.na(y)) == 0){
-      n <- length(x)
-      n0 <- n*(n-1)/2
-      if (length(unique(x)) != n) {
-        x <- as.vector(x) # sometimes input x is a matrix n by 1, which gives errors for rle function below.
-        x.info <- rle(sort(x))
-        t1 <- x.info$lengths[x.info$lengths>1]
-        n1 <- sum(t1*(t1-1)/2)
-      } else {
-        n1 <- 0
-      }
-      if (length(unique(y)) != n) {
-        y <- as.vector(y) # sometimes input y is a matrix n by 1, which gives errors for rle function below.
-        y.info <- rle(sort(y))
-        u1 <- y.info$lengths[y.info$lengths>1]
-        n2 <- sum(u1*(u1-1)/2)
-      } else {
-        n2 <- 0
-      }
-
-      tau <- pcaPP::cor.fk(x, y)*sqrt(n0-n1)*sqrt(n0-n2)/n0
+    index_new = which(!is.na(x) & !is.na(y))
+    if (length(index_new) < 2){
+      stop("Too many missing measuments in one of the variables, filter for missing data.")
+    }else{
+      x <- x[index_new]
+      y <- y[index_new]
+    }
   }
+
+  n <- length(x)
+  n0 <- n * (n - 1) / 2
+  if (length(unique(x)) != n) {
+    x <- as.vector(x) # sometimes input x is a matrix n by 1, which gives errors for rle function below.
+    x.info <- rle(sort(x))
+    t1 <- x.info$lengths[x.info$lengths > 1]
+    n1 <- sum(t1 * (t1 - 1) / 2)
+  } else {
+    n1 <- 0
+  }
+  if (length(unique(y)) != n) {
+    y <- as.vector(y) # sometimes input y is a matrix n by 1, which gives errors for rle function below.
+    y.info <- rle(sort(y))
+    u1 <- y.info$lengths[y.info$lengths > 1]
+    n2 <- sum(u1 * (u1 - 1) / 2)
+  } else {
+    n2 <- 0
+  }
+
+  tau <- pcaPP::cor.fk(x, y) * sqrt(n0 - n1) * sqrt(n0 - n2) / n0
+
   return(tau)
 }
 
@@ -81,21 +88,19 @@ KendallTau <- function(x, y){ # both x and y are vectors, not matrix.
 Kendall_matrix <- function(X, Y = NULL){ # X and Y are matrix.
   if (is.null(Y)) {
     X <- as.matrix(X) # In case that X is vector, this line gives you one column matrix.
-    n <- nrow(X)
     p1 <- ncol(X)
     tau <- matrix(1, p1, p1)
     if (p1 > 1){
-      for (i in 1:(p1-1)){
-        for (j in (i+1):p1){ # calculate KendallTau elementwise.
+      for (i in 1:(p1 - 1)){
+        for (j in (i + 1):p1){ # calculate KendallTau elementwise.
           tau[i, j] <- tau[j, i] <- KendallTau(X[, i], X[, j])
         }
       }
     }
   } else {
     X <- as.matrix(X); Y <- as.matrix(Y) # In case that X and Y are vectors, this line gives you one column matrix.
-    n <- nrow(X)
     p1 <- ncol(X); p2 <- ncol(Y)
-    if ( p1 <= 1 & p2 <= 1){
+    if (p1 == 1 & p2 == 1){
       tau <- KendallTau(X, Y)
     } else {
       tau <- matrix(0, p1, p2)
