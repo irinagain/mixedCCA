@@ -19,7 +19,8 @@ fromKtoR <- function(K, zratio = NULL, type = "trunc", tol = 1e-3) {
         f1 <- function(r)(bridge(r, zratio1 = zratio[i], zratio2 = zratio[j]) - K[i,j])^2
         op <- tryCatch(optimize(f1, lower = -0.99, upper = 0.99, tol = tol)[1], error = function(e) 100)
         if(op == 100){
-          hatR[i, j] <- hatR[j, i] <- 0
+          warning("Optimize returned error one of the pairwise correlations, returning NA")
+          hatR[i, j] <- hatR[j, i] <- NA
         }else {
           hatR[i, j] <- hatR[j, i] <- unlist(op)
         }
@@ -50,7 +51,8 @@ fromKtoR_mixed <- function(K12, zratio1 = NULL, zratio2 = NULL, type1 = "trunc",
         f1 <- function(r)(bridge(r, zratio1 = zratio1[i], zratio2 = zratio2[j]) - K12[i,j])^2
         op <- tryCatch(optimize(f1, lower = -0.99, upper = 0.99, tol = tol)[1], error = function(e) 100)
         if(op == 100) {
-          hatR[i,j] <- 0
+          warning("Optimize returned error one of the pairwise correlations, returning NA")
+          hatR[i,j] <- NA
         } else {
           hatR[i,j] <- unlist(op)
         }
