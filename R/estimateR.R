@@ -198,7 +198,7 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
     if(method == "approx"){
       r12 = fromKtoR_ml_mixed(k12, zratio1 = zratio1, zratio2 = zratio2, type1 = type1, type2 = type2, tol = tol)
     }else{
-      r12 = fromKtoR_mixed(k12, zratio1 = zratio1, type1 = type1, type2 = type2, tol = tol)
+      r12 = fromKtoR_mixed(k12, zratio1 = zratio1, zratio2 = zratio2, type1 = type1, type2 = type2, tol = tol)
     }
     return(list(type = c(type1, type2), R1 = 1, R2 = 1, R12 = r12, R = matrix(c(1, r12, r12, 1), 2, 2)))
   }
