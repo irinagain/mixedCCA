@@ -12,17 +12,17 @@ fromKtoR_ml <- function(K, zratio = NULL, type = "trunc", tol = 1e-3) {
   if (type == "continuous") {
     hatR <- sin(pi/2 * K)
   } else { # if the type is either "trunc" or "binary"
-    upperR <- c(upper.tri(K))
-    hatRupper <- rep(NA, sum(upperR))
-    Kupper <- c(K[upperR])
+    upperR <- c(upper.tri(K)) # length p^2 of true/false with true corresponding to upper.tri
+    hatRupper <- rep(NA, sum(upperR)) # length p(p-1)/2
+    Kupper <- c(K[upperR]) # upper triangle of K matrix
 
     # based on the data type, select bridgeInv and cutoff functions.
     bridgeInv <- bridgeInv_select(type1 = type, type2 = type)
     cutoff <- cutoff_select(type1 = type, type2 = type)
 
     # check if there is any element that is outside of the safe boundary for interpolation.
-    zratio1vec = rep(zratio, d1)[upperR]
-    zratio2vec = rep(zratio, each = d1)[upperR]
+    zratio1vec = rep(zratio, d1)[upperR] # length p(p-1)/2
+    zratio2vec = rep(zratio, each = d1)[upperR] # length p(p-1)/2
     ind_cutoff <- which(abs(Kupper) > cutoff(zratio1vec, zratio2vec))
 
     if (length(ind_cutoff) == 0){
@@ -39,7 +39,8 @@ fromKtoR_ml <- function(K, zratio = NULL, type = "trunc", tol = 1e-3) {
         f1 <- function(r)(bridge(r, zratio1 = zratio1vec[ind], zratio2 = zratio2vec[ind]) - upperK[ind])^2
         op <- tryCatch(optimize(f1, lower = -0.99, upper = 0.99, tol = tol)[1], error = function(e) 100)
         if(op == 100) {
-          warning("Check pairs bewteen variable ", i, " and variable ", j, "\n")
+          warning("Optimize returned error one of the pairwise correlations, returning NA")
+          hatRupper[ind] <- NA
         } else {
           hatRupper[ind] <- unlist(op)
         }
@@ -82,7 +83,7 @@ fromKtoR_ml_mixed <- function(K12, zratio1 = NULL, zratio2 = NULL, type1 = "trun
     # much faster multi-linear interpolation part using saved ipol function.
     if (length(ind_cutoff) == 0){
       # Interpolate all the elements
-      hatR <- bridgeInv(c(K12), zratio1 = zratio1vec, zratio2 = zratio2vec)
+      hatR <- matrix(bridgeInv(c(K12), zratio1 = zratio1vec, zratio2 = zratio2vec), d1, d2)
     }else{
       # Interpolate only those elements that are inside
       hatR[-ind_cutoff] <- bridgeInv(c(K12[-ind_cutoff]), zratio1 = zratio1vec[-ind_cutoff], zratio2 = zratio2vec[-ind_cutoff])
@@ -94,7 +95,8 @@ fromKtoR_ml_mixed <- function(K12, zratio1 = NULL, zratio2 = NULL, type1 = "trun
         f1 <- function(r)(bridge(r, zratio1 = zratio1vec[ind], zratio2 = zratio2vec[ind]) - K12[ind])^2
         op <- tryCatch(optimize(f1, lower = -0.99, upper = 0.99, tol = tol)[1], error = function(e) 100)
         if(op == 100) {
-          warning("Check pairs bewteen variable ", i, " and variable ", j, "\n")
+          warning("Optimize returned error one of the pairwise correlations, returning NA")
+          hatRupper[ind] <- NA
         } else {
           hatR[ind] <- unlist(op)
         }
