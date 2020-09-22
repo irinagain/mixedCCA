@@ -33,10 +33,10 @@ fromKtoR_ml <- function(K, zratio = NULL, type = "trunc", tol = 1e-3) {
       hatRupper[-ind_cutoff] <- bridgeInv(Kupper[-ind_cutoff], zratio1 = zratio1vec[-ind_cutoff], zratio2 = zratio2vec[-ind_cutoff])
 
       # Apply original method to the elements outside
-      bridge <- bridge_select(type1 = type1, type2 = type2)
+      bridge <- bridge_select(type1 = type, type2 = type)
 
       for(ind in ind_cutoff){
-        f1 <- function(r)(bridge(r, zratio1 = zratio1vec[ind], zratio2 = zratio2vec[ind]) - upperK[ind])^2
+        f1 <- function(r)(bridge(r, zratio1 = zratio1vec[ind], zratio2 = zratio2vec[ind]) - Kupper[ind])^2
         op <- tryCatch(optimize(f1, lower = -0.99, upper = 0.99, tol = tol)[1], error = function(e) 100)
         if(op == 100) {
           warning("Optimize returned error one of the pairwise correlations, returning NA")
