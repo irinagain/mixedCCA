@@ -61,7 +61,7 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
         if (sum(zratio == 1) > 0){
           stop("There are variables in the data that have only zeros. Filter those     variables before continuing. \n")
         }
-    }else{
+    } else {
       # checking data type
       if(sum(!(X %in% c(0, 1))) > 0) {
         stop("The data is not \"binary\".")
