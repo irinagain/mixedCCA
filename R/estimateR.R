@@ -186,7 +186,6 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
         if(sum(!(X2 %in% c(0, 1))) > 0) {
           stop("The data X2 is not \"binary\".")
         }
-    zratio2 <- colMeans(X2 == 0)
         if (sum(zratio2 == 1) > 0 | sum(zratio2 == 0) > 0){
           warning("There are binary variables in the data that have only zeros or only ones.\n")
         }
