@@ -52,26 +52,30 @@ KendallTau <- function(x, y){ # both x and y are vectors, not matrix.
     }
   }
 
-  n <- length(x)
-  n0 <- n * (n - 1) / 2
-  if (length(unique(x)) != n) {
-    x <- as.vector(x) # sometimes input x is a matrix n by 1, which gives errors for rle function below.
-    x.info <- rle(sort(x))
-    t1 <- x.info$lengths[x.info$lengths > 1]
-    n1 <- sum(t1 * (t1 - 1) / 2)
+  if (length(unique(x)) == 1 | length(unique(y)) == 1){
+    tau <- 0
   } else {
-    n1 <- 0
-  }
-  if (length(unique(y)) != n) {
-    y <- as.vector(y) # sometimes input y is a matrix n by 1, which gives errors for rle function below.
-    y.info <- rle(sort(y))
-    u1 <- y.info$lengths[y.info$lengths > 1]
-    n2 <- sum(u1 * (u1 - 1) / 2)
-  } else {
-    n2 <- 0
-  }
+    n <- length(x)
+    n0 <- n * (n - 1) / 2
+    if (length(unique(x)) != n) {
+      x <- as.vector(x) # sometimes input x is a matrix n by 1, which gives errors for rle function below.
+      x.info <- rle(sort(x))
+      t1 <- x.info$lengths[x.info$lengths > 1]
+      n1 <- sum(t1 * (t1 - 1) / 2)
+    } else {
+      n1 <- 0
+    }
+    if (length(unique(y)) != n) {
+      y <- as.vector(y) # sometimes input y is a matrix n by 1, which gives errors for rle function below.
+      y.info <- rle(sort(y))
+      u1 <- y.info$lengths[y.info$lengths > 1]
+      n2 <- sum(u1 * (u1 - 1) / 2)
+    } else {
+      n2 <- 0
+    }
 
-  tau <- pcaPP::cor.fk(x, y) * sqrt(n0 - n1) * sqrt(n0 - n2) / n0
+    tau <- pcaPP::cor.fk(x, y) * sqrt(n0 - n1) * sqrt(n0 - n2) / n0
+  }
 
   return(tau)
 }

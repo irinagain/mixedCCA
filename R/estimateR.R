@@ -59,7 +59,7 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
           message("The data does not contain zeros. Consider changing the type to \"continuous\".")
         }
         if (sum(zratio == 1) > 0){
-          stop("There are variables in the data that have only zeros. Filter those     variables before continuing. \n")
+          warning("There are variables in the data that have only zeros. Filter those variables before continuing. \n")
         }
     } else {
       # checking data type
@@ -67,7 +67,7 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
         stop("The data is not \"binary\".")
       }
       if (sum(zratio == 1) > 0 | sum(zratio == 0) > 0){
-        stop("There are binary variables in the data that have only zeros or only ones. Filter those variables before continuing. \n")
+        warning("There are binary variables in the data that have only zeros or only ones. Filter those variables before continuing. \n")
       }
     }
     K <- Kendall_matrix(X)
