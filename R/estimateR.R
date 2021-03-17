@@ -39,6 +39,16 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
     stop("Unrecognized type of data. Should be one of continuous, binary or trunc.")
   }
 
+  ### checking if there is any variable has no variation at all (updated in version 1.4.5)
+  ind_sd0 <- which(apply(X, MARGIN = 2, FUN = function(x){ length(unique(x)) == 1 }))
+  if(length(ind_sd0) > 0){
+    warning("There are variables in the data that have only zeros or only the same values.")
+    X <- X[, -ind_sd0] # we exclude those variables and only consider this part for rank-based correlation
+  }
+  if(length(ind_sd0) == p){
+    stop("All variables in the data have no variation at all.")
+  }
+
   if (type == "continuous"){
     if (any(is.na(X))){
       # If there are any missing measurements, use slower function
@@ -58,17 +68,17 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
         if(sum(zratio) == 0){
           message("The data does not contain zeros. Consider changing the type to \"continuous\".")
         }
-        if (sum(zratio == 1) > 0){
-          warning("There are variables in the data that have only zeros. Filter those variables before continuing. \n")
-        }
+        # if (sum(zratio == 1) > 0){
+        #   warning("There are variables in the data that have only zeros. Filter those variables before continuing. \n")
+        # } # deleted in version 1.4.5
     } else {
       # checking data type
       if(sum(!(X %in% c(0, 1))) > 0) {
         stop("The data is not \"binary\".")
       }
-      if (sum(zratio == 1) > 0 | sum(zratio == 0) > 0){
-        warning("There are binary variables in the data that have only zeros or only ones. Filter those variables before continuing. \n")
-      }
+      # if (sum(zratio == 1) > 0 | sum(zratio == 0) > 0){
+      #   warning("There are binary variables in the data that have only zeros or only ones. Filter those variables before continuing. \n")
+      # } # deleted in version 1.4.5
     }
     K <- Kendall_matrix(X)
 
@@ -87,6 +97,13 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
       }
       R <- as.matrix(Matrix::nearPD(R, corr = TRUE)$mat)
     }
+  }
+
+  ### going back to original size of correlation matrix (updated in version 1.4.5)
+  if(length(ind_sd0) > 0){
+    Rorgsize <- diag(p)
+    Rorgsize[-ind_sd0, -ind_sd0] <- R
+    R <- Rorgsize
   }
 
   # Shrinkage adjustment by nu
@@ -146,6 +163,24 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
 
   if (sum(c(type1, type2) %in% c("continuous", "binary", "trunc")) != 2){
     stop("Unrecognised type of variables. Should be one of continuous, binary or trunc.")
+  }
+
+  ### checking if there is any variable has no variation at all (updated in version 1.4.5)
+  ind1_sd0 <- which(apply(X1, MARGIN = 2, FUN = function(x){ length(unique(x)) == 1 }))
+  if(length(ind1_sd0) > 0){
+    warning("There are variables in the data X1 that have only zeros or only the same values.")
+    X1 <- X1[, -ind1_sd0] # we exclude those variables and only consider this part for rank-based correlation
+  }
+  if(length(ind1_sd0) == p1){
+    stop("All variables in the data X1 have no variation at all.")
+  }
+  ind2_sd0 <- which(apply(X2, MARGIN = 2, FUN = function(x){ length(unique(x)) == 1 }))
+  if(length(ind2_sd0) > 0){
+    warning("There are variables in the data X2 that have only zeros or only the same values.")
+    X2 <- X2[, -ind2_sd0] # we exclude those variables and only consider this part for rank-based correlation
+  }
+  if(length(ind2_sd0) == p2){
+    stop("All variables in the data X2 have no variation at all.")
   }
 
   zratio1 <- colMeans(X1 == 0)
@@ -258,6 +293,7 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
 
     Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
 
+
     if (use.nearPD == TRUE){
       if(min(eigen(Rall)$values) < 0) {
         if(verbose) {
@@ -265,6 +301,13 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
         }
         Rall <- as.matrix(Matrix::nearPD(Rall, corr = TRUE)$mat)
       }
+    }
+
+    ### going back to orginal size of correlation matrix (updated in version 1.4.5)
+    if(length(ind1_sd0) + length(ind2_sd0) > 0){
+      Rall_orgsize <- diag(p1 + p2)
+      Rall_orgsize[-c(ind1_sd0, p1+ind2_sd0), -c(ind1_sd0, p1+ind2_sd0)] <- Rall
+      Rall <- Rall_orgsize
     }
 
     # Shrinkage step based on nu
