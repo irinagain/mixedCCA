@@ -52,10 +52,6 @@ KendallTau <- function(x, y){ # both x and y are vectors, not matrix.
     }
   }
 
-  # deleted again in version 1.4.5 (now this is filtered in estimate.R)
-  # if (length(unique(x)) == 1 | length(unique(y)) == 1){
-  #   tau <- 0
-  # } else {
     n <- length(x)
     n0 <- n * (n - 1) / 2
     if (length(unique(x)) != n) {
@@ -76,7 +72,6 @@ KendallTau <- function(x, y){ # both x and y are vectors, not matrix.
     }
 
     tau <- pcaPP::cor.fk(x, y) * sqrt(n0 - n1) * sqrt(n0 - n2) / n0
-  #}
 
   return(tau)
 }

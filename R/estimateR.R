@@ -89,6 +89,13 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
     }
   }
 
+  ### going back to original size of correlation matrix (updated in version 1.4.5)
+  if(length(ind_sd0) > 0){
+    Rorgsize <- diag(p)
+    Rorgsize[-ind_sd0, -ind_sd0] <- R
+    R <- Rorgsize
+  }
+
   # nearPD to make it semi pos-definite
   if (use.nearPD == TRUE){
     if (min(eigen(R)$values) < 0) {
@@ -97,13 +104,6 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
       }
       R <- as.matrix(Matrix::nearPD(R, corr = TRUE)$mat)
     }
-  }
-
-  ### going back to original size of correlation matrix (updated in version 1.4.5)
-  if(length(ind_sd0) > 0){
-    Rorgsize <- diag(p)
-    Rorgsize[-ind_sd0, -ind_sd0] <- R
-    R <- Rorgsize
   }
 
   # Shrinkage adjustment by nu
@@ -293,6 +293,12 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
 
     Rall <- rbind(cbind(R1, R12), cbind(t(R12), R2))
 
+    ### going back to original size of correlation matrix (updated in version 1.4.5)
+    if(length(ind1_sd0) + length(ind2_sd0) > 0){
+      Rall_orgsize <- diag(p1 + p2)
+      Rall_orgsize[-c(ind1_sd0, p1+ind2_sd0), -c(ind1_sd0, p1+ind2_sd0)] <- Rall
+      Rall <- Rall_orgsize
+    }
 
     if (use.nearPD == TRUE){
       if(min(eigen(Rall)$values) < 0) {
@@ -301,13 +307,6 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
         }
         Rall <- as.matrix(Matrix::nearPD(Rall, corr = TRUE)$mat)
       }
-    }
-
-    ### going back to orginal size of correlation matrix (updated in version 1.4.5)
-    if(length(ind1_sd0) + length(ind2_sd0) > 0){
-      Rall_orgsize <- diag(p1 + p2)
-      Rall_orgsize[-c(ind1_sd0, p1+ind2_sd0), -c(ind1_sd0, p1+ind2_sd0)] <- Rall
-      Rall <- Rall_orgsize
     }
 
     # Shrinkage step based on nu
