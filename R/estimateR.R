@@ -43,7 +43,7 @@ estimateR <- function(X, type = "trunc", method = "approx", use.nearPD = TRUE, n
   ind_sd0 <- which(apply(X, MARGIN = 2, FUN = function(x){ length(unique(x)) == 1 }))
   if(length(ind_sd0) > 0){
     warning("There are variables in the data that have only zeros or only the same values.")
-    X <- X[, -ind_sd0] # we exclude those variables and only consider this part for rank-based correlation
+    X <- X[, -ind_sd0, drop = F] # we exclude those variables and only consider this part for rank-based correlation
   }
   if(length(ind_sd0) == p){
     stop("All variables in the data have no variation at all.")
