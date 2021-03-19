@@ -169,7 +169,7 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
   ind1_sd0 <- which(apply(X1, MARGIN = 2, FUN = function(x){ length(unique(x)) == 1 }))
   if(length(ind1_sd0) > 0){
     warning("There are variables in the data X1 that have only zeros or only the same values.")
-    X1 <- X1[, -ind1_sd0] # we exclude those variables and only consider this part for rank-based correlation
+    X1 <- X1[, -ind1_sd0, drop = F] # we exclude those variables and only consider this part for rank-based correlation
   }
   if(length(ind1_sd0) == p1){
     stop("All variables in the data X1 have no variation at all.")
@@ -177,7 +177,7 @@ estimateR_mixed <- function(X1, X2, type1 = "trunc", type2 = "continuous", metho
   ind2_sd0 <- which(apply(X2, MARGIN = 2, FUN = function(x){ length(unique(x)) == 1 }))
   if(length(ind2_sd0) > 0){
     warning("There are variables in the data X2 that have only zeros or only the same values.")
-    X2 <- X2[, -ind2_sd0] # we exclude those variables and only consider this part for rank-based correlation
+    X2 <- X2[, -ind2_sd0, drop = F] # we exclude those variables and only consider this part for rank-based correlation
   }
   if(length(ind2_sd0) == p2){
     stop("All variables in the data X2 have no variation at all.")
