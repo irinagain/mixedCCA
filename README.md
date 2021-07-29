@@ -15,12 +15,9 @@ analysis for data of mixed types: continuous, binary or zero-inflated
 canonical correlation analysis for data of mixed types”.
 *Biometrika*](https://doi.org/10.1093/biomet/asaa007).
 
-The faster version of latent correlation computation part is now fully
-available and implemented to the R package `mixedCCA`. The corresponding
-reference is available on arXiv:
+If you are not intested in CCA, but would like to estimate rank-based correlations with latent Gaussian copula models, we recommend to use a new stand-alone package `latentcor` available [here](https://github.com/mingzehuang/latentcor) that incorpotaes all continuous/binary/ternary/zero-inflated(truncated) cases.
 
-[Yoon G., Müller C.L. and Gaynanova I., “Fast computation of latent
-correlations” *arXiv*](https://arxiv.org/abs/2006.13875).
+
 
 Installation
 ------------
