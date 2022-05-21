@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // lassobic
 Rcpp::List lassobic(double n, const arma::mat& R1, const arma::colvec& d, arma::colvec w1init, const arma::colvec& lamseq, int BICtype, int maxiter, double tol, int lassoverbose);
 RcppExport SEXP _mixedCCA_lassobic(SEXP nSEXP, SEXP R1SEXP, SEXP dSEXP, SEXP w1initSEXP, SEXP lamseqSEXP, SEXP BICtypeSEXP, SEXP maxiterSEXP, SEXP tolSEXP, SEXP lassoverboseSEXP) {
