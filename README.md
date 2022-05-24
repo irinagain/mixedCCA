@@ -4,8 +4,7 @@
 [![R-CMD-check](https://github.com/irinagain/mixedCCA/workflows/R-CMD-check/badge.svg)](https://github.com/irinagain/mixedCCA/actions)
 <!-- badges: end -->
 
-mixedCCA: sparse CCA for data of mixed types
-============================================
+# mixedCCA: sparse CCA for data of mixed types
 
 The R package `mixedCCA` implements sparse canonical correlation
 analysis for data of mixed types: continuous, binary or zero-inflated
@@ -15,19 +14,24 @@ analysis for data of mixed types: continuous, binary or zero-inflated
 canonical correlation analysis for data of mixed types”.
 *Biometrika*](https://doi.org/10.1093/biomet/asaa007).
 
-If you are not intested in CCA, but would like to estimate rank-based correlations with latent Gaussian copula models, we recommend to use a new stand-alone package `latentcor` available [here](https://github.com/mingzehuang/latentcor) that incorpotaes all continuous/binary/ternary/zero-inflated(truncated) cases.
+The faster version of latent correlation computation part is now fully
+available and implemented to the R package `mixedCCA`. The corresponding
+reference is available on arXiv:
 
+[Yoon G., Müller C.L. and Gaynanova I., “Fast computation of latent
+correlations” *arXiv*](https://arxiv.org/abs/2006.13875).
 
+**Attention:** Due to deprecation of R package `chebpol`
+(<https://cran.r-project.org/web/packages/chebpol/index.html>), the fast
+version is temporarily unavailable. We are working on a fix.
 
-Installation
-------------
+## Installation
 
 ``` install
 devtools::install_github("irinagain/mixedCCA")
 ```
 
-Example
--------
+## Example
 
 ``` r
 library(mixedCCA)

@@ -28,6 +28,8 @@ The faster version of latent correlation computation part is now fully available
 
 [Yoon G., M&uuml;ller C.L. and Gaynanova I., "Fast computation of latent correlations" *arXiv*](https://arxiv.org/abs/2006.13875).
 
+**Attention:** Due to deprecation of R package `chebpol` (https://cran.r-project.org/web/packages/chebpol/index.html), the fast version is temporarily unavailable. We are working on a fix.
+
 
 ## Installation
 
