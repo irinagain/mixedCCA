@@ -2,9 +2,6 @@
 # For multilinear interpolation approximation for bridge Inverse
 ############################################################################################
 
-#' @importFrom chebpol ipol
-NULL
-
 ############################################################################################
 # Cutoff criteria based on the combination of variable types
 ############################################################################################
@@ -65,48 +62,56 @@ bridgeInv_select <- function(type1, type2) {
 
 # wrapper functions
 bridgeInv_tc <- function(tau, zratio1, zratio2 = NULL){
-  out <- TCipol(rbind(tau, zratio1))
+  out <- NULL
+#  out <- TCipol(rbind(tau, zratio1))
   return(out)
 }
 
 bridgeInv_ct <- function(tau, zratio1 = NULL, zratio2){
-  out <- TCipol(rbind(tau, zratio2))
+  out <- NULL
+#  out <- TCipol(rbind(tau, zratio2))
   return(out)
 }
 
 
 # wrapper function
 bridgeInv_tt <- function(tau, zratio1, zratio2){
-  out <- TTipol(rbind(tau, zratio1, zratio2))
+  out <- NULL
+#  out <- TTipol(rbind(tau, zratio1, zratio2))
   return(out)
 }
 
 
 # wrapper functions
 bridgeInv_tb <- function(tau, zratio1, zratio2){
-  out <- TBipol(rbind(tau, zratio1, zratio2))
+  out <- NULL
+#  out <- TBipol(rbind(tau, zratio1, zratio2))
   return(out)
 }
 
 bridgeInv_bt <- function(tau, zratio1, zratio2){
-  out <- TBipol(rbind(tau, zratio2, zratio1))
+  out <- NULL
+#  out <- TBipol(rbind(tau, zratio2, zratio1))
   return(out)
 }
 
 
 # wrapper function
 bridgeInv_bc <- function(tau, zratio1, zratio2 = NULL){
-  out <- BCipol(rbind(tau, zratio1))
+  out <- NULL
+#  out <- BCipol(rbind(tau, zratio1))
   return(out)
 }
 
 bridgeInv_cb <- function(tau, zratio1 = NULL, zratio2){
-  out <- BCipol(rbind(tau, zratio2))
+  out <- NULL
+#  out <- BCipol(rbind(tau, zratio2))
   return(out)
 }
 
 # wrapper function
 bridgeInv_bb <- function(tau, zratio1, zratio2){
-  out <- BBipol(rbind(tau, zratio1, zratio2))
+  out <- NULL
+#  out <- BBipol(rbind(tau, zratio1, zratio2))
   return(out)
 }
