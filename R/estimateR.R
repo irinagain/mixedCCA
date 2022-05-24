@@ -5,7 +5,7 @@
 #' @aliases estimateR estimateR_mixed
 #' @param X A numeric data matrix (n by p), n is the sample size and p is the number of variables.
 #' @param type A type of variables in \code{X}, must be one of "continuous", "binary" or "trunc".
-#' @param method The calculation method of latent correlation. Either "original" method or "approx". If \code{method = "approx"}, multilinear approximation method is used, which is much faster than the original method. If \code{method = "original"}, optimization of the bridge inverse function is used. The default is "approx".
+#' @param method The calculation method of latent correlation. Either "original" method or "approx". If \code{method = "approx"}, multilinear approximation method is used, which is much faster than the original method (requires \code{chebpol} R package). If \code{method = "original"}, optimization of the bridge inverse function is used. The default is "original".
 #' @param use.nearPD A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).
 #' @param nu Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.
 #' @param tol Desired accuracy when calculating the solution of bridge function.
@@ -127,11 +127,6 @@ estimateR <- function(X, type = "trunc", method = "original", use.nearPD = TRUE,
 #' @param X2 A numeric data matrix (n by p2).
 #' @param type1 A type of variables in \code{X1}, must be one of "continuous", "binary" or "trunc".
 #' @param type2 A type of variables in \code{X2}, must be one of "continuous", "binary" or "trunc".
-#' @param method The calculation method of latent correlation. Either "original" method or "approx". If \code{method = "approx"}, multilinear approximation method is used, which is much faster than the original method. If \code{method = "original"}, optimization of the bridge inverse function is used. The default is "approx".
-#' @param use.nearPD A logical value indicating whether to use \link[Matrix]{nearPD} or not when the resulting correlation estimator is not positive definite (have at least one negative eigenvalue).
-#' @param nu Shrinkage parameter for correlation matrix, must be between 0 and 1, the default value is 0.01.
-#' @param tol Desired accuracy when calculating the solution of bridge function.
-#' @param verbose If \code{verbose = FALSE}, printing information whether nearPD is used or not is disabled. The default value is FALSE.
 #'
 #'
 #' @return \code{estimateR_mixed} returns
