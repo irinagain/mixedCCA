@@ -24,5 +24,5 @@ standardCCA(S1, S2, S12, tol = 1e-04)
 }
 }
 \description{
-This function is modified from original CCA function for two reasons: to deal with only positive eigenvalues larger than the tolerance when calculating the inverse of the matrices and to compuate Singular Value Decomposition using \code{\link[irlba]{irlba}} algorithm. Inputs should be correlation or covariance matrices of each data set and between datasets. This function returns only the first pair of canonical covariates.
+This function is modified from original CCA function for two reasons: to deal with only positive eigenvalues larger than the tolerance when calculating the inverse of the matrices and to compute Singular Value Decomposition using \code{\link[irlba]{irlba}} algorithm. Inputs should be correlation or covariance matrices of each data set and between datasets. This function returns only the first pair of canonical covariates.
 }

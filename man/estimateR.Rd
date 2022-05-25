@@ -68,7 +68,7 @@ estimateR_mixed(
 }
 }
 \description{
-Estimation of latent correlation matrix from observed data of (possibly) mixed types (continuous/biary/truncated continuous) based on the latent Gaussian copula model.
+Estimation of latent correlation matrix from observed data of (possibly) mixed types (continuous/binary/truncated continuous) based on the latent Gaussian copula model.
 }
 \examples{
 ### Data setting

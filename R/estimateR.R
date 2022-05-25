@@ -1,6 +1,6 @@
 #' @title Estimate latent correlation matrix
 #'
-#' @description Estimation of latent correlation matrix from observed data of (possibly) mixed types (continuous/biary/truncated continuous) based on the latent Gaussian copula model.
+#' @description Estimation of latent correlation matrix from observed data of (possibly) mixed types (continuous/binary/truncated continuous) based on the latent Gaussian copula model.
 #'
 #' @aliases estimateR estimateR_mixed
 #' @param X A numeric data matrix (n by p), n is the sample size and p is the number of variables.

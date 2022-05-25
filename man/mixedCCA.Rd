@@ -68,7 +68,7 @@ mixedCCA(
 }
 }
 \description{
-Applies sparse canonical correlation analysis (CCA) for high-dimensional data of mixed types (continuous/biary/truncated continuous). Derived rank-based estimator instead of sample correlation matrix is implemented. There are two types of BIC criteria for variable selection. We found that BIC1 works best for variable selection, whereas BIC2 works best for prediction.
+Applies sparse canonical correlation analysis (CCA) for high-dimensional data of mixed types (continuous/binary/truncated continuous). Derived rank-based estimator instead of sample correlation matrix is implemented. There are two types of BIC criteria for variable selection. We found that BIC1 works best for variable selection, whereas BIC2 works best for prediction.
 }
 \examples{
 ### Simple example

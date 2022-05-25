@@ -23,7 +23,7 @@ lambdaseq_generate(
 
 \item{Sigma2}{Covariance/correlation matrix of \eqn{X2} (p2 by p2)}
 
-\item{Sigma12}{Covariance/correlation matrix betweem \eqn{X1} and \eqn{X2}}
+\item{Sigma12}{Covariance/correlation matrix between \eqn{X1} and \eqn{X2}}
 
 \item{w1init}{Initial value for canonical vector \eqn{w1}}
 

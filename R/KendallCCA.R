@@ -6,7 +6,7 @@
 #' @param lam.eps The smallest value for lambda as a fraction of maximum lambda value
 #' @param Sigma1 Covariance/correlation matrix of \eqn{X1} (p1 by p1)
 #' @param Sigma2 Covariance/correlation matrix of \eqn{X2} (p2 by p2)
-#' @param Sigma12 Covariance/correlation matrix betweem \eqn{X1} and \eqn{X2}
+#' @param Sigma12 Covariance/correlation matrix between \eqn{X1} and \eqn{X2}
 #' @param w1init Initial value for canonical vector \eqn{w1}
 #' @param w2init Initial value for canonical vector \eqn{w2}
 #'
@@ -163,7 +163,7 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 
 #' @title Sparse CCA for data of mixed types with BIC criterion
 #'
-#' @description Applies sparse canonical correlation analysis (CCA) for high-dimensional data of mixed types (continuous/biary/truncated continuous). Derived rank-based estimator instead of sample correlation matrix is implemented. There are two types of BIC criteria for variable selection. We found that BIC1 works best for variable selection, whereas BIC2 works best for prediction.
+#' @description Applies sparse canonical correlation analysis (CCA) for high-dimensional data of mixed types (continuous/binary/truncated continuous). Derived rank-based estimator instead of sample correlation matrix is implemented. There are two types of BIC criteria for variable selection. We found that BIC1 works best for variable selection, whereas BIC2 works best for prediction.
 #'
 #' @param X1 A numeric data matrix (n by p1).
 #' @param X2 A numeric data matrix (n by p2).
@@ -284,7 +284,7 @@ mixedCCA <- function(X1, X2, type1, type2,
 
 #' @title Internal standard CCA function.
 #'
-#' @description This function is modified from original CCA function for two reasons: to deal with only positive eigenvalues larger than the tolerance when calculating the inverse of the matrices and to compuate Singular Value Decomposition using \code{\link[irlba]{irlba}} algorithm. Inputs should be correlation or covariance matrices of each data set and between datasets. This function returns only the first pair of canonical covariates.
+#' @description This function is modified from original CCA function for two reasons: to deal with only positive eigenvalues larger than the tolerance when calculating the inverse of the matrices and to compute Singular Value Decomposition using \code{\link[irlba]{irlba}} algorithm. Inputs should be correlation or covariance matrices of each data set and between datasets. This function returns only the first pair of canonical covariates.
 #'
 #' @param S1 correlation/covariance matrix of dataset \code{X1}.
 #' @param S2 correlation/covariance matrix of dataset \code{X2}.
