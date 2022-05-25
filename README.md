@@ -19,11 +19,11 @@ available and implemented to the R package `mixedCCA`. The corresponding
 reference is available on arXiv:
 
 [Yoon G., Müller C.L. and Gaynanova I., “Fast computation of latent
-correlations” *arXiv*](https://arxiv.org/abs/2006.13875).
+correlations” *JCGS*](https://doi.org/10.1080/10618600.2021.1882468).
 
 **Attention:** Due to deprecation of R package `chebpol`
-(<https://cran.r-project.org/web/packages/chebpol/index.html>), the fast
-version is temporarily unavailable. We are working on a fix.
+(<https://cran.r-project.org/package=chebpol>), the fast version is
+temporarily unavailable. We are working on a fix.
 
 ## Installation
 
