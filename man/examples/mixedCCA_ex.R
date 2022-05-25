@@ -32,8 +32,9 @@ range(colMeans(X1 == 0))
 range(colMeans(X2 == 0))
 
 # Kendall CCA with BIC1
-kendallcca1 <- mixedCCA(X1, X2, type1 = "trunc", type2 = "trunc", BICtype = 1)
+kendallcca1 <- mixedCCA(X1, X2, type1 = "trunc", type2 = "trunc", BICtype = 1, nlamseq = 10)
 
 # Kendall CCA with BIC2. Estimated correlation matrix is plugged in from the above result.
 R <- kendallcca1$KendallR
-kendallcca2 <- mixedCCA(X1, X2, type1 = "trunc", type2 = "trunc", KendallR = R, BICtype = 2)
+kendallcca2 <- mixedCCA(X1, X2, type1 = "trunc", type2 = "trunc",
+                        KendallR = R, BICtype = 2, nlamseq = 10)
