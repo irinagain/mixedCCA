@@ -20,7 +20,7 @@
 #'
 #' Yoon G., Carroll R.J. and Gaynanova I. (2020) "Sparse semiparametric canonical correlation analysis for data of mixed types" <doi:10.1093/biomet/asaa007>.
 #'
-#' Yoon G., Müller C.L., Gaynanova I. (2020) "Fast computation of latent correlations" <arXiv:2006.13875>.
+#' Yoon G., Mueller C.L., Gaynanova I. (2020) "Fast computation of latent correlations" <arXiv:2006.13875>.
 #'
 #' @export
 #' @import stats
