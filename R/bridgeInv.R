@@ -64,12 +64,14 @@ bridgeInv_select <- function(type1, type2) {
 
 
 # wrapper functions
-bridgeInv_tc <- function(tau, zratio1, zratio2 = NA){
+bridgeInv_tc <- function(tau, zratio1, zratio2){
+  zratio2 = NA
   out <- latentcor::r_ml_wrapper(K = tau, zratio1 = zratio1, zratio2 = zratio2, comb = "20")
   return(out)
 }
 
-bridgeInv_ct <- function(tau, zratio1 = NA, zratio2){
+bridgeInv_ct <- function(tau, zratio1, zratio2){
+  zratio1 = NA
   out <- latentcor::r_ml_wrapper(K = tau, zratio1 = zratio2, zratio2 = zratio1, comb = "20")
   return(out)
 }
@@ -95,12 +97,14 @@ bridgeInv_bt <- function(tau, zratio1, zratio2){
 
 
 # wrapper function
-bridgeInv_bc <- function(tau, zratio1, zratio2 = NA){
+bridgeInv_bc <- function(tau, zratio1, zratio2){
+  zratio2 = NA
   out <- latentcor::r_ml_wrapper(K = tau, zratio1 = zratio1, zratio2 = zratio2, comb = "10")
   return(out)
 }
 
-bridgeInv_cb <- function(tau, zratio1 = NA, zratio2){
+bridgeInv_cb <- function(tau, zratio1, zratio2){
+  zratio1 = NA
   out <- latentcor::r_ml_wrapper(K = tau, zratio1 = zratio2, zratio2 = zratio1, comb = "10")
   return(out)
 }
