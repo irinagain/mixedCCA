@@ -106,8 +106,8 @@ range(colMeans(X2 == 0))
 # with original method
 R1_org <- estimateR(X1, type = "trunc", method = "original")$R
 # with faster approximation method
-#R1_approx <- estimateR(X1, type = "trunc", method = "approx")$R
-#R12_approx <- estimateR_mixed(X1, X2, type1 = "trunc", type2 = "continuous", method = "approx")$R12
+R1_approx <- estimateR(X1, type = "trunc", method = "approx")$R
+R12_approx <- estimateR_mixed(X1, X2, type1 = "trunc", type2 = "continuous", method = "approx")$R12
 
 
 }
