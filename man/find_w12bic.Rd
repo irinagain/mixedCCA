@@ -50,13 +50,13 @@ find_w12bic(
 \value{
 \code{find_w12bic} returns a data.frame containing
 \itemize{
-      \item{w1: }{estimated canonical direction \eqn{w1}.}
-      \item{w2: }{estimated canonical direction \eqn{w2}.}
-      \item{w1trace: }{a matrix, of which column is the estimated canonical direction \eqn{w1} at each iteration. The number of columns is the number of iteration until the convergence.}
-      \item{w2trace: }{a matrix, of which column is the estimated canonical direction \eqn{w2} at each iteration. The number of columns is the number of iteration until the convergence.}
-      \item{lam1.iter: }{For each iteration, what lambda value is selected for \eqn{w1} is stored.}
-      \item{lam2.iter: }{For each iteration, what lambda value is selected for \eqn{w2} is stored.}
-      \item{obj: }{objective function value without penalty: \eqn{w1^T * R12 * w2}. If lamseq1 and lamseq2 are scalar, then original objective function including penalty part will be used.}
+      \item w1: estimated canonical direction \eqn{w1}.
+      \item w2: estimated canonical direction \eqn{w2}.
+      \item w1trace: a matrix, of which column is the estimated canonical direction \eqn{w1} at each iteration. The number of columns is the number of iteration until the convergence.
+      \item w2trace: a matrix, of which column is the estimated canonical direction \eqn{w2} at each iteration. The number of columns is the number of iteration until the convergence.
+      \item lam1.iter: For each iteration, what lambda value is selected for \eqn{w1} is stored.
+      \item lam2.iter: For each iteration, what lambda value is selected for \eqn{w2} is stored.
+      \item obj: objective function value without penalty: \eqn{w1^T * R12 * w2}. If lamseq1 and lamseq2 are scalar, then original objective function including penalty part will be used.
 }
 }
 \description{

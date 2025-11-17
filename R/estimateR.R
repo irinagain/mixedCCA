@@ -12,8 +12,8 @@
 #' @param verbose If \code{verbose = FALSE}, printing information whether nearPD is used or not is disabled. The default value is FALSE.
 #' @return \code{estimateR} returns
 #' \itemize{
-#'       \item{type: }{Type of the data matrix \code{X}}
-#'       \item{R: }{Estimated p by p latent correlation matrix of \code{X}}
+#'       \item type: Type of the data matrix \code{X}
+#'       \item R: Estimated p by p latent correlation matrix of \code{X}
 #' }
 #' @references
 #' Fan J., Liu H., Ning Y. and Zou H. (2017) "High dimensional semiparametric latent graphicalmodel for mixed data" <doi:10.1111/rssb.12168>.
@@ -131,12 +131,12 @@ estimateR <- function(X, type = "trunc", method = "original", use.nearPD = TRUE,
 #'
 #' @return \code{estimateR_mixed} returns
 #' \itemize{
-#'       \item{type1: }{Type of the data matrix \code{X1}}
-#'       \item{type2: }{Type of the data matrix \code{X2}}
-#'       \item{R: }{Estimated latent correlation matrix of whole \code{X} = (\code{X1}, \code{X2}) (p1+p2 by p1+p2)}
-#'       \item{R1: }{Estimated latent correlation matrix of \code{X1} (p1 by p1)}
-#'       \item{R2: }{Estimated latent correlation matrix of \code{X2} (p2 by p2)}
-#'       \item{R12: }{Estimated latent correlation matrix between \code{X1} and \code{X2} (p1 by p2)}
+#'       \item type1: Type of the data matrix \code{X1}
+#'       \item type2: Type of the data matrix \code{X2}
+#'       \item R: Estimated latent correlation matrix of whole \code{X} = (\code{X1}, \code{X2}) (p1+p2 by p1+p2)
+#'       \item R1: Estimated latent correlation matrix of \code{X1} (p1 by p1)
+#'       \item R2: Estimated latent correlation matrix of \code{X2} (p2 by p2)
+#'       \item R12: Estimated latent correlation matrix between \code{X1} and \code{X2} (p1 by p2)
 #' }
 #'
 #' @export

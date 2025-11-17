@@ -53,18 +53,18 @@ estimateR_mixed(
 \value{
 \code{estimateR} returns
 \itemize{
-      \item{type: }{Type of the data matrix \code{X}}
-      \item{R: }{Estimated p by p latent correlation matrix of \code{X}}
+      \item type: Type of the data matrix \code{X}
+      \item R: Estimated p by p latent correlation matrix of \code{X}
 }
 
 \code{estimateR_mixed} returns
 \itemize{
-      \item{type1: }{Type of the data matrix \code{X1}}
-      \item{type2: }{Type of the data matrix \code{X2}}
-      \item{R: }{Estimated latent correlation matrix of whole \code{X} = (\code{X1}, \code{X2}) (p1+p2 by p1+p2)}
-      \item{R1: }{Estimated latent correlation matrix of \code{X1} (p1 by p1)}
-      \item{R2: }{Estimated latent correlation matrix of \code{X2} (p2 by p2)}
-      \item{R12: }{Estimated latent correlation matrix between \code{X1} and \code{X2} (p1 by p2)}
+      \item type1: Type of the data matrix \code{X1}
+      \item type2: Type of the data matrix \code{X2}
+      \item R: Estimated latent correlation matrix of whole \code{X} = (\code{X1}, \code{X2}) (p1+p2 by p1+p2)
+      \item R1: Estimated latent correlation matrix of \code{X1} (p1 by p1)
+      \item R2: Estimated latent correlation matrix of \code{X2} (p2 by p2)
+      \item R12: Estimated latent correlation matrix between \code{X1} and \code{X2} (p1 by p2)
 }
 }
 \description{

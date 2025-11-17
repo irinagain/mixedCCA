@@ -50,17 +50,17 @@ GenerateData(
 \value{
 \code{GenerateData} returns a list containing
 \itemize{
-      \item{Z1: }{latent numeric data matrix (n by p1).}
-      \item{Z2: }{latent numeric data matrix (n by p2).}
-      \item{X1: }{observed numeric data matrix (n by p1).}
-      \item{X2: }{observed numeric data matrix (n by p2).}
-      \item{true_w1: }{normalized true canonical direction of length p1 for \code{X1}.}
-      \item{true_w2: }{normalized true canonical direction of length p2 for \code{X2}.}
-      \item{type: }{a vector containing types of two datasets.}
-      \item{maxcancor: }{true canonical correlation between \code{Z1} and \code{Z2}.}
-      \item{c1: }{constant threshold for \code{X1} for "trunc" and "binary" data type.}
-      \item{c2: }{constant threshold for \code{X2} for "trunc" and "binary" data type.}
-      \item{Sigma: }{true latent correlation matrix of \code{Z1} and \code{Z2} ((p1+p2) by (p1+p2)).}
+      \item Z1: latent numeric data matrix (n by p1).
+      \item Z2: latent numeric data matrix (n by p2).
+      \item X1: observed numeric data matrix (n by p1).
+      \item X2: observed numeric data matrix (n by p2).
+      \item true_w1: normalized true canonical direction of length p1 for \code{X1}.
+      \item true_w2: normalized true canonical direction of length p2 for \code{X2}.
+      \item type: a vector containing types of two datasets.
+      \item maxcancor: true canonical correlation between \code{Z1} and \code{Z2}.
+      \item c1: constant threshold for \code{X1} for "trunc" and "binary" data type.
+      \item c2: constant threshold for \code{X2} for "trunc" and "binary" data type.
+      \item Sigma: true latent correlation matrix of \code{Z1} and \code{Z2} ((p1+p2) by (p1+p2)).
 }
 }
 \description{

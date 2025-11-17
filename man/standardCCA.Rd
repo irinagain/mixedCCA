@@ -18,9 +18,9 @@ standardCCA(S1, S2, S12, tol = 1e-04)
 \value{
 \code{standardCCA} returns a data.frame containing
 \itemize{
-      \item{cancor: }{estimated canonical correlation.}
-      \item{w1: }{estimated canonical direction \eqn{w1}.}
-      \item{w2: }{estimated canonical direction \eqn{w2}.}
+      \item cancor: estimated canonical correlation.
+      \item w1: estimated canonical direction \eqn{w1}.
+      \item w2: estimated canonical direction \eqn{w2}.
 }
 }
 \description{

@@ -1,7 +1,7 @@
 Package: mixedCCA
 Type: Package
 Title: Sparse Canonical Correlation Analysis for High-Dimensional Mixed Data
-Version: 1.6.2
+Version: 1.6.3
 Date: 2022-09-09
 Authors@R: c(
     person(given = "Grace",
@@ -31,6 +31,6 @@ Encoding: UTF-8
 Depends: R (>= 3.0.1), stats, MASS
 Imports: Rcpp, pcaPP, Matrix, fMultivar, mnormt, irlba, latentcor (>= 2.0.1)
 NeedsCompilation: yes
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.3
 LinkingTo: Rcpp, RcppArmadillo
 LazyData: true

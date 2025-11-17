@@ -59,12 +59,12 @@ mixedCCA(
 \value{
 \code{mixedCCA} returns a data.frame containing
 \itemize{
-      \item{KendallR: }{estimated Kendall's \eqn{\tau} matrix estimator.}
-      \item{lambda_seq: }{the values of \code{lamseq} used for sparse CCA.}
-      \item{w1: }{estimated canonical direction \eqn{w1}.}
-      \item{w2: }{estimated canonical direction \eqn{w2}.}
-      \item{cancor: }{estimated canonical correlation.}
-      \item{fitresult: }{more details regarding the progress at each iteration.}
+      \item KendallR: estimated Kendall's \eqn{\tau} matrix estimator.
+      \item lambda_seq: the values of \code{lamseq} used for sparse CCA.
+      \item w1: estimated canonical direction \eqn{w1}.
+      \item w2: estimated canonical direction \eqn{w2}.
+      \item cancor: estimated canonical correlation.
+      \item fitresult: more details regarding the progress at each iteration.
 }
 }
 \description{

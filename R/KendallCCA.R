@@ -56,13 +56,13 @@ lambdaseq_generate <- function(nlamseq = 20, lam.eps = 1e-02, Sigma1, Sigma2, Si
 #'
 #' @return \code{find_w12bic} returns a data.frame containing
 #' \itemize{
-#'       \item{w1: }{estimated canonical direction \eqn{w1}.}
-#'       \item{w2: }{estimated canonical direction \eqn{w2}.}
-#'       \item{w1trace: }{a matrix, of which column is the estimated canonical direction \eqn{w1} at each iteration. The number of columns is the number of iteration until the convergence.}
-#'       \item{w2trace: }{a matrix, of which column is the estimated canonical direction \eqn{w2} at each iteration. The number of columns is the number of iteration until the convergence.}
-#'       \item{lam1.iter: }{For each iteration, what lambda value is selected for \eqn{w1} is stored.}
-#'       \item{lam2.iter: }{For each iteration, what lambda value is selected for \eqn{w2} is stored.}
-#'       \item{obj: }{objective function value without penalty: \eqn{w1^T * R12 * w2}. If lamseq1 and lamseq2 are scalar, then original objective function including penalty part will be used.}
+#'       \item w1: estimated canonical direction \eqn{w1}.
+#'       \item w2: estimated canonical direction \eqn{w2}.
+#'       \item w1trace: a matrix, of which column is the estimated canonical direction \eqn{w1} at each iteration. The number of columns is the number of iteration until the convergence.
+#'       \item w2trace: a matrix, of which column is the estimated canonical direction \eqn{w2} at each iteration. The number of columns is the number of iteration until the convergence.
+#'       \item lam1.iter: For each iteration, what lambda value is selected for \eqn{w1} is stored.
+#'       \item lam2.iter: For each iteration, what lambda value is selected for \eqn{w2} is stored.
+#'       \item obj: objective function value without penalty: \eqn{w1^T * R12 * w2}. If lamseq1 and lamseq2 are scalar, then original objective function including penalty part will be used.
 #' }
 #'
 #' @references
@@ -187,12 +187,12 @@ find_w12bic <- function(n, R1, R2, R12, lamseq1, lamseq2, w1init, w2init, BICtyp
 #'
 #' @return \code{mixedCCA} returns a data.frame containing
 #' \itemize{
-#'       \item{KendallR: }{estimated Kendall's \eqn{\tau} matrix estimator.}
-#'       \item{lambda_seq: }{the values of \code{lamseq} used for sparse CCA.}
-#'       \item{w1: }{estimated canonical direction \eqn{w1}.}
-#'       \item{w2: }{estimated canonical direction \eqn{w2}.}
-#'       \item{cancor: }{estimated canonical correlation.}
-#'       \item{fitresult: }{more details regarding the progress at each iteration.}
+#'       \item KendallR: estimated Kendall's \eqn{\tau} matrix estimator.
+#'       \item lambda_seq: the values of \code{lamseq} used for sparse CCA.
+#'       \item w1: estimated canonical direction \eqn{w1}.
+#'       \item w2: estimated canonical direction \eqn{w2}.
+#'       \item cancor: estimated canonical correlation.
+#'       \item fitresult: more details regarding the progress at each iteration.
 #' }
 #'
 #' @example man/examples/mixedCCA_ex.R
@@ -293,9 +293,9 @@ mixedCCA <- function(X1, X2, type1, type2,
 #'
 #' @return \code{standardCCA} returns a data.frame containing
 #' \itemize{
-#'       \item{cancor: }{estimated canonical correlation.}
-#'       \item{w1: }{estimated canonical direction \eqn{w1}.}
-#'       \item{w2: }{estimated canonical direction \eqn{w2}.}
+#'       \item cancor: estimated canonical correlation.
+#'       \item w1: estimated canonical direction \eqn{w1}.
+#'       \item w2: estimated canonical direction \eqn{w2}.
 #' }
 #'
 #' @importFrom irlba irlba
@@ -341,9 +341,9 @@ standardCCA <- function(S1, S2, S12, tol = 1e-4){
 #'
 #' @return \code{myrcc} returns a data.frame containing
 #' \itemize{
-#'       \item{cancor: }{estimated canonical correlation.}
-#'       \item{w1: }{estimated canonical direction \eqn{w1}.}
-#'       \item{w2: }{estimated canonical direction \eqn{w2}.}
+#'       \item cancor: estimated canonical correlation.
+#'       \item w1: estimated canonical direction \eqn{w1}.
+#'       \item w2: estimated canonical direction \eqn{w2}.
 #' }
 #' @export
 #'
