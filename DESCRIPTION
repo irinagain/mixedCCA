@@ -17,9 +17,9 @@ Authors@R: c(
     person(given = "Irina",
            family = "Gaynanova",
            role = c("aut", "cre"),
-           email = "irinag@stat.tamu.edu",
+           email = "irinagn@umich.edu",
            comment = c(ORCID = "0000-0002-4116-0268")))
-Maintainer: Irina Gaynanova <irinag@stat.tamu.edu>
+Maintainer: Irina Gaynanova <irinagn@umich.edu>
 Description: Semi-parametric approach for sparse canonical correlation analysis 
     which can handle mixed data types: continuous, binary and truncated continuous.
     Bridge functions are provided to connect Kendall's tau to latent correlation
