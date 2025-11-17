@@ -2,7 +2,7 @@ Package: mixedCCA
 Type: Package
 Title: Sparse Canonical Correlation Analysis for High-Dimensional Mixed Data
 Version: 1.6.3
-Date: 2022-09-09
+Date: 2025-11-17
 Authors@R: c(
     person(given = "Grace",
            family = "Yoon",
